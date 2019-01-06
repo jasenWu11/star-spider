@@ -9,8 +9,10 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    @IBOutlet weak var tableView: UITableView!
+    
     override func viewDidLoad() {
+        @IBOutlet weak var tableView: UITableView!
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
     }
