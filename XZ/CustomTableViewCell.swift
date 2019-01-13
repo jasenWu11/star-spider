@@ -15,6 +15,9 @@ class CustomTableViewCell: UITableViewCell {
     var subButton : UIButton?
     let screenWidth =  UIScreen.main.bounds.size.width
     var rows:Int = 0
+    
+    var root : CustomCellController?
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -25,7 +28,7 @@ class CustomTableViewCell: UITableViewCell {
     }
     @objc func composeBtnClick(subButton: UIButton) {
         print(subButton.tag)
-       
+       root?.performSegue(withIdentifier: "deatil", sender: nil)
     }
     func setUpUI(){
         // 图片
@@ -59,13 +62,13 @@ class CustomTableViewCell: UITableViewCell {
     }
     
     // 给cell赋值，项目中一般使用model，我这里直接写死了
-    func setValueForCell(){
-        
-        rows = rows+1
-        iconImage?.image = UIImage(named:"weibo")
-        titleLabel?.text = "大大大大的标题"
-        subTitleLabel?.text = "副副副副的标题"
-    }
+//    func setValueForCell(){
+//
+//        rows = rows+1
+//        iconImage?.image = UIImage(named:"weibo")
+//        titleLabel?.text = "大大大大的标题"
+//        subTitleLabel?.text = "副副副副的标题"
+//    }
     
     
     override func awakeFromNib() {
@@ -78,5 +81,6 @@ class CustomTableViewCell: UITableViewCell {
         
         // Configure the view for the selected state
     }
+    
     
 }

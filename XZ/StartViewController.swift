@@ -12,8 +12,10 @@ class StartViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let olduser: String = UserDefaults.standard.object(forKey: "user") as! String
+        var olduser : String = "";
+        if UserDefaults.standard.object(forKey: "user") != nil {
+            olduser = UserDefaults.standard.object(forKey: "user") as! String
+        }
         print("以前的文本框的值等于"+olduser)
 
         let time: TimeInterval = 2.0

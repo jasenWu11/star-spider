@@ -9,9 +9,13 @@
 import UIKit
 
 class MymessViewController: UIViewController {
+    
+    var root : MyViewController?
     @IBOutlet weak var tv_name: UILabel!
     @IBAction func back(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
+        self.dismiss(animated: true, completion: {
+            self.root!.tv_name.text = "名字"
+        })
     }
     
     override func viewDidLoad() {

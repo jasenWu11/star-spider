@@ -63,7 +63,7 @@ class APImessViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        if(pid == 10){
+        if(pid == 2238243){
             ptitle = "携程网机票价格走向"
             pdesc = "获取携程网机票价格数据，分析走向"
             let url = URL(string:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428544571&di=aec9218dcffa1e52bd80d9bd046bd8ad&imgtype=0&src=http%3A%2F%2Fphotocdn.sohu.com%2F20150601%2Fmp17161050_1433123079696_1_th.png")
@@ -72,7 +72,7 @@ class APImessViewController: UIViewController {
             iv_img.image = smallImage
             
         }
-        if(pid == 11){
+        if(pid == 2238242){
             ptitle = "百度搜索次数排行版"
             pdesc = "获取百度网搜索次数排行，分析用户需求"
             let url = URL(string:"https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=3668473071,2731513318&fm=26&gp=0.jpg")
@@ -80,7 +80,7 @@ class APImessViewController: UIViewController {
             let smallImage = UIImage(data: data)
             iv_img.image = smallImage
         }
-        if(pid == 12){
+        if(pid == 2238245){
             ptitle = "爱奇艺点击率最高电影"
             pdesc = "获取爱奇艺点击率最高电影,可以方便找到票房较高的电影，筛选避过烂片"
             let url = URL(string:"https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1850075590,3068352838&fm=26&gp=0.jpg")
@@ -88,7 +88,7 @@ class APImessViewController: UIViewController {
             let smallImage = UIImage(data: data)
             iv_img.image = smallImage
         }
-        if(pid == 13){
+        if(pid == 2238241){
             ptitle = "微博热搜版"
             pdesc = "获取微博热搜版，研究大众兴趣"
             let url = URL(string:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428801285&di=669cbde92e7431224a61735411e9f22f&imgtype=0&src=http%3A%2F%2Fwww.xmexpo.cn%2Fuploads%2Fallimg%2F180125%2F1Q91aG5_0.png")
@@ -96,8 +96,24 @@ class APImessViewController: UIViewController {
             let smallImage = UIImage(data: data)
             iv_img.image = smallImage
         }
-        if(pid == 14){
+        if(pid == 2238244){
             ptitle = "淘宝销售排行"
+            pdesc = "获取淘宝销售排行，可以作为准备开网店的前期互联网用户需求分析调查研究使用"
+            let url = URL(string:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428895544&di=edf4a9afdf17a53d702aef9fee17a639&imgtype=0&src=http%3A%2F%2Fphoto.16pic.com%2F00%2F61%2F24%2F16pic_6124483_b.jpg")
+            let data = try! Data(contentsOf: url!)
+            let smallImage = UIImage(data: data)
+            iv_img.image = smallImage
+        }
+        if(pid == 2238246){
+            ptitle = "哔哩哔哩评论量排行"
+            pdesc = "获取淘宝销售排行，可以作为准备开网店的前期互联网用户需求分析调查研究使用"
+            let url = URL(string:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428895544&di=edf4a9afdf17a53d702aef9fee17a639&imgtype=0&src=http%3A%2F%2Fphoto.16pic.com%2F00%2F61%2F24%2F16pic_6124483_b.jpg")
+            let data = try! Data(contentsOf: url!)
+            let smallImage = UIImage(data: data)
+            iv_img.image = smallImage
+        }
+        if(pid == 2238244){
+            ptitle = "深度学习"
             pdesc = "获取淘宝销售排行，可以作为准备开网店的前期互联网用户需求分析调查研究使用"
             let url = URL(string:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428895544&di=edf4a9afdf17a53d702aef9fee17a639&imgtype=0&src=http%3A%2F%2Fphoto.16pic.com%2F00%2F61%2F24%2F16pic_6124483_b.jpg")
             let data = try! Data(contentsOf: url!)

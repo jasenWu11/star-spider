@@ -147,7 +147,7 @@ class MyAppcellViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.accessoryType = .none
             // 大标题
             tv_title = UILabel(frame: CGRect(x:10, y: 10, width:screenWidth-10, height: 20))
-            tv_title?.text = titles[indexPath.row]
+            tv_title?.text = titles[indexPath.item]
             tv_type?.font = UIFont.systemFont(ofSize: 16)
             tv_type?.textColor = UIColor.black
             cell.addSubview(tv_title!)
@@ -161,7 +161,7 @@ class MyAppcellViewController: UIViewController, UITableViewDelegate, UITableVie
             tv_type = UILabel(frame: CGRect(x:85, y:35, width: 100, height:20))
             tv_type?.font = UIFont.systemFont(ofSize: 14)
             tv_type?.textColor = UIColor.black
-            tv_type?.text = types[indexPath.row]
+            tv_type?.text = types[indexPath.item]
             cell.addSubview(tv_type!)
             // 创建时间
             tv_ctimes = UILabel(frame: CGRect(x:10, y:60, width:80, height: 20))
@@ -173,7 +173,7 @@ class MyAppcellViewController: UIViewController, UITableViewDelegate, UITableVie
             tv_ctime = UILabel(frame: CGRect(x:85, y:60, width:100, height: 20))
             tv_ctime?.font = UIFont.systemFont(ofSize: 14)
             tv_ctime?.textColor = UIColor.black
-            tv_ctime?.text = ctimes[indexPath.row]
+            tv_ctime?.text = ctimes[indexPath.item]
             cell.addSubview(tv_ctime!)
             // 状态
             tv_states = UILabel(frame: CGRect(x:10, y:85, width:45, height: 20))
@@ -185,7 +185,7 @@ class MyAppcellViewController: UIViewController, UITableViewDelegate, UITableVie
             tv_state = UILabel(frame: CGRect(x:50, y:85, width:100, height: 20))
             tv_state?.font = UIFont.systemFont(ofSize: 14)
             tv_state?.textColor = UIColor.black
-            tv_state?.text = states[indexPath.row]
+            tv_state?.text = states[indexPath.item]
             cell.addSubview(tv_state!)
             // 统计
             tv_counts = UILabel(frame: CGRect(x:10, y:110, width:60, height: 20))
@@ -197,7 +197,7 @@ class MyAppcellViewController: UIViewController, UITableViewDelegate, UITableVie
             tv_count = UILabel(frame: CGRect(x:65, y:110, width:100, height: 20))
             tv_count?.font = UIFont.systemFont(ofSize: 14)
             tv_count?.textColor = UIColor.black
-            tv_count?.text = counts[indexPath.row]
+            tv_count?.text = counts[indexPath.item]
             cell.addSubview(tv_count!)
             // 操作按钮
             bt_oper = UIButton(frame: CGRect(x:screenWidth-70-15, y:((145)/2-30)-10, width:70, height: 30))
@@ -205,7 +205,7 @@ class MyAppcellViewController: UIViewController, UITableViewDelegate, UITableVie
             bt_oper?.setTitleColor(UIColor.white, for: UIControl.State.normal)
             bt_oper?.titleLabel?.font = UIFont.systemFont(ofSize: 16)
             bt_oper?.backgroundColor = UIColor.blue
-            bt_oper!.tag = pidss[indexPath.row]
+            bt_oper!.tag = pidss[indexPath.item]
             bt_oper?.addTarget(self, action: #selector(Operactions), for: UIControl.Event.touchUpInside)
             cell.addSubview(bt_oper!)
             // 删除按钮
@@ -214,7 +214,7 @@ class MyAppcellViewController: UIViewController, UITableViewDelegate, UITableVie
             bt_dele?.setTitleColor(UIColor.white, for: UIControl.State.normal)
             bt_dele?.titleLabel?.font = UIFont.systemFont(ofSize: 16)
             bt_dele?.backgroundColor = UIColor.red
-            bt_dele!.tag = indexPath.row
+            bt_dele!.tag = indexPath.item
             bt_dele?.addTarget(self, action: #selector(Deleactions), for: UIControl.Event.touchUpInside)
             cell.addSubview(bt_dele!)
             return cell
@@ -223,7 +223,7 @@ class MyAppcellViewController: UIViewController, UITableViewDelegate, UITableVie
     //    // UITableViewDelegate 方法，处理列表项的选中事件
     //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     //        self.tableView!.deselectRow(at: indexPath, animated: true)
-    //        let itemString = self.titles[indexPath.row]
+    //        let itemString = self.titles[indexPath.item]
     //
     //        self.performSegue(withIdentifier: "ShowDetailView", sender: itemString)
     //    }

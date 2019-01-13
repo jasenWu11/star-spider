@@ -10,6 +10,7 @@ import UIKit
 import Alamofire
 class MyViewController: UIViewController {
 
+    @IBOutlet weak var iv_head: UIImageView!
     @IBOutlet weak var messv: UIView!
     @IBOutlet weak var message: UIView!
     @IBOutlet weak var Sugg: UIView!
@@ -27,11 +28,13 @@ class MyViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         jsonRequest()
+        iv_head.layer.cornerRadius = 35
+        iv_head.layer.masksToBounds = true
         let myclick = UITapGestureRecognizer(target: self, action: #selector(myAction))
-        messv.addGestureRecognizer(myclick)
+        iv_head.addGestureRecognizer(myclick)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
-        messv.isUserInteractionEnabled = true
-        
+        iv_head.isUserInteractionEnabled = true
+        tv_name?.textAlignment=NSTextAlignment.center
         let messclick = UITapGestureRecognizer(target: self, action: #selector(messAction))
         message.addGestureRecognizer(messclick)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
@@ -69,6 +72,7 @@ class MyViewController: UIViewController {
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: MymessViewController())))
             as! MymessViewController
         controller.name = username
+        controller.root = self
         self.present(controller, animated: true, completion: nil)
     }
     //点击事件方法

@@ -10,41 +10,151 @@ import UIKit
 
 class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
     //获取屏幕宽度
+    @IBOutlet weak var sv_home: UIScrollView!
     let screenWidth =  UIScreen.main.bounds.size.width
-    
+    var v_xzjj:UIView?
+    var v_pcjj:UIView?
+    var v_apijj:UIView?
+    var v_sjyjj:UIView?
+    var iv_xz:UIImageView?
+    var iv_pc:UIImageView?
+    var iv_api:UIImageView?
+    var iv_sjy:UIImageView?
+    var lv_xz:UILabel?
+    var lv_pc:UILabel?
+    var lv_api:UILabel?
+    var lv_sjy:UILabel?
     //图片轮播组件
     var sliderGallery : SliderGalleryController!
-    
-
-    @IBOutlet weak var sv_tj: UIScrollView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         //初始化图片轮播组件
         sliderGallery = SliderGalleryController()
         sliderGallery.delegate = self
-        sliderGallery.view.frame = CGRect(x: 0, y: 125, width: screenWidth,
-                                          height: (screenWidth-20)/16*9);
-        
+        sliderGallery.view.frame = CGRect(x: 0, y: 0, width: screenWidth,
+                                          height: (screenWidth)/16*11);
+       
         //将图片轮播组件添加到当前视图
         self.addChild(sliderGallery)
-        self.view.addSubview(sliderGallery.view)
-        
+        sv_home.addSubview(sliderGallery.view)
+        //是否可以滚动
+        sv_home.isScrollEnabled = true
+        //垂直方向反弹
+        sv_home.alwaysBounceVertical = true
+        //垂直方向是否显示滚动条
+        sv_home.showsVerticalScrollIndicator = false
         //添加组件的点击事件
         let tap = UITapGestureRecognizer(target: self,
                                          action: #selector(HomeViewController.handleTapAction(_:)))
         sliderGallery.view.addGestureRecognizer(tap)
         // Do any additional setup after loading the view.
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        sv_tj.contentSize = CGSize.init(width: 450, height: 111);
-        sv_tj.isScrollEnabled=true;
-        sv_tj.showsVerticalScrollIndicator = false;
-        sv_tj.showsHorizontalScrollIndicator = false;
+        //星蛛简介视图
+        v_xzjj = UIView(frame: CGRect(x:5, y: (sliderGallery.view?.frame.size.height)!+5, width:(screenWidth-20)/2, height: (screenWidth-20)/2))
+        v_xzjj?.backgroundColor=UIColor.white
+        v_xzjj?.clipsToBounds=true
+        v_xzjj?.layer.cornerRadius = 5
+        v_xzjj?.layer.shadowColor = UIColor.gray.cgColor
+        v_xzjj?.layer.shadowOpacity = 1.0
+        v_xzjj?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        v_xzjj?.layer.shadowRadius = 4
+        v_xzjj?.layer.masksToBounds = false
+        sv_home.addSubview(v_xzjj!)
+        //图片
+        iv_xz = UIImageView(frame: CGRect(x:0, y: 0, width:(v_xzjj?.frame.size.width)!, height: (v_xzjj?.frame.size.height)!-30))
+        iv_xz?.layer.cornerRadius = 5.0
+        iv_xz?.layer.maskedCorners = [CACornerMask.layerMinXMinYCorner , CACornerMask.layerMaxXMinYCorner]
+        iv_xz?.layer.masksToBounds = true
+        iv_xz?.image = UIImage(named:"logo")
+        v_xzjj?.addSubview(iv_xz!)
+        //文字
+        lv_xz = UILabel(frame: CGRect(x:0, y:(iv_xz?.frame.size.height)!, width:(v_xzjj?.frame.size.width)!, height: (v_xzjj?.frame.size.height)!-(iv_xz?.frame.size.height)!))
+        lv_xz?.font = UIFont.systemFont(ofSize: 14)
+        lv_xz?.textColor = UIColor.black
+        lv_xz?.text = "星蛛数据服务平台简介"
+        v_xzjj?.addSubview(lv_xz!)
+        lv_xz?.textAlignment=NSTextAlignment.center
+        //爬虫简介视图
+        v_pcjj = UIView(frame: CGRect(x:(v_xzjj?.frame.size.width)!+15, y: (sliderGallery.view?.frame.size.height)!+5, width:(screenWidth-20)/2, height: (screenWidth-20)/2))
+        v_pcjj?.backgroundColor=UIColor.white
+        v_pcjj?.clipsToBounds=true
+        v_pcjj?.layer.cornerRadius = 5
+        v_pcjj?.layer.shadowColor = UIColor.gray.cgColor
+        v_pcjj?.layer.shadowOpacity = 1.0
+        v_pcjj?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        v_pcjj?.layer.shadowRadius = 4
+        v_pcjj?.layer.masksToBounds = false
+        sv_home.addSubview(v_pcjj!)
+        //图片
+        iv_pc = UIImageView(frame: CGRect(x:0, y: 0, width:(v_pcjj?.frame.size.width)!, height: (v_pcjj?.frame.size.height)!-30))
+        iv_pc?.layer.cornerRadius = 5.0
+        iv_pc?.layer.maskedCorners = [CACornerMask.layerMinXMinYCorner , CACornerMask.layerMaxXMinYCorner]
+        iv_pc?.layer.masksToBounds = true
+        iv_pc?.image = UIImage(named:"pach")
+        v_pcjj?.addSubview(iv_pc!)
+        //文字
+        lv_pc = UILabel(frame: CGRect(x:0, y:(iv_pc?.frame.size.height)!, width:(v_pcjj?.frame.size.width)!, height: (v_pcjj?.frame.size.height)!-(iv_pc?.frame.size.height)!))
+        lv_pc?.font = UIFont.systemFont(ofSize: 14)
+        lv_pc?.textColor = UIColor.black
+        lv_pc?.text = "什么是爬虫？"
+        v_pcjj?.addSubview(lv_pc!)
+        lv_pc?.textAlignment=NSTextAlignment.center
+        //API简介视图
+        v_apijj = UIView(frame: CGRect(x:5, y: (sliderGallery.view?.frame.size.height)!+15+(v_xzjj?.frame.size.height)!, width:(screenWidth-20)/2, height: (screenWidth-20)/2))
+        v_apijj?.backgroundColor=UIColor.white
+        v_apijj?.clipsToBounds=true
+        v_apijj?.layer.cornerRadius = 5
+        v_apijj?.layer.shadowColor = UIColor.gray.cgColor
+        v_apijj?.layer.shadowOpacity = 1.0
+        v_apijj?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        v_apijj?.layer.shadowRadius = 4
+        v_apijj?.layer.masksToBounds = false
+        sv_home.addSubview(v_apijj!)
+        //图片
+        iv_api = UIImageView(frame: CGRect(x:0, y: 0, width:(v_apijj?.frame.size.width)!, height: (v_apijj?.frame.size.height)!-30))
+        iv_api?.layer.cornerRadius = 5.0
+        iv_api?.layer.maskedCorners = [CACornerMask.layerMinXMinYCorner , CACornerMask.layerMaxXMinYCorner]
+        iv_api?.layer.masksToBounds = true
+        iv_api?.image = UIImage(named:"API")
+        v_apijj?.addSubview(iv_api!)
+        //文字
+        lv_api = UILabel(frame: CGRect(x:0, y:(iv_api?.frame.size.height)!, width:(v_apijj?.frame.size.width)!, height: (v_apijj?.frame.size.height)!-(iv_api?.frame.size.height)!))
+        lv_api?.font = UIFont.systemFont(ofSize: 14)
+        lv_api?.textColor = UIColor.black
+        lv_api?.text = "什么是API？"
+        v_apijj?.addSubview(lv_api!)
+        lv_api?.textAlignment=NSTextAlignment.center
+        //SJY简介视图
+        v_sjyjj = UIView(frame: CGRect(x:(v_xzjj?.frame.size.width)!+15, y: (sliderGallery.view?.frame.size.height)!+15+(v_xzjj?.frame.size.height)!, width:(screenWidth-20)/2, height: (screenWidth-20)/2))
+        v_sjyjj?.backgroundColor=UIColor.white
+        v_sjyjj?.clipsToBounds=true
+        v_sjyjj?.layer.cornerRadius = 5
+        v_sjyjj?.layer.shadowColor = UIColor.gray.cgColor
+        v_sjyjj?.layer.shadowOpacity = 1.0
+        v_sjyjj?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        v_sjyjj?.layer.shadowRadius = 4
+        v_sjyjj?.layer.masksToBounds = false
+        sv_home.addSubview(v_sjyjj!)
+        //图片
+        iv_sjy = UIImageView(frame: CGRect(x:0, y: 0, width:(v_sjyjj?.frame.size.width)!, height: (v_sjyjj?.frame.size.height)!-30))
+        iv_sjy?.layer.cornerRadius = 5.0
+        iv_sjy?.layer.maskedCorners = [CACornerMask.layerMinXMinYCorner , CACornerMask.layerMaxXMinYCorner]
+        iv_sjy?.layer.masksToBounds = true
+        iv_sjy?.image = UIImage(named:"sjy")
+        v_sjyjj?.addSubview(iv_sjy!)
+        //文字
+        lv_sjy = UILabel(frame: CGRect(x:0, y:(iv_sjy?.frame.size.height)!, width:(v_sjyjj?.frame.size.width)!, height: (v_sjyjj?.frame.size.height)!-(iv_sjy?.frame.size.height)!))
+        lv_sjy?.font = UIFont.systemFont(ofSize: 14)
+        lv_sjy?.textColor = UIColor.black
+        lv_sjy?.text = "什么是数据源？"
+        v_sjyjj?.addSubview(lv_sjy!)
+        lv_sjy?.textAlignment=NSTextAlignment.center
+        sv_home.contentSize = CGSize(width: screenWidth,
+                                     height: (sliderGallery.view?.frame.size.height)!+(v_xzjj?.frame.size.height)!+(v_apijj?.frame.size.height)!+20);
     }
     //图片轮播组件协议方法：获取内部scrollView尺寸
     func galleryScrollerViewSize() -> CGSize {
-        return CGSize(width: screenWidth, height: (screenWidth-20)/16*9)
+        return CGSize(width: screenWidth, height: (screenWidth)/16*11)
     }
     
     //图片轮播组件协议方法：获取数据集合
@@ -64,19 +174,19 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
         var ids : Int = 0
         
         if(index == 0){
-            ids = 10
+            ids = 2238243
         }
         if(index == 1){
-            ids = 11
+            ids = 2238242
         }
         if(index == 2){
-            ids = 12
+            ids = 2238245
         }
         if(index == 3){
-            ids = 13
+            ids = 2238241
         }
         if(index == 4){
-            ids = 14
+            ids = 2238244
         }
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: APImessViewController())))
             as! APImessViewController
