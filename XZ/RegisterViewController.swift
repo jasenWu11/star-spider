@@ -148,22 +148,22 @@ class RegisterViewController: UIViewController {
             return
         }
         else {
-            let alertController = UIAlertController(title: "注册成功!",
-                                                    message: nil, preferredStyle: .alert)
-            //显示提示框
-            self.present(alertController, animated: true, completion: nil)
-            //两秒钟后自动消失
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-                self.presentedViewController?.dismiss(animated: false, completion: nil)
-            }
-            let time: TimeInterval = 0.8
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
-                //code
-                let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: LoginViewController())))
-                    as! LoginViewController
-                self.present(controller, animated: true, completion: nil)
-            }
-            
+//            let alertController = UIAlertController(title: "注册成功!",
+//                                                    message: nil, preferredStyle: .alert)
+//            //显示提示框
+//            self.present(alertController, animated: true, completion: nil)
+//            //两秒钟后自动消失
+//            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+//                self.presentedViewController?.dismiss(animated: false, completion: nil)
+//            }
+//            let time: TimeInterval = 0.8
+//            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
+//                //code
+//                let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: LoginViewController())))
+//                    as! LoginViewController
+//                self.present(controller, animated: true, completion: nil)
+//            }
+            RegisterRequest()
         }
         
     }
@@ -198,5 +198,75 @@ class RegisterViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
+    func RegisterRequest()  {
+        phone = tv_phone.text!
+        pass = tv_pass.text!
+        yanzh = tv_yanzh.text!
+        let url = "https://www.xingzhu.club/XzTest/users/register"
+        let paras = ["userPhoneNumber":phone,"userPwd":pass]
+        print("手机号"+phone)
+        print("手机号"+pass)
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                let code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+//                if(erro == 0){
+                    let alertController = UIAlertController(title: message,
+                                                            message: nil, preferredStyle: .alert)
+                    //显示提示框
+                    self.present(alertController, animated: true, completion: nil)
+                    //两秒钟后自动消失
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                        self.presentedViewController?.dismiss(animated: false, completion: nil)
+                    }
+                if(message == "注册成功"){
+                    let time: TimeInterval = 1
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
+                        //code
+                        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: LoginViewController())))
+                            as! LoginViewController
+                        self.present(controller, animated: true, completion: nil)
+                    }
+                }
+//
+//                }
+//                if(erro == 10){
+//                    let alertController = UIAlertController(title: "验证码错误!",
+//                                                            message: nil, preferredStyle: .alert)
+//                    //显示提示框
+//                    self.present(alertController, animated: true, completion: nil)
+//                    //两秒钟后自动消失
+//                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.8) {
+//                        self.presentedViewController?.dismiss(animated: false, completion: nil)
+//                    }
+//                }
+//                if(erro == 16){
+//                    let alertController = UIAlertController(title: "密码错误!",
+//                                                            message: nil, preferredStyle: .alert)
+//                    //显示提示框
+//                    self.present(alertController, animated: true, completion: nil)
+//                    //两秒钟后自动消失
+//                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.8) {
+//                        self.presentedViewController?.dismiss(animated: false, completion: nil)
+//                    }
+//                }
+//                if(erro == 14){
+//                    let alertController = UIAlertController(title: "用户不存在!",
+//                                                            message: nil, preferredStyle: .alert)
+//                    //显示提示框
+//                    self.present(alertController, animated: true, completion: nil)
+//                    //两秒钟后自动消失
+//                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.8) {
+//                        self.presentedViewController?.dismiss(animated: false, completion: nil)
+//                    }
+//                }
+            }
+            
+        }
+    }
 }

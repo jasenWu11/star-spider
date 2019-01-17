@@ -19,6 +19,7 @@ class MyViewController: UIViewController {
     @IBOutlet weak var tv_name: UILabel!
     var userphone = ""
     var username = ""
+    var nameph:String = ""
     @IBAction func TZ(_ sender: Any) {
         
         let secondViewController = MymessViewController()
@@ -27,9 +28,26 @@ class MyViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        jsonRequest()
+        var headph : String = "";
+        if UserDefaults.standard.object(forKey: "userProfilePhoto") != nil {
+            headph = UserDefaults.standard.object(forKey: "userProfilePhoto") as! String
+        }
+        if UserDefaults.standard.object(forKey: "userName") != nil {
+            nameph = UserDefaults.standard.object(forKey: "userName") as! String
+        }
+        //jsonRequest()
         iv_head.layer.cornerRadius = 35
         iv_head.layer.masksToBounds = true
+        print("头像\(headph)")
+        if(headph != ""){
+            let url = URL(string:headph)
+            let data = try! Data(contentsOf: url!)
+            let smallImage = UIImage(data: data)
+            iv_head.image = smallImage
+        }
+        if(nameph != ""){
+            tv_name.text = nameph
+        }
         let myclick = UITapGestureRecognizer(target: self, action: #selector(myAction))
         iv_head.addGestureRecognizer(myclick)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应

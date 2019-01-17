@@ -132,6 +132,7 @@ class LoginViewController: UIViewController {
             print("结果:\(data)")
             }
         self.countDown(timeOut: 60)
+        
         }
     
     //验证码倒计时
@@ -190,19 +191,20 @@ class LoginViewController: UIViewController {
         pass = tv_pwd.text!
         user=tv_phone.text!
         yanzhen=tv_yanzh.text!
-        let url = "http://47.106.217.3:8360/app/user/login"
-        let paras = ["phone":phone,"password":pass,"code":yanzhen]
+        let url = "https://www.xingzhu.club/XzTest/users/login"
+        let paras = ["userPhoneNumber":phone,"userPwd":pass]
         print("手机号"+phone)
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
-        Alamofire.request(url, method: .post, parameters: paras, encoding: URLEncoding.default, headers: nil).responseJSON { (response) in
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
             print("jsonRequest:\(response.result)")
-            if let data = response.result.value {
-                let json = JSON(data)
+            if let jdata = response.result.value {
+                let json = JSON(jdata)
                 print("结果:\(json)")
-                var erro: Int = json["errno"].int!
-                print("错误:\(erro)")
-                if(erro == 0){
-                    let alertController = UIAlertController(title: "登录成功!",
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message: String = json["message"].string!
+//                if(erro == "0"){
+                    let alertController = UIAlertController(title: message,
                                                             message: nil, preferredStyle: .alert)
                     //显示提示框
                     self.present(alertController, animated: true, completion: nil)
@@ -210,46 +212,47 @@ class LoginViewController: UIViewController {
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
                         self.presentedViewController?.dismiss(animated: false, completion: nil)
                     }
+                if(message == "登录成功"){
+                    let usermess = json["data"]
+                    let userId: Int = usermess["userId"].int ?? 0
+                    let userPwd: String = usermess["userPwd"].string ?? ""
+                    let userEmail: String = usermess["userEmail"].string ?? ""
+                    let userBalance: Int = usermess["userBalance"].int ?? 0
+                    let userProfilePhoto: String = usermess["userProfilePhoto"].string ?? ""
+                    let userName: String = usermess["userName"].string ?? ""
+                    let userRegisterTime: String = usermess["userRegisterTime"].string ?? ""
+                    let isVip: Int = usermess["isVip"].int ?? 0
+                    let userPhoneNumber: String = usermess["userPhoneNumber"].string ?? ""
+                    let userPwdSalt: String = usermess["userPwdSalt"].string ?? ""
+                    print("用户id：\(userId)")
+                    print("密码：\(userPwd)")
+                    print("邮箱：\(userEmail)")
+                    print("余额：\(userBalance)")
+                    print("头像：\(userProfilePhoto)")
+                    print("用户名：\(userName)")
+                    print("注册时间：\(userRegisterTime)")
+                    print("是否VIP：\(isVip)")
+                    print("手机号码：\(userPhoneNumber)")
+                    print("密码状态：\(userPwdSalt)")
                     let time: TimeInterval = 1
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
                         //code
                         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: MainViewController())))
                             as! MainViewController
                         self.present(controller, animated: true, completion: nil)
-                        UserDefaults.standard.set(self.phone, forKey: "user")
-                    }
-                    
+                        UserDefaults.standard.set(userId, forKey: "userId")
+                        UserDefaults.standard.set(userPwd, forKey: "userPwd")
+                        UserDefaults.standard.set(userEmail, forKey: "userEmail")
+                        UserDefaults.standard.set(userBalance, forKey: "userBalance")
+                        UserDefaults.standard.set(userProfilePhoto, forKey: "userProfilePhoto")
+                        UserDefaults.standard.set(userName, forKey: "userName")
+                        UserDefaults.standard.set(userRegisterTime, forKey: "userRegisterTime")
+                        UserDefaults.standard.set(isVip, forKey: "isVip")
+                        UserDefaults.standard.set(userPhoneNumber, forKey: "userPhoneNumber")
+                        UserDefaults.standard.set(userPwdSalt, forKey: "userPwdSalt")
                 }
-                if(erro == 10){
-                    let alertController = UIAlertController(title: "验证码错误!",
-                                                            message: nil, preferredStyle: .alert)
-                    //显示提示框
-                    self.present(alertController, animated: true, completion: nil)
-                    //两秒钟后自动消失
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.8) {
-                        self.presentedViewController?.dismiss(animated: false, completion: nil)
                     }
-                }
-                if(erro == 16){
-                    let alertController = UIAlertController(title: "密码错误!",
-                                                            message: nil, preferredStyle: .alert)
-                    //显示提示框
-                    self.present(alertController, animated: true, completion: nil)
-                    //两秒钟后自动消失
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.8) {
-                        self.presentedViewController?.dismiss(animated: false, completion: nil)
-                    }
-                }
-                if(erro == 14){
-                    let alertController = UIAlertController(title: "用户不存在!",
-                                                            message: nil, preferredStyle: .alert)
-                    //显示提示框
-                    self.present(alertController, animated: true, completion: nil)
-                    //两秒钟后自动消失
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.8) {
-                        self.presentedViewController?.dismiss(animated: false, completion: nil)
-                    }
-                }
+
             }
             
         }

@@ -13,7 +13,16 @@ class SettingViewController: UIViewController {
     @IBOutlet weak var loset: UIButton!
     @IBOutlet weak var zhanyin: UIView!
     @IBOutlet weak var abus: UIView!
-    var user: String = ""
+    var userId: String = ""
+    var userPwd: String = ""
+    var userEmail: String = ""
+    var userBalance: String = ""
+    var userProfilePhoto: String = ""
+    var userName: String = ""
+    var userRegisterTime: String = ""
+    var isVip: String = ""
+    var userPhoneNumber: String = ""
+    var userPwdSalt: String = ""
     @IBAction func back(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
@@ -49,9 +58,27 @@ class SettingViewController: UIViewController {
         self.present(controller, animated: true, completion: nil)
     }
     @objc func losetAction() -> Void {
-        user = ""
-        print("文本框的值等于"+user)
-        UserDefaults.standard.set(user, forKey: "user")
+        userId = ""
+        userPwd = ""
+        userEmail = ""
+        userBalance = ""
+        userProfilePhoto = ""
+        userName = ""
+        userRegisterTime = ""
+        isVip = ""
+        userPhoneNumber = ""
+        userId = ""
+        print("文本框的值等于"+userId)
+        UserDefaults.standard.set(userId, forKey: "userId")
+        UserDefaults.standard.set(userPwd, forKey: "userPwd")
+        UserDefaults.standard.set(userEmail, forKey: "userEmail")
+        UserDefaults.standard.set(userBalance, forKey: "userBalance")
+        UserDefaults.standard.set(userProfilePhoto, forKey: "userProfilePhoto")
+        UserDefaults.standard.set(userName, forKey: "userName")
+        UserDefaults.standard.set(userRegisterTime, forKey: "userRegisterTime")
+        UserDefaults.standard.set(isVip, forKey: "isVip")
+        UserDefaults.standard.set(userPhoneNumber, forKey: "userPhoneNumber")
+          UserDefaults.standard.set(userPwdSalt, forKey: "userPwdSalt")
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: LoginViewController())))
             as! LoginViewController
         self.present(controller, animated: true, completion: nil)

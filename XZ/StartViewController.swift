@@ -13,11 +13,15 @@ class StartViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         var olduser : String = "";
-        if UserDefaults.standard.object(forKey: "user") != nil {
-            olduser = UserDefaults.standard.object(forKey: "user") as! String
+        var oldhead : String = "";
+        if UserDefaults.standard.object(forKey: "userPhoneNumber") != nil {
+            olduser = UserDefaults.standard.object(forKey: "userPhoneNumber") as! String
         }
         print("以前的文本框的值等于"+olduser)
-
+        if UserDefaults.standard.object(forKey: "userProfilePhoto") != nil {
+            oldhead = UserDefaults.standard.object(forKey: "userProfilePhoto") as! String
+        }
+        print("以前的头像等于"+oldhead)
         let time: TimeInterval = 2.0
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
             //code
