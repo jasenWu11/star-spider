@@ -1,0 +1,6 @@
+framework module Pods_XZ {
+  umbrella header "Pods-XZ-umbrella.h"
+
+  export *
+  module * { export * }
+}

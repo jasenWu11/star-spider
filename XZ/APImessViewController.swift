@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Alamofire
 class APImessViewController: UIViewController {
 
     @IBOutlet weak var tv_desc: UITextView!
@@ -63,6 +63,7 @@ class APImessViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        getAllProducts()
         if(pid == 2238243){
             ptitle = "携程网机票价格走向"
             pdesc = "获取携程网机票价格数据，分析走向"
@@ -124,7 +125,38 @@ class APImessViewController: UIViewController {
         tv_desc.text = pdesc
         // Do any additional setup after loading the view.
     }
-    
+    @objc func getAllProducts()  {
+        let url = "https://www.xingzhu.club/XzTest/products/getProductById"
+        let paras = ["productId":self.pid]
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                var message: String = json["message"].string!
+                if(message == "查询成功"){
+                    let promess = json["data"]
+                    let protitle: String = promess["productTitle"].string ?? ""
+                    let protime: String = promess["productAddedTime"].string ?? ""
+                    let prophoto: String = promess["productPhoto"].string ?? ""
+                    let prodes: String = promess["productDes"].string ?? ""
+                    let prover: String = promess["productVersion"].string ?? ""
+                    let propopu: String = promess["productPopularity"].string ?? ""
+                    let proupdate: String = promess["productUpdateTime"].string ?? ""
+                    let protype: Int = promess["productType"].int ?? 0
+                    let proprice: String = promess["productPriceMonth"].string ?? ""
+                    print("标题\(protitle)")
+                    self.tv_atitle.text = protitle
+                    self.tv_desc.text = prodes
+                    let url = URL(string:prophoto)
+                    let data = try! Data(contentsOf: url!)
+                    let smallImage = UIImage(data: data)
+                    self.iv_img.image = smallImage
+                }
+            }
+        }
+    }
 
     /*
     // MARK: - Navigation
@@ -135,5 +167,5 @@ class APImessViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
 }
+

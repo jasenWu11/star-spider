@@ -8,12 +8,13 @@
 
 import UIKit
 import Alamofire
+import MJRefresh
 class ShopTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    var titles:[String] = ["微博热搜版","爱奇艺点击率最高电影","淘宝销售排行"]
-    var contents:[String] = ["获取微博热搜版，研究大众兴趣","获取爱奇艺点击率最高电影,可以方便找到票房较高的电影，筛选避过烂片","获取淘宝销售排行，可以作为准备开网店的前期互联网用户需求分析调查研究使用"]
-    var images:[String] = ["weibo","aiqiyi","taobao"]
-    var price:[Double] = [81.04,130.5,75.04]
-    var pidss:[Int] = [2238241,2238245,2238244]
+    var titles:[String] = []
+    var contents:[String] = []
+    var images:[String] = []
+    var price:[Double] = []
+    var pidss:[Int] = []
     var type:Int = 0
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
@@ -22,8 +23,28 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
     var pids:Int = 0
     var tableView:UITableView?
     var root : ShoppagViewController?
+    // 顶部刷新
+    let header = MJRefreshNormalHeader()
+   
+    override func loadView() {
+        super.loadView()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        //隐藏时间
+        header.lastUpdatedTimeLabel.isHidden = true
+       header.stateLabel.isHidden = true
+        //refreshItemData()
+        //创建表视图
+        self.tableView = UITableView(frame: CGRect(x:0, y:5, width:self.screenWidth, height: self.screenHeight-123), style:.plain)
+        //self.tableView = UITableView(frame: self.view.frame, style:.plain)
+        self.tableView!.delegate = self
+        self.tableView!.dataSource = self
+        //创建一个重用的单元格
+        self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "ShopCell")
+        self.view.addSubview(self.tableView!)
+        header.setRefreshingTarget(self, refreshingAction: #selector(getAllProducts))
+        self.tableView!.mj_header = header
         getAllProducts()
 //        titles = ["微博热搜版","爱奇艺点击率最高电影"]
 //        contents = root?.content1 ?? ["获取微博热搜版，研究大众兴趣","获取爱奇艺点击率最高电影,可以方便找到票房较高的电影，筛选避过烂片"]
@@ -31,17 +52,8 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
 //        price = root?.price1 ?? [81.04,130.5]
 //        pidss = root?.pid1 ?? [2238241,2238245]
        print("数据是\(titles)")
-        //创建表视图
-        self.tableView = UITableView(frame: CGRect(x:0, y:5, width:screenWidth, height: screenHeight-123), style:.plain)
-        //self.tableView = UITableView(frame: self.view.frame, style:.plain)
-        self.tableView!.delegate = self
-        self.tableView!.dataSource = self
-        //创建一个重用的单元格
-        self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "ShopCell")
-        view.addSubview(self.tableView!)
+      
     }
-    // MARK: - Table view data source
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -61,7 +73,10 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         let cell = ShopTableViewCell.init(style: UITableViewCell.CellStyle.default, reuseIdentifier: identifier) as! ShopTableViewCell
         cell.root = self
         cell.titleLabel?.text = titles[indexPath.row]
-        cell.iconImage?.image = UIImage(named:images[indexPath.row])
+        let url = URL(string:images[indexPath.row])
+        let data = try! Data(contentsOf: url!)
+        let smallImage = UIImage(data: data)
+        cell.iconImage?.image = smallImage
         cell.subTitleLabel?.text = contents[indexPath.row]
         cell.pirceLabel?.text = "¥\(price[indexPath.row])"
         cell.subButton!.tag = pidss[indexPath.row]
@@ -81,14 +96,19 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
 //            controller.pid = (sender as? Int)!
 //        }
 //    }
-    func getAllProducts()  {
+    @objc func getAllProducts()  {
         let url = "https://www.xingzhu.club/XzTest/products/getAllProducts"
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
         Alamofire.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil).responseJSON { (response) in
             print("jsonRequest:\(response.result)")
             self.titles = []
+            self.pidss = []
+            self.contents = []
+            self.images = []
+            self.price = []
             if let data = response.result.value {
                 let json = JSON(data)
+                print("结果:\(json)")
                 var code: Int = json["code"].int!
                 print("错误:\(code)")
                 var message:String = json["message"].string!
@@ -112,6 +132,22 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             }
             print("标题是\(self.titles)")
+            print("图片是\(self.images)")
+            //重现加载表格数据
+            self.tableView!.reloadData()
+            //结束刷新
+            self.tableView!.mj_header.endRefreshing()
         }
+    }
+    //初始化数据
+    func refreshItemData() {
+        titles.append("微博热搜版")
+        contents.append("获取微博热搜版，研究大众兴趣")
+        images.append("https://xz-1256883494.cos.ap-guangzhou.myqcloud.com/products_img/weibo.png")
+        price.append(81.04)
+        pidss.append(2238241)
+    }
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
     }
 }

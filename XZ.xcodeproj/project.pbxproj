@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		26E5515F82FA0DBB55C2FEA4 /* Pods_XZ.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36593CCAB6E862C0D338C373 /* Pods_XZ.framework */; };
 		531B3F4921D3659600451269 /* APImessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531B3F4821D3659600451269 /* APImessViewController.swift */; };
 		531B3F4A21D366C100451269 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 53E9B9A721CBA76A000F0EB6 /* Main.storyboard */; };
 		531C331321D513C700F35A5E /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531C331221D513C700F35A5E /* RegisterViewController.swift */; };
@@ -193,6 +194,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2A5CD88F91C9B2F0C145C85B /* Pods-XZ.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XZ.debug.xcconfig"; path = "Pods/Target Support Files/Pods-XZ/Pods-XZ.debug.xcconfig"; sourceTree = "<group>"; };
+		342562C9693D399F11703693 /* Pods-XZ.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XZ.release.xcconfig"; path = "Pods/Target Support Files/Pods-XZ/Pods-XZ.release.xcconfig"; sourceTree = "<group>"; };
+		36593CCAB6E862C0D338C373 /* Pods_XZ.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_XZ.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		530E43A521F885A7006B07EB /* XZ-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XZ-Bridging-Header.h"; sourceTree = "<group>"; };
 		531B3F4821D3659600451269 /* APImessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APImessViewController.swift; sourceTree = "<group>"; };
 		531C331221D513C700F35A5E /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		531C332621D5259800F35A5E /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -288,6 +293,7 @@
 			files = (
 				5336730021D62A74004E5028 /* Alamofire.framework in Frameworks */,
 				538E531121E8827300AFCB09 /* PagingMenuController.framework in Frameworks */,
+				26E5515F82FA0DBB55C2FEA4 /* Pods_XZ.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +314,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1CA109231C4CEAB85F408076 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				2A5CD88F91C9B2F0C145C85B /* Pods-XZ.debug.xcconfig */,
+				342562C9693D399F11703693 /* Pods-XZ.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		533672B921D629E7004E5028 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -350,6 +365,9 @@
 				53E9B9C221CBA76B000F0EB6 /* XZUITests */,
 				53E9B9A121CBA76A000F0EB6 /* Products */,
 				533672FF21D62A4B004E5028 /* XZ copy-Info.plist */,
+				530E43A521F885A7006B07EB /* XZ-Bridging-Header.h */,
+				1CA109231C4CEAB85F408076 /* Pods */,
+				5F55999BF0B0677D1C52F063 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -486,6 +504,14 @@
 			path = service;
 			sourceTree = "<group>";
 		};
+		5F55999BF0B0677D1C52F063 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				36593CCAB6E862C0D338C373 /* Pods_XZ.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -493,10 +519,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 53E9B9C821CBA76C000F0EB6 /* Build configuration list for PBXNativeTarget "XZ" */;
 			buildPhases = (
+				C72E2F7AE82C82ECB5FEEA41 /* [CP] Check Pods Manifest.lock */,
 				53E9B99C21CBA76A000F0EB6 /* Sources */,
 				53E9B99D21CBA76A000F0EB6 /* Frameworks */,
 				53E9B99E21CBA76A000F0EB6 /* Resources */,
 				5336730421D62A74004E5028 /* Embed Frameworks */,
+				27D185C5831E92222975187B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -557,6 +585,7 @@
 				TargetAttributes = {
 					53E9B99F21CBA76A000F0EB6 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1010;
 					};
 					53E9B9B321CBA76B000F0EB6 = {
 						CreatedOnToolsVersion = 10.1;
@@ -717,6 +746,53 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		27D185C5831E92222975187B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-XZ/Pods-XZ-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-XZ/Pods-XZ-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C72E2F7AE82C82ECB5FEEA41 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-XZ-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		53E9B99C21CBA76A000F0EB6 /* Sources */ = {
@@ -943,9 +1019,11 @@
 		};
 		53E9B9C921CBA76C000F0EB6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2A5CD88F91C9B2F0C145C85B /* Pods-XZ.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = XZ/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -954,6 +1032,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = XZ.XZ;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "XZ-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -961,9 +1041,11 @@
 		};
 		53E9B9CA21CBA76C000F0EB6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 342562C9693D399F11703693 /* Pods-XZ.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = XZ/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -972,6 +1054,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = XZ.XZ;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "XZ-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
