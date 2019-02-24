@@ -9,6 +9,8 @@
 import UIKit
 import Alamofire
 class LoginViewController: UIViewController {
+    
+    @IBOutlet weak var tv_fog: UILabel!
     @IBOutlet weak var tv_Res: UILabel!
     @IBOutlet weak var tv_pwd: UITextField!
     @IBOutlet weak var tv_phone: UITextField!
@@ -31,12 +33,33 @@ class LoginViewController: UIViewController {
         bt_log.addGestureRecognizer(logclick)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
         bt_log.isUserInteractionEnabled = true
+        let fogclick = UITapGestureRecognizer(target: self, action: #selector(fogAction))
+        tv_fog.addGestureRecognizer(fogclick)
+        //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
+        tv_fog.isUserInteractionEnabled = true
         // Do any additional setup after loading the view.
+        //登录按钮圆角颜色
+        bt_log?.clipsToBounds=true
+        bt_log?.layer.cornerRadius = 10
+        bt_log?.layer.shadowColor = UIColor.gray.cgColor
+        bt_log?.layer.shadowOpacity = 1.0
+        bt_log?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        bt_log?.layer.shadowRadius = 4
+        bt_log?.layer.masksToBounds = false
+        bt_log?.backgroundColor = UIColorRGB_Alpha(R: 91.0, G: 84.0, B: 145.0, alpha: 0.8);
     }
     @objc func resAction() -> Void {
         
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: RegisterViewController())))
             as! RegisterViewController
+        controller.root = self
+        self.present(controller, animated: true, completion: nil)
+    }
+    @objc func fogAction() -> Void {
+        
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: FogetpassViewController())))
+            as! FogetpassViewController
+        controller.root = self
         self.present(controller, animated: true, completion: nil)
     }
     func showMsgbox(_message: String, _title: String = "提示"){
@@ -51,10 +74,9 @@ class LoginViewController: UIViewController {
         phone = tv_phone.text!
         pass = tv_pwd.text!
         user=tv_phone.text!
-        yanzhen=tv_yanzh.text!
         
         if (phone == ""){
-            showMsgbox(_message: "请输入帐号")
+            showMsgbox(_message: "请输入手机号")
             return
             
         }
@@ -68,10 +90,6 @@ class LoginViewController: UIViewController {
         }
         if (pass.count > 16 || pass.count < 6){
             showMsgbox(_message: "请输入6到16位密码")
-            return
-        }
-        if (yanzhen == ""){
-            showMsgbox(_message: "请输入验证码")
             return
         }
         else {
@@ -122,11 +140,11 @@ class LoginViewController: UIViewController {
         pass = tv_pwd.text!
         user=tv_phone.text!
         yanzhen=tv_yanzh.text!
-        let url = "http://47.106.217.3:8360/app/user/code"
-        let paras = ["phone":phone]
+        let url = "https://www.xingzhu.club/XzTest/users/getVerifyCode"
+        let paras = ["userPhoneNumber":phone]
         print("手机号"+phone)
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
-        Alamofire.request(url, method: .post, parameters: paras, encoding: URLEncoding.default, headers: nil).responseJSON { (response) in
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
             print("jsonRequest:\(response.result)")
             let data = response.result.value
             print("结果:\(data)")
@@ -190,7 +208,6 @@ class LoginViewController: UIViewController {
         phone = tv_phone.text!
         pass = tv_pwd.text!
         user=tv_phone.text!
-        yanzhen=tv_yanzh.text!
         let url = "https://www.xingzhu.club/XzTest/users/login"
         let paras = ["userPhoneNumber":phone,"userPwd":pass]
         print("手机号"+phone)
@@ -217,7 +234,7 @@ class LoginViewController: UIViewController {
                     let userId: Int = usermess["userId"].int ?? 0
                     let userPwd: String = usermess["userPwd"].string ?? ""
                     let userEmail: String = usermess["userEmail"].string ?? ""
-                    let userBalance: Int = usermess["userBalance"].int ?? 0
+                    let userBalance: Double = usermess["userBalance"].double ?? 0.0
                     let userProfilePhoto: String = usermess["userProfilePhoto"].string ?? ""
                     let userName: String = usermess["userName"].string ?? ""
                     let userRegisterTime: String = usermess["userRegisterTime"].string ?? ""
@@ -256,5 +273,10 @@ class LoginViewController: UIViewController {
             }
             
         }
+    }
+    func UIColorRGB_Alpha(R:CGFloat, G:CGFloat, B:CGFloat, alpha:CGFloat) -> UIColor
+    {
+        let color = UIColor.init(red: (R / 255.0), green: (G / 255.0), blue: (B / 255.0), alpha: alpha);
+        return color;
     }
 }

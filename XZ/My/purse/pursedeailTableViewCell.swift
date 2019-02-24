@@ -1,31 +1,31 @@
 //
-//  ShopTableViewCell.swift
+//  pursedeailTableViewCell.swift
 //  XZ
 //
-//  Created by wjz on 2019/1/9.
+//  Created by wjz on 2019/2/22.
 //  Copyright © 2019年 wjz. All rights reserved.
 //
 
 import UIKit
 
-class MyAppTableViewcell: UITableViewCell {
+class pursedeailTableViewCell: UITableViewCell {
     
     var tableView:UITableView?
-    var tv_type: UILabel?
-    var tv_title: UILabel?
-    var tv_ctime: UILabel?
+    var tv_pursed: UIView?
+    var tv_times: UILabel?
+    var tv_rids: UILabel?
+    var tv_mons: UILabel?
     var tv_state: UILabel?
     var tv_count: UILabel?
     var bt_oper : UIButton?
     var bt_dele : UIButton?
-    var tv_types: UILabel?
-    var tv_ctimes: UILabel?
+    var tv_timess: UILabel?
+    var tv_monss: UILabel?
     var tv_states: UILabel?
     var tv_counts: UILabel?
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
-    var root : MyAppTableViewController?
-    var tzroot : ShoppagViewController?
+    var root : PursedeailTableViewController?
     var pid:Int = 5
     var pids:Int = 5
     required init?(coder aDecoder: NSCoder) {
@@ -37,11 +37,33 @@ class MyAppTableViewcell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.setUpUI()
     }
-    @objc func Operactions(subButton: UIButton) {
-        var pids:Int = 0
-        pids = subButton.tag
-        root?.root?.performSegue(withIdentifier: "operDetailView", sender: pids)
-    }
+//    @objc func Operactions(subButton: UIButton) {
+//        print("支付状态\(root?.appPayStatus)")
+//        let appPayStatus:String = (root?.appPayStatus[subButton.tag])!
+//        var crawlername : String = (root?.crawlerName[subButton.tag])!
+//        var iskey : Int = (root?.iskeywords[subButton.tag])!
+//        root?.root?.iskey = iskey
+//        print("支付状态\(appPayStatus)")
+//        print("产品编号\(pids)")
+//        print("是否需要keyword\(iskey)")
+//        if(appPayStatus == "已支付"){
+//            root?.root?.performSegue(withIdentifier: "operDetailView", sender: crawlername)
+//        }
+//        else{
+//            let alertController = UIAlertController(title: "提示", message: "该应用未支付，是否前往支付订单？",preferredStyle: .alert)
+//            let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
+//                action in
+//                self.payok()
+//            })
+//            let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+//            alertController.addAction(cancelAction1)
+//            alertController.addAction(cancelAction2)
+//            root?.present(alertController, animated: true, completion: nil)
+//        }
+//    }
+//    func payok(){
+//        root?.root?.performSegue(withIdentifier: "MyOrder", sender: pids)
+//    }
     @objc func Deleactions(subButton: UIButton) {
         print(subButton.tag)
         let alertController = UIAlertController(title: "提示", message: "是否删除该应用？",preferredStyle: .alert)
@@ -105,72 +127,33 @@ class MyAppTableViewcell: UITableViewCell {
     }
     func setUpUI(){
         //视图
+        tv_pursed = UIView(frame: CGRect(x:5, y: 5, width:screenWidth-10, height: 50))
+        tv_pursed?.backgroundColor=UIColor.white
+        tv_pursed?.clipsToBounds=true
+        tv_pursed?.layer.cornerRadius = 5
+        tv_pursed?.layer.shadowColor = UIColor.gray.cgColor
+        tv_pursed?.layer.shadowOpacity = 1.0
+        tv_pursed?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        tv_pursed?.layer.shadowRadius = 4
+        tv_pursed?.layer.masksToBounds = false
+        self.addSubview(tv_pursed!)
         // 大标题
-        tv_title = UILabel(frame: CGRect(x:10, y: 10, width:screenWidth-10, height: 20))
-        tv_type?.font = UIFont.systemFont(ofSize: 16)
-        tv_type?.textColor = UIColor.black
-        self.addSubview(tv_title!)
-        //类型说明
-        tv_types = UILabel(frame: CGRect(x:10, y:35, width: 80, height:20))
-        tv_types?.font = UIFont.systemFont(ofSize: 14)
-        tv_types?.textColor = UIColor.black
-        tv_types?.text = "应用类型："
-        self.addSubview(tv_types!)
-        // 类型
-        tv_type = UILabel(frame: CGRect(x:85, y:35, width: 100, height:20))
-        tv_type?.font = UIFont.systemFont(ofSize: 14)
-        tv_type?.textColor = UIColor.black
-        self.addSubview(tv_type!)
+        tv_rids = UILabel(frame: CGRect(x:20, y: 10, width:50, height: 30))
+        tv_rids?.font = UIFont.systemFont(ofSize: 20)
+        tv_rids?.textColor = UIColor.black
+        tv_pursed?.addSubview(tv_rids!)
         // 创建时间
-        tv_ctimes = UILabel(frame: CGRect(x:10, y:60, width:80, height: 20))
-        tv_ctimes?.font = UIFont.systemFont(ofSize: 14)
-        tv_ctimes?.textColor = UIColor.black
-        tv_ctimes?.text = "操作时间："
-        self.addSubview(tv_ctimes!)
-        
-        tv_ctime = UILabel(frame: CGRect(x:85, y:60, width:100, height: 20))
-        tv_ctime?.font = UIFont.systemFont(ofSize: 14)
-        tv_ctime?.textColor = UIColor.black
-        self.addSubview(tv_ctime!)
-        // 状态
-        tv_states = UILabel(frame: CGRect(x:10, y:85, width:45, height: 20))
-        tv_states?.font = UIFont.systemFont(ofSize: 14)
-        tv_states?.textColor = UIColor.black
-        tv_states?.text = "状态："
-        self.addSubview(tv_states!)
-        
-        tv_state = UILabel(frame: CGRect(x:50, y:85, width:100, height: 20))
-        tv_state?.font = UIFont.systemFont(ofSize: 14)
-        tv_state?.textColor = UIColor.black
-        self.addSubview(tv_state!)
-        // 统计
-        tv_counts = UILabel(frame: CGRect(x:10, y:110, width:60, height: 20))
-        tv_counts?.font = UIFont.systemFont(ofSize: 14)
-        tv_counts?.textColor = UIColor.black
-        tv_counts?.text = "统计量："
-        self.addSubview(tv_counts!)
-        
-        tv_count = UILabel(frame: CGRect(x:65, y:110, width:100, height: 20))
-        tv_count?.font = UIFont.systemFont(ofSize: 14)
-        tv_count?.textColor = UIColor.black
-        self.addSubview(tv_count!)
-        // 操作按钮
-        bt_oper = UIButton(frame: CGRect(x:screenWidth-70-15, y:((145)/2-30)-10, width:70, height: 30))
-        bt_oper?.setTitle("操作", for: UIControl.State.normal)
-        bt_oper?.setTitleColor(UIColor.white, for: UIControl.State.normal)
-        bt_oper?.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        bt_oper?.backgroundColor = UIColor.blue
-        bt_oper?.addTarget(self, action: #selector(Operactions), for: UIControl.Event.touchUpInside)
-        self.addSubview(bt_oper!)
-        // 删除按钮
-        bt_dele = UIButton(frame: CGRect(x:screenWidth-70-15, y:((145)/2)+10, width:70, height: 30))
-        bt_dele?.setTitle("删除", for: UIControl.State.normal)
-        bt_dele?.setTitleColor(UIColor.white, for: UIControl.State.normal)
-        bt_dele?.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        bt_dele?.backgroundColor = UIColor.red
-        bt_dele?.addTarget(self, action: #selector(Deleactions), for: UIControl.Event.touchUpInside)
-        self.addSubview(bt_dele!)
-        
+        tv_times = UILabel(frame: CGRect(x:(screenWidth-210)/2, y:10, width: 200, height:30))
+        tv_times?.font = UIFont.systemFont(ofSize: 20)
+        tv_times?.textColor = UIColor.black
+        tv_times?.textAlignment = .center
+        tv_pursed?.addSubview(tv_times!)
+        // 结束时间
+        tv_mons = UILabel(frame: CGRect(x:screenWidth-100, y:10, width:80, height: 30))
+        tv_mons?.font = UIFont.systemFont(ofSize: 20)
+        tv_mons?.textColor = UIColor.black
+        tv_mons?.textAlignment = .right
+        tv_pursed?.addSubview(tv_mons!)
     }
     
     // 给cell赋值，项目中一般使用model，我这里直接写死了

@@ -75,7 +75,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
 
 //主视图控制器
 class MyApppagViewController: UIViewController {
-    
+    var iskey:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -85,28 +85,6 @@ class MyApppagViewController: UIViewController {
         (options.pagingControllers[1] as! MyAppTableViewController).root = self
         (options.pagingControllers[2] as! MyAppTableViewController).root = self
         (options.pagingControllers[3] as! MyAppTableViewController).root = self
-        
-        //2的数据
-        (options.pagingControllers[1] as! MyAppTableViewController).titles = ["携程网机票价格走向","深度学习"]
-        (options.pagingControllers[1] as! MyAppTableViewController).types = ["数据","数据"]
-        (options.pagingControllers[1] as! MyAppTableViewController).ctimes = ["2018-11-02","2018-11-30"]
-        (options.pagingControllers[1] as! MyAppTableViewController).states = ["已停止","正在操作"]
-        (options.pagingControllers[1] as! MyAppTableViewController).counts = ["30","18"]
-        (options.pagingControllers[1] as! MyAppTableViewController).pidss = [2238243,2238244]
-        //3的数据
-        (options.pagingControllers[2] as! MyAppTableViewController).titles = ["淘宝销售版","哔哩哔哩评论量排行"]
-        (options.pagingControllers[2] as! MyAppTableViewController).types = ["爬虫","爬虫","机器学习"]
-        (options.pagingControllers[2] as! MyAppTableViewController).ctimes = ["2018-11-11","2018-11-22"]
-        (options.pagingControllers[2] as! MyAppTableViewController).states = ["暂停","正在操作"]
-        (options.pagingControllers[2] as! MyAppTableViewController).counts = ["15","20"]
-        (options.pagingControllers[2] as! MyAppTableViewController).pidss = [2238244,2238246]
-        //4的数据
-        (options.pagingControllers[3] as! MyAppTableViewController).titles = ["微博热搜版","百度搜索次数排行版","爱奇艺电影点击排行版"]
-        (options.pagingControllers[3] as! MyAppTableViewController).types = ["API接口","API接口","API接口"]
-        (options.pagingControllers[3] as! MyAppTableViewController).ctimes = ["2018-10-19","2018-10-22","2018-11-12"]
-        (options.pagingControllers[3] as! MyAppTableViewController).states = ["未开始","已停止","未开始"]
-        (options.pagingControllers[3] as! MyAppTableViewController).counts = ["0","16","0"]
-        (options.pagingControllers[3] as! MyAppTableViewController).pidss = [2238241,2238242,2238245]
         //分页菜单控制器初始化
         let pagingMenuController = PagingMenuController(options: options)
         //分页菜单控制器尺寸设置
@@ -123,8 +101,12 @@ class MyApppagViewController: UIViewController {
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "operDetailView"{
-            let controller = segue.destination as! OperViewController
-            controller.pid = (sender as? Int)!
+            let controller = segue.destination as! ViewController
+            controller.crawlername = (sender as? String)!
+            controller.iskey = self.iskey
+        }
+        if segue.identifier == "MyOrder"{
+            let controller = segue.destination as! MyorderTableViewController
         }
     }
 }

@@ -10,6 +10,10 @@ import UIKit
 import Alamofire
 class RegisterViewController: UIViewController {
 
+    @IBOutlet weak var bt_back: UIButton!
+    @IBOutlet weak var bt_re: UIButton!
+    @IBOutlet weak var v_yzm: UIView!
+    @IBOutlet weak var v_xinxi: UIView!
     @IBOutlet weak var tv_phone: UITextField!
     @IBOutlet weak var bt_Yz: UIButton!
     @IBOutlet weak var tv_pass: UITextField!
@@ -17,20 +21,56 @@ class RegisterViewController: UIViewController {
     var phone: String = ""
     var pass: String = ""
     var yanzh: String = ""
+    var verifyCode : String = ""
+    var root : LoginViewController?
+    var oldphone = ""
     @IBAction func back(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
+        
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        //注册信息视图圆角
+        v_xinxi?.clipsToBounds=true
+        v_xinxi?.layer.cornerRadius = 10
+        v_xinxi?.layer.shadowColor = UIColor.gray.cgColor
+        v_xinxi?.layer.shadowOpacity = 1.0
+        v_xinxi?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        v_xinxi?.layer.shadowRadius = 4
+        v_xinxi?.layer.masksToBounds = false
+        //验证码视图圆角
+        v_yzm?.clipsToBounds=true
+        v_yzm?.layer.cornerRadius = 10
+        v_yzm?.layer.shadowColor = UIColor.gray.cgColor
+        v_yzm?.layer.shadowOpacity = 1.0
+        v_yzm?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        v_yzm?.layer.shadowRadius = 4
+        v_yzm?.layer.masksToBounds = false
+        //确定按钮圆角
+        bt_re?.layer.cornerRadius = 10
+        bt_re?.backgroundColor = UIColorRGB_Alpha(R: 91.0, G: 84.0, B: 145.0, alpha: 0.8);
+        //返回登录按钮圆角
+        bt_back?.clipsToBounds=true
+        bt_back?.layer.cornerRadius = 10
+        bt_back?.layer.shadowColor = UIColor.gray.cgColor
+        bt_back?.layer.shadowOpacity = 1.0
+        bt_back?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        bt_back?.layer.shadowRadius = 4
+        bt_back?.layer.masksToBounds = false
+        bt_back?.backgroundColor = UIColorRGB_Alpha(R: 211.0, G: 216.0, B: 231.0, alpha: 0.8);
+        //验证码按钮右边圆角
+        bt_Yz?.layer.cornerRadius = 10.0
+        bt_Yz?.layer.maskedCorners = [CACornerMask.layerMaxXMinYCorner , CACornerMask.layerMaxXMaxYCorner]
+        bt_Yz?.layer.masksToBounds = true
+        bt_Yz?.backgroundColor = UIColorRGB_Alpha(R: 91.0, G: 84.0, B: 145.0, alpha: 0.8);
         setBottomBorder(textField: tv_phone)
-        //左侧图片
-        tv_phone.leftView = UIImageView(image: UIImage(named: "phone"))
-        tv_phone.leftViewMode = UITextField.ViewMode.always
-        tv_pass.leftView = UIImageView(image: UIImage(named: "mima"))
-        tv_pass.leftViewMode = UITextField.ViewMode.always
-        tv_yanzh.leftView = UIImageView(image: UIImage(named: "xinxi"))
-        tv_yanzh.leftViewMode = UITextField.ViewMode.always
+//        //左侧图片
+//        tv_phone.leftView = UIImageView(image: UIImage(named: "phone"))
+//        tv_phone.leftViewMode = UITextField.ViewMode.always
+//        tv_pass.leftView = UIImageView(image: UIImage(named: "mima"))
+//        tv_pass.leftViewMode = UITextField.ViewMode.always
+//        tv_yanzh.leftView = UIImageView(image: UIImage(named: "xinxi"))
+//        tv_yanzh.leftViewMode = UITextField.ViewMode.always
         // Do any additional setup after loading the view.
     }
     //左边栏图片
@@ -54,20 +94,52 @@ class RegisterViewController: UIViewController {
         
     }
     @IBAction func getYanzhen(_ sender: Any) {
-        CodeRequest()
+        phone = tv_phone.text!
+        if (phone == ""){
+            showMsgbox(_message: "请输入手机号")
+            return
+            
+        }
+        if (isTelNumber(num: phone as NSString) == false) {
+            showMsgbox(_message: "请输入正确的手机号")
+            return
+        }
+        else{
+            CodeRequest()
+        }
+        
     }
     func CodeRequest()  {
         phone = tv_phone.text!
         pass = tv_pass.text!
         yanzh=tv_yanzh.text!
-        let url = "http://47.106.217.3:8360/app/user/code"
-        let paras = ["phone":phone]
+        oldphone = phone
+        let url = "https://www.xingzhu.club/XzTest/users/getVerifyCode"
+        let paras = ["userPhoneNumber":phone]
         print("手机号"+phone)
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
-        Alamofire.request(url, method: .post, parameters: paras, encoding: URLEncoding.default, headers: nil).responseJSON { (response) in
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
             print("jsonRequest:\(response.result)")
-            let data = response.result.value
-            print("结果:\(data)")
+            let jdata = response.result.value
+            print("结果:\(jdata)")
+            let json = JSON(jdata)
+            var message: String = json["message"].string!
+            print("信息:\(message)")
+            let alertController = UIAlertController(title: message,
+                                                    message: nil, preferredStyle: .alert)
+            //显示提示框
+            self.present(alertController, animated: true, completion: nil)
+            //两秒钟后自动消失
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                self.presentedViewController?.dismiss(animated: false, completion: nil)
+            }
+            if(message == "发送信息成功！"){
+                let codemess = json["data"]
+                self.verifyCode = codemess["verifyCode"].string ?? ""
+                print("数据\(codemess)")
+                print("验证码\(self.verifyCode)")
+                UserDefaults.standard.set(self.verifyCode, forKey: "verifyCode")
+            }
         }
         self.countDown(timeOut: 60)
     }
@@ -127,7 +199,7 @@ class RegisterViewController: UIViewController {
         pass = tv_pass.text!
         yanzh = tv_yanzh.text!
         if (phone == ""){
-            showMsgbox(_message: "请输入帐号")
+            showMsgbox(_message: "请输入手机号")
             return
             
         }
@@ -145,6 +217,12 @@ class RegisterViewController: UIViewController {
         }
         if (yanzh == ""){
             showMsgbox(_message: "请输入验证码")
+            return
+        }
+        if(yanzh != verifyCode || phone != oldphone){
+            print("输入\(yanzh),收到的是\(verifyCode)")
+            print("现在的\(phone),原来得的是\(oldphone)")
+            showMsgbox(_message: "验证码不正确")
             return
         }
         else {
@@ -228,9 +306,10 @@ class RegisterViewController: UIViewController {
                     let time: TimeInterval = 1
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
                         //code
-                        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: LoginViewController())))
-                            as! LoginViewController
-                        self.present(controller, animated: true, completion: nil)
+                        self.dismiss(animated: true, completion: nil)
+                        print("手机号\(self.phone),密码\(self.pass)")
+                        self.root?.tv_phone.text = self.phone
+                        self.root?.tv_pwd.text = self.pass
                     }
                 }
 //
@@ -268,5 +347,10 @@ class RegisterViewController: UIViewController {
             }
             
         }
+    }
+    func UIColorRGB_Alpha(R:CGFloat, G:CGFloat, B:CGFloat, alpha:CGFloat) -> UIColor
+    {
+        let color = UIColor.init(red: (R / 255.0), green: (G / 255.0), blue: (B / 255.0), alpha: alpha);
+        return color;
     }
 }

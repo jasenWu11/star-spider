@@ -9,7 +9,8 @@
 import UIKit
 import Alamofire
 class MyViewController: UIViewController {
-
+    @IBOutlet weak var v_purse: UIView!
+    @IBOutlet weak var tv_qbdd: UILabel!
     @IBOutlet weak var iv_head: UIImageView!
     @IBOutlet weak var messv: UIView!
     @IBOutlet weak var message: UIView!
@@ -57,7 +58,10 @@ class MyViewController: UIViewController {
         message.addGestureRecognizer(messclick)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
         message.isUserInteractionEnabled = true
-        
+        let purseclick = UITapGestureRecognizer(target: self, action: #selector(purseAction))
+        v_purse.addGestureRecognizer(purseclick)
+        //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
+        v_purse.isUserInteractionEnabled = true
         let suggclick = UITapGestureRecognizer(target: self, action: #selector(suggAction))
         Sugg.addGestureRecognizer(suggclick)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
@@ -67,6 +71,12 @@ class MyViewController: UIViewController {
         sett.addGestureRecognizer(settclick)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
         sett.isUserInteractionEnabled = true
+        
+        let myqbddclick = UITapGestureRecognizer(target: self, action: #selector(qbddAction))
+        tv_qbdd.addGestureRecognizer(myqbddclick)
+        //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
+        tv_qbdd.isUserInteractionEnabled = true
+        
     }
     func jsonRequest()  {
         
@@ -94,6 +104,12 @@ class MyViewController: UIViewController {
         self.present(controller, animated: true, completion: nil)
     }
     //点击事件方法
+    @objc func purseAction() -> Void {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: PurseViewController())))
+            as! PurseViewController
+        self.present(controller, animated: true, completion: nil)
+    }
+    //点击事件方法
     @objc func messAction() -> Void {
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: MessageViewController())))
             as! MessageViewController
@@ -111,6 +127,12 @@ class MyViewController: UIViewController {
             as! SettingViewController
         self.present(controller, animated: true, completion: nil)
     }
+    //点击事件方法
+    @objc func qbddAction() -> Void {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: MyorderTableViewController())))
+            as! MyorderTableViewController
+        self.present(controller, animated: true, completion: nil)
+    }
     /*
     // MARK: - Navigation
 
@@ -121,4 +143,9 @@ class MyViewController: UIViewController {
     }
     */
 
+    @IBAction func run(_ sender: Any) {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: ViewController())))
+            as! ViewController
+        self.present(controller, animated: true, completion: nil)
+    }
 }

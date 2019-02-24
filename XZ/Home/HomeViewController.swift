@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Alamofire
 class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
     //获取屏幕宽度
     @IBOutlet weak var sv_home: UIScrollView!
@@ -24,11 +24,17 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
     var lv_pc:UILabel?
     var lv_api:UILabel?
     var lv_sjy:UILabel?
+    var ppic:[String] = ["https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428544571&di=aec9218dcffa1e52bd80d9bd046bd8ad&imgtype=0&src=http%3A%2F%2Fphotocdn.sohu.com%2F20150601%2Fmp17161050_1433123079696_1_th.png",
+                         "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=3668473071,2731513318&fm=26&gp=0.jpg",
+                         "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1850075590,3068352838&fm=26&gp=0.jpg",
+                         "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428801285&di=669cbde92e7431224a61735411e9f22f&imgtype=0&src=http%3A%2F%2Fwww.xmexpo.cn%2Fuploads%2Fallimg%2F180125%2F1Q91aG5_0.png",
+                         "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428895544&di=edf4a9afdf17a53d702aef9fee17a639&imgtype=0&src=http%3A%2F%2Fphoto.16pic.com%2F00%2F61%2F24%2F16pic_6124483_b.jpg"]
     //图片轮播组件
     var sliderGallery : SliderGalleryController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        getAllAdvs()
         //初始化图片轮播组件
         sliderGallery = SliderGalleryController()
         sliderGallery.delegate = self
@@ -159,11 +165,7 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
     
     //图片轮播组件协议方法：获取数据集合
     func galleryDataSource() -> [String] {
-        return ["https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428544571&di=aec9218dcffa1e52bd80d9bd046bd8ad&imgtype=0&src=http%3A%2F%2Fphotocdn.sohu.com%2F20150601%2Fmp17161050_1433123079696_1_th.png",
-                "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=3668473071,2731513318&fm=26&gp=0.jpg",
-                "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1850075590,3068352838&fm=26&gp=0.jpg",
-                "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428801285&di=669cbde92e7431224a61735411e9f22f&imgtype=0&src=http%3A%2F%2Fwww.xmexpo.cn%2Fuploads%2Fallimg%2F180125%2F1Q91aG5_0.png",
-                "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428895544&di=edf4a9afdf17a53d702aef9fee17a639&imgtype=0&src=http%3A%2F%2Fphoto.16pic.com%2F00%2F61%2F24%2F16pic_6124483_b.jpg"]
+        return self.ppic
     }
     
     //点击事件响应
@@ -211,5 +213,31 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
         // Pass the selected object to the new view controller.
     }
     */
-
+    @objc func getAllAdvs()  {
+        let url = "https://www.xingzhu.club/XzTest/advs/getAllAdvs"
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("提示:\(message)")
+                if(message == "查询成功"){
+                    let provinces = json["data"]
+                    self.ppic.removeAll()
+                    for i in 0..<provinces.count{
+                        let advPic: String = provinces[i]["advPic"].string ?? ""
+                        
+                        self.ppic += [advPic]
+                    }
+                    
+                    self.sliderGallery.reloadData()
+                }
+                
+            }
+        }
+    }
 }
