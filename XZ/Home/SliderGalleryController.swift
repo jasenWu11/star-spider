@@ -224,7 +224,18 @@ class SliderGalleryController: UIViewController,UIScrollViewDelegate{
         configureAutoScrollTimer()
         
     }
-    
+    //重新加载数据
+    func reloadData() {
+        //索引重置
+        self.currentIndex = 0
+        //重新获取数据
+        self.dataSource =  self.delegate.galleryDataSource()
+        //页控制器更新
+        self.pageControl?.numberOfPages = (self.dataSource?.count)!
+        self.pageControl?.currentPage = 0
+        //重新设置各个imageView的图片
+        resetImageViewSource()
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

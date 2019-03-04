@@ -98,9 +98,9 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
         if UserDefaults.standard.object(forKey: "userPhoneNumber") != nil {
             phones = UserDefaults.standard.object(forKey: "userPhoneNumber") as! String
         }
-        var yuer : Int = 0;
+        var yuer : Double = 0;
         if UserDefaults.standard.object(forKey: "userBalance") != nil {
-            yuer = UserDefaults.standard.object(forKey: "userBalance") as! Int
+            yuer = UserDefaults.standard.object(forKey: "userBalance") as! Double
         }
         print("余额\(yuer)")
         tv_ye.text = "¥\(yuer)"

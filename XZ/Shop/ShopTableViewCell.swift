@@ -8,8 +8,7 @@
 
 import UIKit
 
-class ShopTableViewCell: UITableViewCell {
-
+class ShopTableViewCell: UITableViewCell{
     var iconImage     : UIImageView?
     var titleLabel    : UILabel?
     var subTitleLabel : UILabel?

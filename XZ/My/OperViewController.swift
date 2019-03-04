@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Alamofire
 class OperViewController: UIViewController {
 
     @IBOutlet weak var tv_title: UILabel!
@@ -26,6 +26,7 @@ class OperViewController: UIViewController {
         print(pid)
         pids = String(pid)
         setvalues()
+        getData()
         // Do any additional setup after loading the view.
     }
     
@@ -82,5 +83,24 @@ class OperViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
+    @objc func getData(){
+        let url = "https://www.xingzhu.club/XzTest/spiders/weibo"
+        let paras = ["keyword":"吴亦凡"]
+        print("商品ID\(self.pids)")
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("提示:\(message)")
+                let datamess = json["data"]
+                print("数据\(datamess)")
+            }
+        }
+    }
 }

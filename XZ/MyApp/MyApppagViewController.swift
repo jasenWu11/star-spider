@@ -17,7 +17,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     //第2个子视图控制器
     private let viewController2 = MyAppTableViewController()
     //第3个子视图控制器
-    private let viewController3 = MyAppTableViewController()
+    private let viewController3 = DataSourceTableViewController()
     //第4个子视图控制器
     private let viewController4 = MyAppTableViewController()
     //组件类型
@@ -54,14 +54,14 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     fileprivate struct MenuItem2: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "数据"))
+            return .text(title: MenuItemText(text: "爬虫"))
         }
     }
     //第3个菜单项
     fileprivate struct MenuItem3: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "爬虫"))
+            return .text(title: MenuItemText(text: "数据源"))
         }
     }
     //第4个菜单项
@@ -75,7 +75,9 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
 
 //主视图控制器
 class MyApppagViewController: UIViewController {
-    
+    var iskey:Int = 0
+    var Ntitle:String = ""
+    var dataName:String = ""
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -83,30 +85,8 @@ class MyApppagViewController: UIViewController {
         let options = PagingMenuOptions()
         (options.pagingControllers[0] as! MyAppTableViewController).root = self
         (options.pagingControllers[1] as! MyAppTableViewController).root = self
-        (options.pagingControllers[2] as! MyAppTableViewController).root = self
+        (options.pagingControllers[2] as! DataSourceTableViewController).root = self
         (options.pagingControllers[3] as! MyAppTableViewController).root = self
-        
-        //2的数据
-        (options.pagingControllers[1] as! MyAppTableViewController).titles = ["携程网机票价格走向","深度学习"]
-        (options.pagingControllers[1] as! MyAppTableViewController).types = ["数据","数据"]
-        (options.pagingControllers[1] as! MyAppTableViewController).ctimes = ["2018-11-02","2018-11-30"]
-        (options.pagingControllers[1] as! MyAppTableViewController).states = ["已停止","正在操作"]
-        (options.pagingControllers[1] as! MyAppTableViewController).counts = ["30","18"]
-        (options.pagingControllers[1] as! MyAppTableViewController).pidss = [2238243,2238244]
-        //3的数据
-        (options.pagingControllers[2] as! MyAppTableViewController).titles = ["淘宝销售版","哔哩哔哩评论量排行"]
-        (options.pagingControllers[2] as! MyAppTableViewController).types = ["爬虫","爬虫","机器学习"]
-        (options.pagingControllers[2] as! MyAppTableViewController).ctimes = ["2018-11-11","2018-11-22"]
-        (options.pagingControllers[2] as! MyAppTableViewController).states = ["暂停","正在操作"]
-        (options.pagingControllers[2] as! MyAppTableViewController).counts = ["15","20"]
-        (options.pagingControllers[2] as! MyAppTableViewController).pidss = [2238244,2238246]
-        //4的数据
-        (options.pagingControllers[3] as! MyAppTableViewController).titles = ["微博热搜版","百度搜索次数排行版","爱奇艺电影点击排行版"]
-        (options.pagingControllers[3] as! MyAppTableViewController).types = ["API接口","API接口","API接口"]
-        (options.pagingControllers[3] as! MyAppTableViewController).ctimes = ["2018-10-19","2018-10-22","2018-11-12"]
-        (options.pagingControllers[3] as! MyAppTableViewController).states = ["未开始","已停止","未开始"]
-        (options.pagingControllers[3] as! MyAppTableViewController).counts = ["0","16","0"]
-        (options.pagingControllers[3] as! MyAppTableViewController).pidss = [2238241,2238242,2238245]
         //分页菜单控制器初始化
         let pagingMenuController = PagingMenuController(options: options)
         //分页菜单控制器尺寸设置
@@ -123,8 +103,19 @@ class MyApppagViewController: UIViewController {
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "operDetailView"{
-            let controller = segue.destination as! OperViewController
-            controller.pid = (sender as? Int)!
+            let controller = segue.destination as! OperateViewController
+            controller.crawlername = (sender as? String)!
+            controller.iskey = self.iskey
+            controller.Ntitle = self.Ntitle
+        }
+        if segue.identifier == "MyOrder"{
+            let controller = segue.destination as! BuyappViewController
+            controller.pids = (sender as? Int)!
+        }
+        if segue.identifier == "datasourceDetailView"{
+            let controller = segue.destination as! DataSourceViewController
+            controller.Ntitle = self.Ntitle
+            controller.dataName = self.dataName
         }
     }
 }
