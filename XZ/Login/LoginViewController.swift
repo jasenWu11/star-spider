@@ -9,7 +9,7 @@
 import UIKit
 import Alamofire
 class LoginViewController: UIViewController {
-    
+    @IBOutlet weak var iv_logo: UIImageView!
     @IBOutlet weak var tv_fog: UILabel!
     @IBOutlet weak var tv_Res: UILabel!
     @IBOutlet weak var tv_pwd: UITextField!
@@ -21,8 +21,12 @@ class LoginViewController: UIViewController {
     var phone: String = ""
     var pass: String = ""
     var yanzhen: String = ""
+    let screenHeight =  UIScreen.main.bounds.size.height
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(LoginViewController.handleTap(sender:))))
+        self.navigationController?.navigationBar.isHidden = true
+        iv_logo.frame.origin.y = screenHeight/10
         UserDefaults.standard.set("", forKey: "user")
         let resclick = UITapGestureRecognizer(target: self, action: #selector(resAction))
         let logclick = UITapGestureRecognizer(target: self, action: #selector(logAction))
@@ -48,19 +52,27 @@ class LoginViewController: UIViewController {
         bt_log?.layer.masksToBounds = false
         bt_log?.backgroundColor = UIColorRGB_Alpha(R: 91.0, G: 84.0, B: 145.0, alpha: 0.8);
     }
+    //收起键盘
+    @objc func handleTap(sender: UITapGestureRecognizer) {
+       if sender.state == .ended {
+          tv_phone.resignFirstResponder()
+          tv_pwd.resignFirstResponder()
+       }
+       sender.cancelsTouchesInView = false
+    }
     @objc func resAction() -> Void {
         
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: RegisterViewController())))
             as! RegisterViewController
         controller.root = self
-        self.present(controller, animated: true, completion: nil)
+        self.navigationController?.pushViewController(controller, animated: true)
     }
     @objc func fogAction() -> Void {
         
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: FogetpassViewController())))
             as! FogetpassViewController
         controller.root = self
-        self.present(controller, animated: true, completion: nil)
+    self.navigationController?.pushViewController(controller, animated: true)
     }
     func showMsgbox(_message: String, _title: String = "提示"){
         
@@ -279,4 +291,5 @@ class LoginViewController: UIViewController {
         let color = UIColor.init(red: (R / 255.0), green: (G / 255.0), blue: (B / 255.0), alpha: alpha);
         return color;
     }
+    
 }

@@ -12,6 +12,7 @@ class StartViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.isNavigationBarHidden = true
         var olduser : String = "";
         var oldhead : String = "";
         if UserDefaults.standard.object(forKey: "userPhoneNumber") != nil {
@@ -35,9 +36,9 @@ class StartViewController: UIViewController {
     }
     
     @objc func ToLoginAction() -> Void {
-        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: LoginViewController())))
-            as! LoginViewController
-        self.present(controller, animated: true, completion: nil)
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: theloginUINavigationController())))
+            as! theloginUINavigationController
+       self.present(controller, animated: true, completion: nil)
     }
     @objc func ToMainAction() -> Void {
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: MainViewController())))

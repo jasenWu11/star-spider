@@ -34,10 +34,9 @@ class messViewController: UIViewController {
     var pids:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColorRGB_Alpha(R: 238.0, G: 238.0, B: 238.0, alpha: 0.8);
+        view.backgroundColor = UIColorRGB_Alpha(R: 238.0, G: 238.0, B: 238.0, alpha: 1.0);
         //商品视图
-        proView = UIView(frame: CGRect(x:0, y: 5, width:screenWidth
-            , height: 140))
+        proView = UIView(frame: CGRect(x:0, y: 0, width:screenWidth, height: screenWidth*3/4))
         proView?.backgroundColor=UIColor.white
         proView?.clipsToBounds=true
         proView?.layer.shadowColor = UIColor.gray.cgColor
@@ -47,29 +46,13 @@ class messViewController: UIViewController {
         proView?.layer.masksToBounds = false
         view.addSubview(proView!)
         //图片
-        proPhoto = UIImageView(frame: CGRect(x:15, y: 10, width:150, height: 120))
+        proPhoto = UIImageView(frame: CGRect(x:0, y: 0, width:screenWidth, height: screenWidth*3/4))
         proView?.addSubview(proPhoto!)
         proPhoto?.image = UIImage(named:"weibo")
-        //标题
-        protitle = UILabel(frame: CGRect(x:(proPhoto?.frame.size.width)!+25, y:10, width: screenWidth-(proPhoto?.frame.size.width)!-35, height:30))
-        protitle?.font = UIFont.systemFont(ofSize: 16)
-        protitle?.textColor = UIColor.black
-        protitle?.numberOfLines = 0
-        protitle?.lineBreakMode = NSLineBreakMode.byWordWrapping
-        proView?.addSubview(protitle!)
-        protitle?.text = "携程机票价格走向趋势"
-        protitle?.textAlignment=NSTextAlignment.center
-        //描述
-        prodes = UILabel(frame: CGRect(x:(proPhoto?.frame.size.width)!+25, y:(protitle?.frame.size.height)!+35, width: screenWidth-(proPhoto?.frame.size.width)!-35, height:30))
-        prodes?.font = UIFont.systemFont(ofSize: 14)
-        prodes?.textColor = UIColor.black
-        prodes?.numberOfLines = 0
-        prodes?.lineBreakMode = NSLineBreakMode.byWordWrapping
-        proView?.addSubview(prodes!)
-        prodes?.text = "研究携程机票价格，购买机票"
+        
         //版本视图
-        versView = UIView(frame: CGRect(x:0, y: (proView?.frame.size.height)!+15, width:screenWidth
-            , height: 80))
+        versView = UIView(frame: CGRect(x:0, y: (proView?.frame.size.height)!+5, width:screenWidth
+            , height: 175))
         versView?.backgroundColor=UIColor.white
         versView?.clipsToBounds=true
         versView?.layer.shadowColor = UIColor.gray.cgColor
@@ -80,8 +63,34 @@ class messViewController: UIViewController {
         view.addSubview(versView!)
         let versViewWidth =  (UIScreen.main.bounds.size.width)/2
         let versViewHeight =  ((versView?.frame.size.height)!)/2
+        //标题
+        protitle = UILabel(frame: CGRect(x:10, y:10, width: versViewWidth+10, height:50))
+        protitle?.font = UIFont.systemFont(ofSize: 16)
+        protitle?.textColor = UIColor.black
+        protitle?.numberOfLines=0
+        protitle?.lineBreakMode = NSLineBreakMode.byWordWrapping
+        versView?.addSubview(protitle!)
+        protitle?.textAlignment=NSTextAlignment.left
+        //价格内容
+        tv_price = UILabel(frame: CGRect(x:versViewWidth+20, y:10, width: versViewWidth-30, height:20))
+        tv_price?.font = UIFont.systemFont(ofSize: 16)
+        tv_price?.textColor = UIColorRGB_Alpha(R: 0.0, G: 140.0, B: 255.0, alpha: 1.0);
+        tv_price?.numberOfLines = 0
+        tv_price?.lineBreakMode = NSLineBreakMode.byWordWrapping
+        versView?.addSubview(tv_price!)
+        tv_price?.adjustsFontSizeToFitWidth=true
+        tv_price?.textAlignment = .right
+        tv_price?.text = "28.8"
+        //描述
+        prodes = UILabel(frame: CGRect(x:10, y:(protitle?.frame.size.height)!+15, width: screenWidth-20, height:50))
+        prodes?.font = UIFont.systemFont(ofSize: 16)
+        prodes?.textColor = UIColor.black
+        prodes?.numberOfLines=0
+        prodes?.lineBreakMode = NSLineBreakMode.byWordWrapping
+        prodes?.textAlignment = .left
+        versView?.addSubview(prodes!)
         //版本号
-        verslabel = UILabel(frame: CGRect(x:15, y:5, width: 45, height:30))
+        verslabel = UILabel(frame: CGRect(x:10, y:(protitle?.frame.size.height)!+(prodes?.frame.size.height)!+20, width: 45, height:20))
         verslabel?.font = UIFont.systemFont(ofSize: 14)
         verslabel?.textColor = UIColor.black
         verslabel?.numberOfLines = 0
@@ -90,7 +99,7 @@ class messViewController: UIViewController {
         verslabel?.adjustsFontSizeToFitWidth=true
         verslabel?.text = "版本："
         //版本号数字
-        version = UILabel(frame: CGRect(x:(verslabel?.frame.size.width)!+15, y:5, width: versViewWidth-60-20, height:30))
+        version = UILabel(frame: CGRect(x:(verslabel?.frame.size.width)!+15, y:(protitle?.frame.size.height)!+(prodes?.frame.size.height)!+20, width: versViewWidth-60-20, height:20))
         version?.font = UIFont.systemFont(ofSize: 14)
         version?.textColor = UIColor.black
         version?.numberOfLines = 0
@@ -99,7 +108,7 @@ class messViewController: UIViewController {
         version?.adjustsFontSizeToFitWidth=true
         version?.text = "v1.3(4)"
         //更新时间标签
-        uptimelabel = UILabel(frame: CGRect(x:versViewWidth-10, y:5, width: 75, height:30))
+        uptimelabel = UILabel(frame: CGRect(x:versViewWidth-10, y:(protitle?.frame.size.height)!+(prodes?.frame.size.height)!+20, width: 75, height:20))
         uptimelabel?.font = UIFont.systemFont(ofSize: 14)
         uptimelabel?.textColor = UIColor.black
         uptimelabel?.numberOfLines = 0
@@ -108,7 +117,7 @@ class messViewController: UIViewController {
         uptimelabel?.adjustsFontSizeToFitWidth=true
         uptimelabel?.text = "更新时间："
         //更新时间
-        uptime = UILabel(frame: CGRect(x:versViewWidth+(uptimelabel?.frame.size.width)!-10, y:5, width: versViewWidth-75-10, height:30))
+        uptime = UILabel(frame: CGRect(x:versViewWidth+(uptimelabel?.frame.size.width)!-10, y:(protitle?.frame.size.height)!+(prodes?.frame.size.height)!+20, width: versViewWidth-75-10, height:20))
         uptime?.font = UIFont.systemFont(ofSize: 14)
         uptime?.textColor = UIColor.black
         uptime?.numberOfLines = 0
@@ -118,7 +127,7 @@ class messViewController: UIViewController {
         uptime?.text = "2018-09-11"
         
         //人气
-        renqilabel = UILabel(frame: CGRect(x:15, y:versViewHeight+5, width: 45, height:30))
+        renqilabel = UILabel(frame: CGRect(x:10, y:(protitle?.frame.size.height)!+(prodes?.frame.size.height)!+(verslabel?.frame.size.height)!+25, width: 45, height:20))
         renqilabel?.font = UIFont.systemFont(ofSize: 14)
         renqilabel?.textColor = UIColor.black
         renqilabel?.numberOfLines = 0
@@ -127,7 +136,7 @@ class messViewController: UIViewController {
         renqilabel?.adjustsFontSizeToFitWidth=true
         renqilabel?.text = "人气："
         //人气内容
-        renqi = UILabel(frame: CGRect(x:(verslabel?.frame.size.width)!+15, y:versViewHeight+5, width: versViewWidth-60-20, height:30))
+        renqi = UILabel(frame: CGRect(x:(verslabel?.frame.size.width)!+15, y:(protitle?.frame.size.height)!+(prodes?.frame.size.height)!+(verslabel?.frame.size.height)!+25, width: versViewWidth-60-20, height:20))
         renqi?.font = UIFont.systemFont(ofSize: 14)
         renqi?.textColor = UIColor.black
         renqi?.numberOfLines = 0
@@ -136,7 +145,7 @@ class messViewController: UIViewController {
         renqi?.adjustsFontSizeToFitWidth=true
         renqi?.text = "4998"
         //有限期限
-        qixianlabel = UILabel(frame: CGRect(x:versViewWidth-10, y:versViewHeight+5, width: 75, height:30))
+        qixianlabel = UILabel(frame: CGRect(x:versViewWidth-10, y:(protitle?.frame.size.height)!+(prodes?.frame.size.height)!+(verslabel?.frame.size.height)!+25, width: 75, height:20))
         qixianlabel?.font = UIFont.systemFont(ofSize: 14)
         qixianlabel?.textColor = UIColor.black
         qixianlabel?.numberOfLines = 0
@@ -145,54 +154,37 @@ class messViewController: UIViewController {
         qixianlabel?.adjustsFontSizeToFitWidth=true
         qixianlabel?.text = "有限期限："
         //期限内容
-        qixian = UILabel(frame: CGRect(x:versViewWidth+(uptimelabel?.frame.size.width)!-10, y:versViewHeight+5, width: versViewWidth-75-10, height:30))
+        qixian = UILabel(frame: CGRect(x:versViewWidth+(uptimelabel?.frame.size.width)!-10, y:(protitle?.frame.size.height)!+(prodes?.frame.size.height)!+(verslabel?.frame.size.height)!+25, width: versViewWidth-75-10, height:20))
         qixian?.font = UIFont.systemFont(ofSize: 14)
         qixian?.textColor = UIColor.black
         qixian?.numberOfLines = 0
         qixian?.lineBreakMode = NSLineBreakMode.byWordWrapping
         versView?.addSubview(qixian!)
         qixian?.adjustsFontSizeToFitWidth=true
-        qixian?.text = "无限期"
-        //价格视图
-        priceView = UIView(frame: CGRect(x:0, y: (proView?.frame.size.height)!+(versView?.frame.size.height)!+25, width:screenWidth
-            , height: 55))
-        priceView?.backgroundColor=UIColor.white
-        priceView?.clipsToBounds=true
-        priceView?.layer.shadowColor = UIColor.gray.cgColor
-        priceView?.layer.shadowOpacity = 1.0
-        priceView?.layer.shadowOffset = CGSize(width: 0, height: 0)
-        priceView?.layer.shadowRadius = 4
-        priceView?.layer.masksToBounds = false
-        view.addSubview(priceView!)
-        //价格
-        pricelabel = UILabel(frame: CGRect(x:15, y:10, width: 50, height:35))
-        pricelabel?.font = UIFont.systemFont(ofSize: 16)
-        pricelabel?.textColor = UIColor.black
-        pricelabel?.numberOfLines = 0
-        pricelabel?.lineBreakMode = NSLineBreakMode.byWordWrapping
-        priceView?.addSubview(pricelabel!)
-        pricelabel?.adjustsFontSizeToFitWidth=true
-        pricelabel?.text = "价格："
-        //价格内容
-        tv_price = UILabel(frame: CGRect(x:(pricelabel?.frame.size.width)!+15, y:10, width: 100, height:35))
-        tv_price?.font = UIFont.systemFont(ofSize: 16)
-        tv_price?.textColor = UIColorRGB_Alpha(R: 0.0, G: 140.0, B: 255.0, alpha: 1.0);
-        tv_price?.numberOfLines = 0
-        tv_price?.lineBreakMode = NSLineBreakMode.byWordWrapping
-        priceView?.addSubview(tv_price!)
-        tv_price?.adjustsFontSizeToFitWidth=true
-        tv_price?.text = "28.800000000000001"
-        //调用次数按钮
-        bt_dycs = UIButton(frame: CGRect(x:screenWidth-130, y:0, width:130, height: (priceView?.frame.size.height)!))
-        bt_dycs?.setTitle("购买调用次数", for: UIControl.State.normal)
-        bt_dycs?.setTitleColor(UIColor.white, for: UIControl.State.normal)
-        bt_dycs?.backgroundColor = UIColorRGB_Alpha(R: 0.0, G: 140.0, B: 255.0, alpha: 1.0);
-        bt_dycs?.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        bt_dycs?.addTarget(self, action: #selector(gmcsBtnClick), for: UIControl.Event.touchUpInside)
-        //subButton!.tag = pid
-        priceView?.addSubview(bt_dycs!)
+        qixian?.text = "一个月"
+//        //价格视图
+//        priceView = UIView(frame: CGRect(x:0, y: (proView?.frame.size.height)!+(versView?.frame.size.height)!+25, width:screenWidth
+//            , height: 55))
+//        priceView?.backgroundColor=UIColor.white
+//        priceView?.clipsToBounds=true
+//        priceView?.layer.shadowColor = UIColor.gray.cgColor
+//        priceView?.layer.shadowOpacity = 1.0
+//        priceView?.layer.shadowOffset = CGSize(width: 0, height: 0)
+//        priceView?.layer.shadowRadius = 4
+//        priceView?.layer.masksToBounds = false
+//        view.addSubview(priceView!)
+//
+//        //调用次数按钮
+//        bt_dycs = UIButton(frame: CGRect(x:screenWidth-130, y:0, width:130, height: (priceView?.frame.size.height)!))
+//        bt_dycs?.setTitle("购买调用次数", for: UIControl.State.normal)
+//        bt_dycs?.setTitleColor(UIColor.white, for: UIControl.State.normal)
+//        bt_dycs?.backgroundColor = UIColorRGB_Alpha(R: 0.0, G: 140.0, B: 255.0, alpha: 1.0);
+//        bt_dycs?.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+//        bt_dycs?.addTarget(self, action: #selector(gmcsBtnClick), for: UIControl.Event.touchUpInside)
+//        //subButton!.tag = pid
+//        priceView?.addSubview(bt_dycs!)
         //警告视图
-        jingaoView = UIView(frame: CGRect(x:0, y: (proView?.frame.size.height)!+(versView?.frame.size.height)!+(priceView?.frame.size.height)!+35, width:screenWidth
+        jingaoView = UIView(frame: CGRect(x:0, y: (proView?.frame.size.height)!+(versView?.frame.size.height)!+10, width:screenWidth
             , height: 50))
         jingaoView?.backgroundColor=UIColor.white
         jingaoView?.clipsToBounds=true
@@ -255,11 +247,16 @@ class messViewController: UIViewController {
                 let proatime: String = promess["productAddedTime"].string ?? ""
                 let provers: String = promess["productVersion"].string ?? ""
                 let propopu: Int = promess["productPopularity"].int ?? 0
-                self.protitle?.text = protitle
-                self.prodes?.text = prodes
+                self.protitle?.text = "\(protitle)"
+                var protitleheight = self.heightForView(text: "\(self.protitle?.text)", font: UIFont.systemFont(ofSize: 16), width:  self.screenWidth-20 ,wheres:"protitle")
+                self.protitle?.frame.size.height = protitleheight
+                
+                self.prodes?.text = "简介: \(prodes)"
+                var theheight = self.heightForView(text: "\(self.prodes?.text)", font: UIFont.systemFont(ofSize: 16), width:  self.screenWidth-20,wheres:"prodes")
+                self.prodes?.frame.size.height = theheight
                 self.uptime?.text = proutime
                  var proplices = "\(proplice)"
-                self.tv_price?.text = proplices
+                self.tv_price?.text = "价格：\(proplices) 每月"
                 self.version?.text = provers
                 self.root?.proedit = provers
                 self.root?.prouptime = proutime
@@ -274,6 +271,46 @@ class messViewController: UIViewController {
                 }
             }
         }
+    }
+    //label自适应高度
+    func heightForView(text:String, font:UIFont, width:CGFloat,wheres:String) -> CGFloat{
+        
+        let label:UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: CGFloat.greatestFiniteMagnitude))
+        label.numberOfLines = 0
+        label.lineBreakMode = NSLineBreakMode.byWordWrapping
+        label.font = font
+        label.text = text
+        label.sizeToFit()
+        print("返回的\(label.frame.height)")
+        if(wheres == "protitle"){
+            var they = 50-label.frame.height
+            prodes?.frame.origin.y -= they
+            verslabel?.frame.origin.y -= they
+            version?.frame.origin.y -= they
+            uptimelabel?.frame.origin.y -= they
+            uptime?.frame.origin.y -= they
+            renqilabel?.frame.origin.y -= they
+            renqi?.frame.origin.y -= they
+            qixianlabel?.frame.origin.y -= they
+            qixian?.frame.origin.y -= they
+            versView?.frame.size.height -= they
+            jingaoView?.frame.origin.y -= they
+        }
+        if (wheres == "prodes") {
+            var they = 50-label.frame.height
+            verslabel?.frame.origin.y -= they
+            version?.frame.origin.y -= they
+            uptimelabel?.frame.origin.y -= they
+            uptime?.frame.origin.y -= they
+            renqilabel?.frame.origin.y -= they
+            renqi?.frame.origin.y -= they
+            qixianlabel?.frame.origin.y -= they
+            qixian?.frame.origin.y -= they
+            versView?.frame.size.height -= they
+            jingaoView?.frame.origin.y -= they
+        }
+        
+        return label.frame.height
     }
 }
 

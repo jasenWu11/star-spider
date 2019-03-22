@@ -1,3 +1,10 @@
+//
+//  UICollectionGridViewLayout.swift
+//  hangge_1081
+//
+//  Created by hangge on 2016/11/19.
+//  Copyright © 2016年 hangge.com. All rights reserved.
+//
 import Foundation
 import UIKit
 
@@ -144,6 +151,20 @@ class UICollectionGridViewLayout: UICollectionViewLayout {
         }
     }
     
+//    //计算某一列的单元格尺寸
+//    func sizeForItemWithColumnIndex(columnIndex: Int, remainingWidth: CGFloat) -> CGSize {
+//        let columnString = viewController.cols[columnIndex]
+//        //根据列头标题文件，估算各列的宽度
+//        let size = NSString(string: columnString).size(withAttributes: [
+//            NSAttributedString.Key.font:UIFont.systemFont(ofSize: 15),
+//            NSAttributedString.Key.underlineStyle:NSUnderlineStyle.single.rawValue
+//            ])
+//
+//        //修改成所有列都平均分配（但宽度不能小于90）
+//        let width = max(remainingWidth/CGFloat(columnIndex+1), 60)
+//        //计算好的宽度还要取整，避免偏移
+//        return CGSize(width: ceil(width), height:size.height + 30)
+//    }
     //计算某一列的单元格尺寸
     func sizeForItemWithColumnIndex(columnIndex: Int, remainingWidth: CGFloat) -> CGSize {
         let columnString = viewController.cols[columnIndex]
@@ -153,10 +174,15 @@ class UICollectionGridViewLayout: UICollectionViewLayout {
             NSAttributedString.Key.underlineStyle:NSUnderlineStyle.single.rawValue
             ])
         
-        //修改成所有列都平均分配（但宽度不能小于90）
-        let width = max(remainingWidth/CGFloat(columnIndex+1), 90)
-        //计算好的宽度还要取整，避免偏移
-        return CGSize(width: ceil(width), height:size.height + 10)
+        //如果有剩余的空间则都给第一列
+        if columnIndex == 0 {
+            return CGSize(width: 100, height:size.height + 30)
+        }
+        else if columnIndex == 1 {
+                return CGSize(width: collectionView!.frame.width-100, height:size.height + 30)
+            
+        }
+        //行高增加10像素，列宽增加17像素
+        return CGSize(width:size.width + 17, height:size.height + 0)
     }
 }
-

@@ -32,8 +32,11 @@ class ShopTableViewCell: UITableViewCell{
     }
     @objc func composeBtnClick(shopcellView: UILabel) {
         print(shopcellView.tag)
-        pids = shopcellView.tag
-        root?.root?.performSegue(withIdentifier: "deatil", sender: pids)
+        var pid = (root?.pidss[shopcellView.tag])!
+        var ntitle:String = (root?.titles[shopcellView.tag])!
+        root?.root?.pids = pid
+        root?.root?.Ntitle = ntitle
+        root?.root?.todeatil()
     }
     @objc func BuyClick(subButton: UIButton) {
         let optionMenuController = UIAlertController(title: nil, message: "选择支付方式", preferredStyle: .actionSheet)
@@ -95,25 +98,29 @@ class ShopTableViewCell: UITableViewCell{
         shopcellView?.addSubview(iconImage!)
         
         // 大标题
-        titleLabel = UILabel(frame: CGRect(x:(iconImage?.frame.size.width)!+25, y:10, width: self.frame.size.width-(iconImage?.frame.size.width)!+20, height:30))
+        titleLabel = UILabel(frame: CGRect(x:(iconImage?.frame.size.width)!+25, y:10, width: self.frame.size.width-(iconImage?.frame.size.width)!+20, height:20))
         titleLabel?.font = UIFont.systemFont(ofSize: 16)
         titleLabel?.textColor = UIColor.black
-        titleLabel?.numberOfLines = 0
+        titleLabel?.numberOfLines=0
         titleLabel?.lineBreakMode = NSLineBreakMode.byWordWrapping
+        titleLabel?.textAlignment = .left
         shopcellView?.addSubview(titleLabel!)
         
         // 简介
-        subTitleLabel = UILabel(frame: CGRect(x:(iconImage?.frame.size.width)!+25, y:(titleLabel?.frame.size.height)!, width:self.frame.size.width-(iconImage?.frame.size.width)!+20, height: 30))
+        subTitleLabel = UILabel(frame: CGRect(x:(iconImage?.frame.size.width)!+25, y:(titleLabel?.frame.size.height)!+15, width:self.frame.size.width-(iconImage?.frame.size.width)!+10, height: 30))
         subTitleLabel?.font = UIFont.systemFont(ofSize: 14)
         subTitleLabel?.textColor = UIColor.gray
+        subTitleLabel?.numberOfLines=0
+        subTitleLabel?.lineBreakMode = NSLineBreakMode.byWordWrapping
+        subTitleLabel?.textAlignment = .left
         shopcellView?.addSubview(subTitleLabel!)
         //价格
-        pirceLabel = UILabel(frame: CGRect(x:(iconImage?.frame.size.width)!+25, y:(iconImage?.frame.size.height)!-40, width:60, height: 30))
+        pirceLabel = UILabel(frame: CGRect(x:(iconImage?.frame.size.width)!+25, y:(iconImage?.frame.size.height)!-30, width:60, height: 20))
         pirceLabel?.font = UIFont.systemFont(ofSize: 15)
         pirceLabel?.textColor = UIColor.black
         shopcellView?.addSubview(pirceLabel!)
         // 按钮
-        subButton = UIButton(frame: CGRect(x:screenWidth-80-25, y:(iconImage?.frame.size.height)!-40, width:80, height: 25))
+        subButton = UIButton(frame: CGRect(x:screenWidth-80-25, y:(iconImage?.frame.size.height)!-35, width:80, height: 25))
         subButton?.setTitle("购买", for: UIControl.State.normal)
         subButton?.setTitleColor(UIColor.white, for: UIControl.State.normal)
         subButton?.backgroundColor = UIColor.black

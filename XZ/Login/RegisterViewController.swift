@@ -9,7 +9,7 @@
 import UIKit
 import Alamofire
 class RegisterViewController: UIViewController {
-
+    @IBOutlet weak var l_xieyi: UILabel!
     @IBOutlet weak var bt_back: UIButton!
     @IBOutlet weak var bt_re: UIButton!
     @IBOutlet weak var v_yzm: UIView!
@@ -24,12 +24,17 @@ class RegisterViewController: UIViewController {
     var verifyCode : String = ""
     var root : LoginViewController?
     var oldphone = ""
+    var xyurl = "https://www.xingzhu.club/v1.0/#/toregister/service-contract"
     @IBAction  func back(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
-        
+        self.navigationController?.popViewController(animated: true)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(RegisterViewController.handleTap(sender:))))
+        let xieyiclick = UITapGestureRecognizer(target: self, action: #selector(xieyiAction))
+        l_xieyi.addGestureRecognizer(xieyiclick)
+        //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
+        l_xieyi.isUserInteractionEnabled = true
         //注册信息视图圆角
         v_xinxi?.clipsToBounds=true
         v_xinxi?.layer.cornerRadius = 10
@@ -306,7 +311,7 @@ class RegisterViewController: UIViewController {
                     let time: TimeInterval = 1
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
                         //code
-                        self.dismiss(animated: true, completion: nil)
+                        self.navigationController?.popViewController(animated: true)
                         print("手机号\(self.phone),密码\(self.pass)")
                         self.root?.tv_phone.text = self.phone
                         self.root?.tv_pwd.text = self.pass
@@ -352,5 +357,23 @@ class RegisterViewController: UIViewController {
     {
         let color = UIColor.init(red: (R / 255.0), green: (G / 255.0), blue: (B / 255.0), alpha: alpha);
         return color;
+    }
+    @objc func xieyiAction() -> Void {
+        var showname:String = "星蛛用户服务协议"
+        print("跳转到\(xyurl)")
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: ToWebViewController())))
+            as! ToWebViewController
+        controller.theurl = xyurl
+        controller.thetitle = showname
+    self.navigationController?.pushViewController(controller, animated: true)
+    }
+    //收起键盘
+    @objc func handleTap(sender: UITapGestureRecognizer) {
+        if sender.state == .ended {
+            tv_phone.resignFirstResponder()
+            tv_pass.resignFirstResponder()
+            tv_yanzh.resignFirstResponder()
+        }
+        sender.cancelsTouchesInView = false
     }
 }

@@ -9,7 +9,7 @@
 import UIKit
 import Alamofire
 import MJRefresh
-class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     var titles:[String] = []
     var ctimes:[String] = []
     var etimes:[String] = []
@@ -21,6 +21,7 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
     var appPayStatus:[String] = []
     var productType:[String] = []
     var iskeywords:[Int] = []
+    var endtime:[String] = []
     var iskey:Int = 0
 //    var states:[String] = ["未开始","已停止","已停止","暂停","未开始","正在操作","正在操作"]
 //    var counts:[String] = ["0","16","30","15","0","20","18"]
@@ -33,17 +34,42 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
     var root : MyApppagViewController?
     // 顶部刷新
     let header = MJRefreshNormalHeader()
+    var searchBars:UISearchBar?
+    var searchtext:String = ""
     override func viewDidLoad() {
         super.viewDidLoad()
+        //关闭导航栏半透明效果
+        self.navigationController?.navigationBar.isTranslucent = false
         self.tableView?.separatorStyle = .none
+        //搜索框
+        searchBars = UISearchBar(frame: CGRect(x:0, y: 0, width:screenWidth, height: 44))
+        searchBars?.barStyle = .black
+        searchBars?.showsCancelButton = true
+        searchBars?.keyboardAppearance = .default
+        searchBars?.delegate = self
+        let bt_cancel = searchBars?.value(forKey: "cancelButton") as! UIButton
+        bt_cancel.setTitle("Cancel", for: .normal)
+        bt_cancel.setTitleColor(UIColor.white,for: .normal)
+        let seartext = searchBars?.value(forKey: "searchField") as! UITextField
+        seartext.textColor = UIColor.white
+        searchBars?.tintColor = UIColor.blue
+        //光标颜色
+        searchBars?.subviews[0].subviews[1].tintColor = UIColor.white
+        searchBars?.keyboardType = .default
+        //        searchBars?.addTarget(self, action: #selector(composeBtnClick), for: UIControl.Event.touchUpInside)
+        view.addSubview(searchBars!)
         //下拉刷新
-        header.lastUpdatedTimeLabel.isHidden = true
-        header.stateLabel.isHidden = true
+        header.lastUpdatedTimeLabel.isHidden = false
+        header.stateLabel.isHidden = false
         //创建表视图
-        self.tableView = UITableView(frame: CGRect(x:0, y:0, width:screenWidth, height: screenHeight-123), style:.plain)
+        self.tableView = UITableView(frame: CGRect(x:0, y:44, width:screenWidth, height: screenHeight-187), style:.plain)
         //self.tableView = UITableView(frame: self.view.frame, style:.plain)
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
+        tableView?.separatorStyle = .none
+        //下拉刷新
+        header.setRefreshingTarget(self, refreshingAction: #selector(getAllApps))
+        self.tableView!.mj_header = header
         //创建一个重用的单元格
         self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "ShopCell")
         view.addSubview(self.tableView!)
@@ -52,8 +78,7 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         print("我的应用前台显示")
-        header.setRefreshingTarget(self, refreshingAction: #selector(getAllApps))
-        self.tableView!.mj_header = header
+        //手动调用刷新效果
         getAllApps()
         // The rest of your code.
     }
@@ -88,6 +113,12 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
         print(indexPath.row)
     }
     @objc func getAllApps()  {
+        searchBars?.text = ""
+        let now = Date()
+        // 创建一个日期格式器
+        let dformatter = DateFormatter()
+        dformatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        var savetime:String = "\(dformatter.string(from: now))"
         
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
         let url = "https://www.xingzhu.club/XzTest/apps/getAllApps"
@@ -114,6 +145,7 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
                 self.appPayStatus.removeAll()
                 self.productType.removeAll()
                 self.iskeywords.removeAll()
+                self.endtime.removeAll()
                 for i in 0..<provinces.count{
                     let appIds: Int = provinces[i]["appId"].int ?? 0
                     self.appId += [appIds]
@@ -129,6 +161,9 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
                    
                     let pParams: String = provinces[i]["productParams"].string ?? ""
                     self.productParams += [pParams]
+                    
+                    let eTime: String = provinces[i]["appEndTime"].string ?? ""
+                    self.endtime += [eTime]
                     
                     if pParams.contains("keyword") {
                         self.iskey = 1
@@ -161,7 +196,17 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
                         apStatus = "未支付"
                     }
                     else if (apaystatus == 2){
-                        apStatus = "已支付"
+                        
+                        if eTime.compare(savetime) == .orderedAscending
+                        {
+                            print("已过期")
+                            apStatus = "已过期"
+                        }
+                        else if eTime.compare(savetime) == .orderedDescending
+                        {
+                            print("未过期")
+                            apStatus = "已支付"
+                        }
                     }
                     self.appPayStatus += [apStatus]
                     
@@ -180,7 +225,141 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
                     self.productType += [ptype]
                 }
             }
-             print("是否需要keyword\(self.iskeywords)")
+             print("剩下的时间\(self.endtime)")
+            self.tableView!.reloadData()
+            //结束刷新
+            self.tableView!.mj_header.endRefreshing()
+        }
+    }
+    func searchBar(_ searchBar:UISearchBar, textDidChange searchText:String) {
+        
+        //searchBars?.resignFirstResponder()
+        searchtext = searchBars?.text! ?? ""
+        print(searchtext)
+        //print("searchtext")
+        getApps()
+        if (searchtext == "") {
+            getAllApps()
+        }
+    }
+    func searchBarCancelButtonClicked(_ searchBar:UISearchBar) {
+        print("cancel")
+        searchBars?.text = ""
+        getAllApps()
+    }
+    @objc func getApps()  {
+        let now = Date()
+        // 创建一个日期格式器
+        let dformatter = DateFormatter()
+        dformatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        var savetime:String = "\(dformatter.string(from: now))"
+        
+        var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
+        let url = "https://www.xingzhu.club/XzTest/apps/getAppByContent"
+        let paras = ["userId":userid,"content":self.searchtext] as [String : Any]
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("提示:\(message)")
+                let provinces = json["data"]
+                self.titles.removeAll()
+                self.ctimes.removeAll()
+                self.etimes.removeAll()
+                self.pidss.removeAll()
+                self.productParams.removeAll()
+                self.appId.removeAll()
+                self.crawlerName.removeAll()
+                self.appStatus.removeAll()
+                self.appPayStatus.removeAll()
+                self.productType.removeAll()
+                self.iskeywords.removeAll()
+                self.endtime.removeAll()
+                for i in 0..<provinces.count{
+                    let appIds: Int = provinces[i]["appId"].int ?? 0
+                    self.appId += [appIds]
+                    
+                    let productId: Int = provinces[i]["productId"].int ?? 0
+                    self.pidss += [productId]
+                    
+                    let productTitle: String = provinces[i]["productTitle"].string ?? ""
+                    self.titles += [productTitle]
+                    
+                    let appCTime: String = provinces[i]["appCreateTime"].string ?? ""
+                    self.ctimes += [appCTime]
+                    
+                    let pParams: String = provinces[i]["productParams"].string ?? ""
+                    self.productParams += [pParams]
+                    
+                    let eTime: String = provinces[i]["appEndTime"].string ?? ""
+                    self.endtime += [eTime]
+                    
+                    if pParams.contains("keyword") {
+                        self.iskey = 1
+                    }else{
+                        self.iskey = 0
+                    }
+                    self.iskeywords += [self.iskey]
+                    
+                    let cName: String = provinces[i]["crawlerName"].string ?? ""
+                    self.crawlerName += [cName]
+                    
+                    let appstatus: Int = provinces[i]["appStatus"].int ?? 0
+                    
+                    var aStatus = ""
+                    if (appstatus == 1){
+                        aStatus = "未启动"
+                    }
+                    else if (appstatus == 2){
+                        aStatus = "运行"
+                    }
+                    else if (appstatus == 3){
+                        aStatus = "已停止"
+                    }
+                    self.appStatus += [aStatus]
+                    
+                    let apaystatus: Int = provinces[i]["appPayStatus"].int ?? 0
+                    
+                    var apStatus = ""
+                    if (apaystatus == 1){
+                        apStatus = "未支付"
+                    }
+                    else if (apaystatus == 2){
+                        
+                        if eTime.compare(savetime) == .orderedAscending
+                        {
+                            print("已过期")
+                            apStatus = "已过期"
+                        }
+                        else if eTime.compare(savetime) == .orderedDescending
+                        {
+                            print("未过期")
+                            apStatus = "已支付"
+                        }
+                    }
+                    self.appPayStatus += [apStatus]
+                    
+                    let producttype: Int = provinces[i]["productType"].int ?? 0
+                    
+                    var ptype = ""
+                    if (producttype == 1){
+                        ptype = "爬虫"
+                    }
+                    else if (producttype == 2){
+                        ptype = "数据"
+                    }
+                    else if (producttype == 3){
+                        ptype = "API"
+                    }
+                    self.productType += [ptype]
+                }
+            }
+            print("剩下的时间\(self.endtime)")
             self.tableView!.reloadData()
             //结束刷新
             self.tableView!.mj_header.endRefreshing()

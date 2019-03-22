@@ -9,107 +9,45 @@
 import UIKit
 import Alamofire
 class DataSourceViewController: UIViewController, UICollectionGridViewSortDelegate {
-    @IBOutlet weak var ni_title: UINavigationItem!
-    @IBOutlet weak var bt_com: UIButton!
-    @IBOutlet weak var tf_data: UITextField!
-    @IBOutlet weak var l_key: UILabel!
     var iskey:Int = 0
     var Ntitle:String = ""
     var dataName:String = ""
     var gridViewController: UICollectionGridViewController!
-    var columns:[String] = ["编号","客户", "消费金额", "消费次数", "满意度","搞笑"]
-    var columd:[String] = ["编号","客户", "消费金额", "消费次数", "满意度","搞笑"]
-    var row1:[String] = ["No.01","hangge", "100", "8", "60%","11"]
-    var row2:[String] = ["No.02","张三", "223", "16", "81%","12"]
-    var row3:[String] = ["No.03","李四", "143", "25", "93%","11"]
-    var row4:[String] = ["No.04","王五", "75", "2", "53%","12"]
-    var row5:[String] = ["No.05","韩梅梅", "43", "12", "33%","11"]
-    var row6:[String] = ["No.06","李雷", "33", "27", "45%","12"]
-    var row7:[String] = ["No.07","王大力", "33", "22", "15%","11"]
-    var row8:[String] = ["No.08","蝙蝠侠", "100", "8", "60%","11"]
-    var row9:[String] = ["No.09","超人", "223", "16", "81%","12"]
+    var columns:[String] = []
+    var columd:[String] = []
+    var row1:[String] = []
     var rows:[[String]] = []
+    var excelrows:[[String]] = []
     var row:[String] = []
     var therow : [Any] = []
     var therows : [[Any]]! = []
     var pid:Int = 0
     var qdata:String = ""
-    var field1:String = ""
-    var field2:String = ""
-    var field3:String = ""
-    var field4:String = ""
-    var field5:String = ""
-    var field6:String = ""
-    var field7:String = ""
-    var field8:String = ""
-    var field9:String = ""
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
+    var titless:[String] = []
 //    var v_datasource : UIView?
 //    var datasourceView : UIScrollView?
 //    var iv_close:UIButton?
 //    var height:Int = 0
     var phoitem:Int = -1
+    var text:String = "loading..."
     override func viewDidLoad() {
         super.viewDidLoad()
-        ni_title.title = Ntitle
-        bt_com?.backgroundColor=UIColorRGB_Alpha(R: 91.0, G: 84.0, B: 145.0, alpha: 0.8);
-        bt_com?.clipsToBounds=true
-        bt_com?.layer.shadowColor = UIColor.gray.cgColor
-        bt_com?.layer.shadowOpacity = 1.0
-        bt_com?.layer.shadowOffset = CGSize(width: 0, height: 0)
-        bt_com?.layer.shadowRadius = 4
-        bt_com?.layer.masksToBounds = false
+        
+        self.title = Ntitle
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"+",style:UIBarButtonItem.Style.plain,target:self,action:#selector(menu))
+        self.navigationItem.rightBarButtonItem?.image = UIImage(named: "share")
+        self.navigationItem.rightBarButtonItem!.isEnabled = false
         gridViewController = UICollectionGridViewController()
-        
         view.addSubview(self.gridViewController.view)
-        
-//        v_datasource = UIScrollView(frame: CGRect(x:20, y: screenHeight/5, width:screenWidth-40, height: screenHeight/5*3))
-//        v_datasource?.backgroundColor=UIColor.white
-//        v_datasource?.clipsToBounds=true
-//        v_datasource?.layer.cornerRadius = 3
-//        v_datasource?.layer.shadowColor = UIColor.gray.cgColor
-//        v_datasource?.layer.shadowOpacity = 1.0
-//        v_datasource?.layer.shadowOffset = CGSize(width: 0, height: 0)
-//        v_datasource?.layer.shadowRadius = 4
-//        v_datasource?.layer.masksToBounds = false
-//        //datasourceView?.addTarget(self, action: #selector(composeBtnClick), for: UIControl.Event.touchUpInside)
-//        view.addSubview(v_datasource!)
-//        v_datasource?.isHidden = true
-//
-//        iv_close = UIButton(frame: CGRect(x:10, y: 8, width:30, height: 30))
-//        iv_close?.setImage(UIImage(named:"close"), for: .normal)
-//        iv_close?.addTarget(self, action: #selector(CloseClick), for: UIControl.Event.touchUpInside)
-//        v_datasource?.addSubview(iv_close!)
-//
-//        datasourceView = UIScrollView(frame: CGRect(x:0, y: 40, width:screenWidth-40, height: screenHeight/5*3-40))
-//        datasourceView?.backgroundColor=UIColor.white
-//        datasourceView?.clipsToBounds=true
-//        datasourceView?.layer.cornerRadius = 3
-//        datasourceView?.layer.shadowColor = UIColor.gray.cgColor
-//        datasourceView?.layer.shadowOpacity = 1.0
-//        datasourceView?.layer.shadowOffset = CGSize(width: 0, height: 0)
-//        datasourceView?.layer.shadowRadius = 4
-//        datasourceView?.layer.masksToBounds = false
-//        //datasourceView?.addTarget(self, action: #selector(composeBtnClick), for: UIControl.Event.touchUpInside)
-//        v_datasource?.addSubview(datasourceView!)
-//
-//        //是否可以滚动
-//        datasourceView?.isScrollEnabled = true
-//        //垂直方向反弹
-//        datasourceView?.alwaysBounceVertical = true
-//        //垂直方向是否显示滚动条
-//        datasourceView?.showsVerticalScrollIndicator = false
-//        datasourceView?.clipsToBounds = true
-//
-//
-        
+   
         DataRequet()
     }
     
     override func viewDidLayoutSubviews() {
-        gridViewController.view.frame = CGRect(x:0, y:64, width:view.frame.width,
-                                               height:view.frame.height-64)
+        gridViewController.view.frame = CGRect(x:0, y:0, width:view.frame.width,
+                                               height:view.frame.height-0)
     }
     
     override func didReceiveMemoryWarning() {
@@ -156,98 +94,27 @@ class DataSourceViewController: UIViewController, UICollectionGridViewSortDelega
         return color;
     }
     func DataRequet() {
-        
+        self.navigationItem.rightBarButtonItem!.isEnabled = false
+        self.gridViewController.addtext()
+        MCGCDTimer.shared.scheduledDispatchTimer(WithTimerName: "GCDTimer", timeInterval: 5, queue: .main, repeats: true) {
+            if(self.text == "loading..."){
+                self.gridViewController.bezierText.show(text: self.text)
+                self.text = "获取中..."
+            }
+            else if(self.text == "获取中..."){
+                self.gridViewController.bezierText.show(text: self.text)
+                self.text = "loading..."
+            }
+        }
             self.columns.removeAll()
             self.rows.removeAll()
             self.gridViewController.removeRow()
             let url = "https://www.xingzhu.club/XzTest/datasource/getDataSource"
             var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
             let paras = ["userId":userid,"crawlerName":dataName] as [String : Any]
-        if(dataName == "bilibili_beauty"){
-            self.columd = ["序号","视频链接","视频名","视频av号","视频时长","播放量","up主","上传日期"]
-            self.columns = ["序号","视频名"]
-            self.field1 = "视频链接"
-            self.field2 = "视频名"
-            self.field3 = "视频av号"
-            self.field4 = "视频时长"
-            self.field5 = "播放量"
-            self.field6 = "up主"
-            self.field7 = "上传日期"
-        }
-        else if(dataName == "douban_new_movie"){
-            self.columd = ["序号","电影链接","电影名称","电影评分"]
-            self.columns = ["序号","电影名称"]
-            self.field1 = "电影链接"
-            self.field2 = "电影名称"
-            self.field3 = "电影评分"
-        }
-        else if(dataName == "douban_top250"){
-            self.columd = ["序号","电影链接","电影名称","电影评分"]
-            self.columns = ["序号","电影名称"]
-            self.field1 = "电影链接"
-            self.field2 = "电影名称"
-            self.field3 = "电影评分"
-        }
-        else if(dataName == "tencent_video"){
-            self.columd = ["序号","视频链接","视频名称","视频作者","视频简介"]
-            self.columns = ["序号","视频名称"]
-            self.field1 = "视频链接"
-            self.field2 = "视频名称"
-            self.field3 = "视频作者"
-            self.field4 = "视频简介"
-        }
-        else if(dataName == "weibo"){
-            self.columd = ["序号","链接","微博名","评论文本","图片"]
-            self.columns = ["序号","微博名"]
-            self.field1 = "链接"
-            self.field2 = "微博名"
-            self.field3 = "评论文本"
-            self.field4 = "图片"
-        }
-        else if(dataName == "amazon_phone"){
-            self.columd = ["序号","链接","标题","价格","图片","品牌"]
-            self.columns = ["序号","标题"]
-            self.field1 = "链接"
-            self.field2 = "标题"
-            self.field3 = "价格"
-            self.field4 = "图片"
-            self.field5 = "品牌"
-        }
-        else if(dataName == "bilibili_all_video"){
-            self.columns = ["序号","视频链接","视频名","视频av号","作者","播放量","视频简介","视频时长"]
-            self.columd = ["序号","视频名"]
-            self.field1 = "视频链接"
-            self.field2 = "视频名"
-            self.field3 = "视频av号"
-            self.field4 = "作者"
-            self.field5 = "播放量"
-            self.field6 = "视频简介"
-            self.field7 = "视频时长"
-        }
-        else if(dataName == "dangdang_book"){
-            self.columns = ["序号","链接","书名","作者以及译者","价格","简介"]
-            self.columd = ["序号","书名"]
-            self.field1 = "链接"
-            self.field2 = "书名"
-            self.field3 = "作者以及译者"
-            self.field4 = "价格"
-            self.field5 = "简介"
-        }
         ///循环查找当前数组中是否已经添加过该元素
         
-        for index in 0..<columd.count
-            
-        {
-            
-            var item : String = columd[index]
-            
-            //print("遍历数组1：\(item)")
-            let stringResult = item.contains("图")
-            print("\(index)包含图吗？\(stringResult)")
-            if(stringResult == true){
-                phoitem = index
-            }
-        }
+       
             print("用户id\(userid)和数据源名\(dataName)")
             // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
             Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
@@ -260,57 +127,42 @@ class DataSourceViewController: UIViewController, UICollectionGridViewSortDelega
                     var message:String = json["message"].string!
                     print("提示:\(message)")
                     let datamess = json["data"]
-                    print("数据量\(datamess.count)")
+                    let titlemess = json["title"].string
+                    //设置表头
+                    self.columd = self.StringtoArray(Stringvalue: titlemess!) as! [String]
+                    //简约式表头
+                    var row0:String = self.columd[0]
+                    var row2:String = self.columd[2]
+                    self.columns += [row0]
+                    self.columns += [row2]
+                    ///循环查找当前数组中是否已经添加过该元素
+                    for index in 0..<self.columd.count
+                        
+                    {
+                        var item : String = self.columd[index]
+                        //print("遍历数组1：\(item)")
+                        let stringResult = item.contains("图")
+                        print("\(index)包含图吗？\(stringResult)")
+                        if(stringResult == true){
+                            self.phoitem = index
+                        }
+                    }
+                    //print("输出数组是\(self.titless)")
+                    //print("数据量\(datamess.count)")
                     if(datamess.count>0){
                         for index in 0...datamess.count-1 {
                             var num = "NO.\(index+1)"
-                            var row1 = datamess[index][self.field1].string ?? "无此数据"
-                            var row1s : String = self.Spacequit(Stringvalue: row1)
-                            var row2 = datamess[index][self.field2].string ?? "无此数据"
-                            var row2s : String = self.Spacequit(Stringvalue: row2)
-                            var row3 = datamess[index][self.field3].string ?? "无此数据"
-                            var row3s : String = self.Spacequit(Stringvalue: row3)
-                            var row4 = datamess[index][self.field4].string ?? "无此数据"
-                            var row4s : String = self.Spacequit(Stringvalue: row4)
-                            var row5 = datamess[index][self.field5].string ?? "无此数据"
-                            var row5s : String = self.Spacequit(Stringvalue: row5)
-                            var row6 = datamess[index][self.field6].string ?? "无此数据"
-                            var row6s : String = self.Spacequit(Stringvalue: row6)
-                            var row7 = datamess[index][self.field7].string ?? "无此数据"
-                            var row7s : String = self.Spacequit(Stringvalue: row7)
-                            var row8 = datamess[index][self.field8].string ?? "无此数据"
-                            var row8s : String = self.Spacequit(Stringvalue: row8)
-                            var row9 = datamess[index][self.field9].string ?? "无此数据"
-                            var row9s : String = self.Spacequit(Stringvalue: row9)
                             self.row += [num]
-                            self.therow += [num]
-                            if(row1s != "无此数据"){
-                                self.row += [row1s]
-                            }
-                            if(row2s != "无此数据"){
-                                self.row += [row2s]
-                                self.therow += [row2s]
-                            }
-                            if(row3s != "无此数据"){
-                                self.row += [row3s]
-                            }
-                            if(row4s != "无此数据"){
-                                self.row += [row4s]
-                            }
-                            if(row5s != "无此数据"){
-                                self.row += [row5s]
-                            }
-                            if(row6s != "无此数据"){
-                                self.row += [row6s]
-                            }
-                            if(row7s != "无此数据"){
-                                self.row += [row7s]
-                            }
-                            if(row8s != "无此数据"){
-                                self.row += [row8s]
-                            }
-                            if(row9s != "无此数据"){
-                                self.row += [row9s]
+                             self.therow += [num]
+                            for i in 1..<self.columd.count{
+                                var row1 = "\(datamess[index][self.columd[i]])"
+                                var row1s : String = self.Spacequit(Stringvalue: row1)
+                                if(row1s != "无此数据"){
+                                    self.row += [row1s]
+                                }
+                                if(i == 2){
+                                    self.therow += [row1s]
+                                }
                             }
                             self.rows += [self.row]
                             self.row.removeAll()
@@ -318,55 +170,24 @@ class DataSourceViewController: UIViewController, UICollectionGridViewSortDelega
                             self.therows += [self.therow]
                             self.therow.removeAll()
                         }
+                        self.excelrows = self.rows
+                        MCGCDTimer.shared.cancleTimer(WithTimerName: "GCDTimer")
+                        self.gridViewController.bezierText.removeFromSuperview()
+                        self.gridViewController.setViewY(type: 0)
                         self.gridViewController.setColumns(columns: self.columns)
                         self.gridViewController.setColumd(columd: self.columd)
                         self.gridViewController.setRow(row: self.rows)
                         self.gridViewController.setPhoto(photoindex: self.phoitem)
                         //print("数据表格是\(self.rows)")
                         //print("数据表格假装是\(self.therows)")
+                        self.navigationItem.rightBarButtonItem!.isEnabled = true
                         for arrayItem in self.therows {
                             self.gridViewController.addRow(row: arrayItem)
                         }
                         self.gridViewController.sortDelegate = self
                     }
-//                    if(datamess.count>0){
-//                        for index in 1...datamess.count {
-//                            let datamess1 = datamess["\(index)"]
-//                            var num = "No.\(index)"
-//                            var pic:String = datamess1["pic"].string ?? "null"
-//                            var people:String = datamess1["people"].string ?? "null"
-//                            var url:String = datamess1["url"].string ?? "null"
-//                            var text:String = ""
-//                            var texts:String = ""
-//                            var textsz:[String] = []
-//                            let datavinces = datamess1["text"]
-//                            if let arr = datavinces.arrayObject {
-//                                textsz = arr as! [String]
-//                            }
-//                            for arrayItem in textsz {
-//                                if("\(arrayItem)" != " "&&"\(arrayItem)" != ":"){
-//                                    text += "\(arrayItem)"
-//                                }
-//                            }
-//                            self.row += [num]
-//                            self.row += [url]
-//                            self.row += [text]
-//                            self.row += [pic]
-//                            self.row += [people]
-//                            self.rows += [self.row]
-//                            self.row.removeAll()
-//                        }
-//                        self.gridViewController.setColumns(columns: self.columns)
-//                        print("数据表格是\(self.rows)")
-//                        for arrayItem in self.rows {
-//                            self.gridViewController.addRow(row: arrayItem)
-//                        }
-//                        self.gridViewController.sortDelegate = self
-//                    }
-                    else{
-                        self.gridViewController.showMsgbox(_message: "爬取数据量为0，请确认需爬取内容后重新爬取")
-                       
-                    }
+
+                    
                 }
             
         }
@@ -393,5 +214,42 @@ class DataSourceViewController: UIViewController, UICollectionGridViewSortDelega
 //        datasourceView?.contentSize = CGSize(width: 200,
 //                                             height: 310);
 //    }
+    func StringtoArray(Stringvalue:String)->Array<Any>{
+        //去掉无用字符
+        let leftquit = Stringvalue.trimmingCharacters(in: NSCharacterSet(charactersIn: "[") as CharacterSet)
+        let rightquit = leftquit.trimmingCharacters(in: NSCharacterSet(charactersIn: "]") as CharacterSet)
+        var thetitle:String = "序号,\(rightquit)"
+        let array = thetitle.components(separatedBy:",")
+        return array
+    }
+    @objc func menu(_ sender: Any) {
+        let items: [String] = ["导出Excel","分享到微信","分享到QQ","发送到邮箱"]
+        let imgSource: [String] = ["excel","wechat","QQ","youxiang"]
+        NavigationMenuShared.showPopMenuSelecteWithFrameWidth(width: itemWidth, height: 160, point: CGPoint(x: ScreenInfo.Width - 30, y: 0), item: items, imgSource: imgSource) { (index) in
+            ///点击回调
+            switch index{
+            case 0:
+                self.gridViewController.excel(excelname: self.Ntitle)
+            case 1:
+                self.gridViewController.wechat(excelname: self.Ntitle)
+            case 2:
+                self.gridViewController.QQ2(excelname: self.Ntitle)
+            case 3:
+                self.gridViewController.toemail(excelname: self.Ntitle)
+            default:
+                break
+            }
+        }
+    }
+    
+    
+    func showMsgbox(_message: String, _title: String = "提示"){
+        
+        let alert = UIAlertController(title: _title, message: _message, preferredStyle: UIAlertController.Style.alert)
+        let btnOK = UIAlertAction(title: "好的", style: .default, handler: nil)
+        alert.addAction(btnOK)
+        self.present(alert, animated: true, completion: nil)
+        
+    }
 }
 

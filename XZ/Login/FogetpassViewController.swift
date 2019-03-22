@@ -26,11 +26,12 @@ class FogetpassViewController: UIViewController {
     var verifyCode : String = ""
     var root : LoginViewController?
     @IBAction func back(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
+        self.navigationController?.popViewController(animated: true)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(FogetpassViewController.handleTap(sender:))))
         //注册信息视图圆角
         v_xinxi?.clipsToBounds=true
         v_xinxi?.layer.cornerRadius = 10
@@ -307,7 +308,7 @@ class FogetpassViewController: UIViewController {
                     let time: TimeInterval = 1
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
                         //code
-                        self.dismiss(animated: true, completion: nil)
+                        self.navigationController?.popViewController(animated: true)
                         print("手机号\(self.phone),密码\(self.pass)")
                         self.root?.tv_phone.text = self.phone
                         self.root?.tv_pwd.text = self.pass
@@ -353,5 +354,14 @@ class FogetpassViewController: UIViewController {
     {
         let color = UIColor.init(red: (R / 255.0), green: (G / 255.0), blue: (B / 255.0), alpha: alpha);
         return color;
+    }
+    //收起键盘
+    @objc func handleTap(sender: UITapGestureRecognizer) {
+        if sender.state == .ended {
+            tv_phone.resignFirstResponder()
+            tv_pass.resignFirstResponder()
+            tv_yanzh.resignFirstResponder()
+        }
+        sender.cancelsTouchesInView = false
     }
 }

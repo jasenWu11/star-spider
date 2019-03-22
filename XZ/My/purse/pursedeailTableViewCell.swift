@@ -11,18 +11,20 @@ import UIKit
 class pursedeailTableViewCell: UITableViewCell {
     
     var tableView:UITableView?
-    var tv_pursed: UIView?
-    var tv_times: UILabel?
-    var tv_rids: UILabel?
-    var tv_mons: UILabel?
+    var tv_pursed : UIView?
+    var tv_times : UILabel?
+    var tv_rids : UILabel?
+    var tv_mons : UILabel?
+    var tv_rcr : UILabel?
     var tv_state: UILabel?
     var tv_count: UILabel?
     var bt_oper : UIButton?
     var bt_dele : UIButton?
-    var tv_timess: UILabel?
-    var tv_monss: UILabel?
-    var tv_states: UILabel?
-    var tv_counts: UILabel?
+    var tv_timess : UILabel?
+    var tv_monss : UILabel?
+    var tv_states : UILabel?
+    var tv_counts : UILabel?
+    var v_fenge : UIView?
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
     var root : PursedeailTableViewController?
@@ -127,33 +129,41 @@ class pursedeailTableViewCell: UITableViewCell {
     }
     func setUpUI(){
         //视图
-        tv_pursed = UIView(frame: CGRect(x:5, y: 5, width:screenWidth-10, height: 50))
+        tv_pursed = UIView(frame: CGRect(x:0, y: 0, width:screenWidth, height: 70))
         tv_pursed?.backgroundColor=UIColor.white
         tv_pursed?.clipsToBounds=true
-        tv_pursed?.layer.cornerRadius = 5
-        tv_pursed?.layer.shadowColor = UIColor.gray.cgColor
-        tv_pursed?.layer.shadowOpacity = 1.0
-        tv_pursed?.layer.shadowOffset = CGSize(width: 0, height: 0)
-        tv_pursed?.layer.shadowRadius = 4
-        tv_pursed?.layer.masksToBounds = false
         self.addSubview(tv_pursed!)
-        // 大标题
-        tv_rids = UILabel(frame: CGRect(x:20, y: 10, width:50, height: 30))
-        tv_rids?.font = UIFont.systemFont(ofSize: 20)
+        // 充值ID
+        tv_rids = UILabel(frame: CGRect(x:10, y: 10, width:50, height: 50))
+        tv_rids?.font = UIFont.systemFont(ofSize: 16)
         tv_rids?.textColor = UIColor.black
+        tv_rids?.layer.cornerRadius = 25
+        tv_rids?.layer.borderWidth = 0.5
+        tv_rids?.layer.masksToBounds = true
+        tv_rids?.textAlignment=NSTextAlignment.center
         tv_pursed?.addSubview(tv_rids!)
+        //账单描述
+        tv_rcr = UILabel(frame: CGRect(x:70, y:10, width: 200, height:30))
+        tv_rcr?.font = UIFont.systemFont(ofSize: 16)
+        tv_rcr?.textColor = UIColor.black
+        tv_rcr?.textAlignment = .left
+        tv_pursed?.addSubview(tv_rcr!)
         // 创建时间
-        tv_times = UILabel(frame: CGRect(x:(screenWidth-210)/2, y:10, width: 200, height:30))
-        tv_times?.font = UIFont.systemFont(ofSize: 20)
-        tv_times?.textColor = UIColor.black
-        tv_times?.textAlignment = .center
+        tv_times = UILabel(frame: CGRect(x:70, y:40, width: 200, height:20))
+        tv_times?.font = UIFont.systemFont(ofSize: 13)
+        tv_times?.textColor = UIColor.gray
+        tv_times?.textAlignment = .left
         tv_pursed?.addSubview(tv_times!)
-        // 结束时间
+        // 价格
         tv_mons = UILabel(frame: CGRect(x:screenWidth-100, y:10, width:80, height: 30))
-        tv_mons?.font = UIFont.systemFont(ofSize: 20)
+        tv_mons?.font = UIFont.systemFont(ofSize: 16)
         tv_mons?.textColor = UIColor.black
         tv_mons?.textAlignment = .right
         tv_pursed?.addSubview(tv_mons!)
+        // 分隔线
+        v_fenge = UILabel(frame: CGRect(x:70, y:70, width:screenWidth-70, height: 0.7))
+        v_fenge?.backgroundColor = UIColor.gray
+        self.addSubview(v_fenge!)
     }
     
     // 给cell赋值，项目中一般使用model，我这里直接写死了

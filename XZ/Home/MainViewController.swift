@@ -9,14 +9,41 @@
 import UIKit
 
 class MainViewController: UITabBarController {
-
+    let screenWidth =  UIScreen.main.bounds.size.width
+    let screenHeight =  UIScreen.main.bounds.size.height
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
     }
+    func hideTabbar(hidden: Bool) {
+        UIView.animate(withDuration: 0.2) {
+            if hidden {
+                var frame = self.tabBar.frame
+                frame.origin.y = self.screenHeight
+                self.tabBar.frame = frame
+            } else {
+                var frame = self.tabBar.frame
+                frame.origin.y = self.screenHeight
+                self.tabBar.frame = frame
+            }
+        }
+    }
+    func hidetabbars(hidden: Bool){
+        UIView.animate(withDuration: 0.2){
+            if hidden {
+                self.tabBar.frame.origin.y += 100
+            }
+            else{
+                self.tabBar.frame.origin.y -= 100
+            }
+        }
+    }
+    //代理点击事件
     
-
+    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        print("点击了\(item.tag)")
+    }
     /*
     // MARK: - Navigation
 

@@ -57,20 +57,21 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
         view.addSubview(searchBars!)
         
         //下拉刷新
-        header.lastUpdatedTimeLabel.isHidden = true
-        header.stateLabel.isHidden = true
+        header.lastUpdatedTimeLabel.isHidden = false
+        header.stateLabel.isHidden = false
         //refreshItemData()
         //创建表视图
         self.tableView = UITableView(frame: CGRect(x:0, y:44, width:self.screenWidth, height: self.screenHeight-167), style:.plain)
         //self.tableView = UITableView(frame: self.view.frame, style:.plain)
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
+        tableView?.separatorStyle = .none
         //创建一个重用的单元格
         self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "ShopCell")
         self.view.addSubview(self.tableView!)
-        header.setRefreshingTarget(self, refreshingAction: #selector(getAllProducts))
+        header.setRefreshingTarget(self, refreshingAction: #selector(getAllDatasource))
         self.tableView!.mj_header = header
-        getAllProducts()
+        getAllDatasource()
         //        dsns = ["微博热搜版","爱奇艺点击率最高电影"]
         //        clns = root?.content1 ?? ["获取微博热搜版，研究大众兴趣","获取爱奇艺点击率最高电影,可以方便找到票房较高的电影，筛选避过烂片"]
         //        images = root?.image1 ?? ["weibo","aiqiyi"]
@@ -114,6 +115,7 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
             cell.tv_dsss?.text = dsss[indexPath.row]
             cell.subButton!.tag = pidss[indexPath.row]
             cell.subButton!.tag = indexPath.row
+            cell.datasourceView!.tag = indexPath.row
             cell.tag = pidss[indexPath.row]
             pids = pidss[indexPath.row]
             return cell
@@ -129,8 +131,8 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
     //            controller.pid = (sender as? Int)!
     //        }
     //    }
-    @objc func getAllProducts()  {
-        
+    @objc func getAllDatasource()  {
+        searchBars?.text = ""
         let url = "https://www.xingzhu.club/XzTest/datasource/getAllDataSource"
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
         let paras = ["userId":userid]
@@ -229,28 +231,25 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
         searchtext = searchBars?.text! ?? ""
         print(searchtext)
         //print("searchtext")
-        getProducts()
+        getDatasource()
         if (searchtext == "") {
-            getAllProducts()
+            getAllDatasource()
         }
     }
     func searchBarCancelButtonClicked(_ searchBar:UISearchBar) {
         print("cancel")
-        getAllProducts()
+        searchBars?.text = ""
+        getAllDatasource()
     }
-    @objc func getProducts()  {
-        let url = "https://www.xingzhu.club/XzTest/datasource/getAllDataSource"
+    @objc func getDatasource()  {
+        let url = "https://www.xingzhu.club/XzTest/datasource/getDataSourceByContent"
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
-        let paras = ["productTitle":self.searchtext]
+        var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
+        let paras = ["userId":userid,"content":self.searchtext] as [String : Any]
         print("搜索\(self.searchtext)")
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
         Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
             print("jsonRequest:\(response.result)")
-            self.dsns = []
-            self.pidss = []
-            self.clns = []
-            self.images = []
-            self.dsnu = []
             if let data = response.result.value {
                 let json = JSON(data)
                 print("结果:\(json)")
@@ -259,21 +258,52 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
                 var message:String = json["message"].string!
                 print("提示:\(message)")
                 let provinces = json["data"]
+                self.dsns.removeAll()
+                self.pidss.removeAll()
+                self.clns.removeAll()
+                self.images.removeAll()
+                self.dsnu.removeAll()
                 for i in 0..<provinces.count{
                     let productId: Int = provinces[i]["productId"].int ?? 0
                     self.pidss += [productId]
                     
-                    let productTitle: String = provinces[i]["productTitle"].string ?? ""
-                    self.dsns += [productTitle]
+                    let dataSourceName: String = provinces[i]["dataSourceName"].string ?? ""
+                    self.dsns += [dataSourceName]
                     
-                    let productDes: String = provinces[i]["productDes"].string ?? ""
-                    self.clns += [productDes]
+                    let crawlerName: String = provinces[i]["crawlerName"].string ?? ""
+                    self.clns += [crawlerName]
+                    
+                    let dataSourceCreateTime: String = provinces[i]["dataSourceCreateTime"].string ?? ""
+                    self.dsct += [dataSourceCreateTime]
+                    
+                    let dataSourceUpdateTime: String = provinces[i]["dataSourceUpdateTime"].string ?? ""
+                    self.dsut += [dataSourceUpdateTime]
                     
                     let productPhoto: String = provinces[i]["productPhoto"].string ?? ""
                     self.images += [productPhoto]
                     
                     let dataSourceNumbers: Int = provinces[i]["dataSourceNumbers"].int ?? 0
                     self.dsnu += [dataSourceNumbers]
+                    
+                    let dataSourceSize: Int = provinces[i]["dataSourceSize"].int ?? 0
+                    var datassring:String = ""
+                    if (dataSourceSize>1000000000){
+                        var datass:Int = dataSourceSize/1000000000
+                        datassring = "\(datass)GB"
+                    }
+                    else if (dataSourceSize<1000000000&&dataSourceSize>1000000){
+                        var datass:Int = dataSourceSize/1000000
+                        datassring = "\(datass)MB"
+                    }
+                    else if (dataSourceSize<1000000&&dataSourceSize>1000){
+                        var datass:Int = dataSourceSize/1000
+                        datassring = "\(datass)KB"
+                    }
+                    else if (dataSourceSize<1000){
+                        var datass:Int = dataSourceSize
+                        datassring = "\(datass)B"
+                    }
+                    self.dsss += [datassring]
                 }
             }
             print("标题是\(self.dsns)")

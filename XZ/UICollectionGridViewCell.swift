@@ -1,4 +1,11 @@
 //
+//  UICollectionGridViewCell.swift
+//  hangge_1081
+//
+//  Created by hangge on 2017/4/14.
+//  Copyright © 2017年 hangge.com. All rights reserved.
+//
+
 import UIKit
 
 class UICollectionGridViewCell: UICollectionViewCell {

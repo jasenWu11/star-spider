@@ -24,10 +24,20 @@ class SettingViewController: UIViewController {
     var userPhoneNumber: String = ""
     var userPwdSalt: String = ""
     @IBAction func back(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
+        let transition = CATransition()
+        transition.duration = 0.6
+        transition.type = CATransitionType.reveal
+        transition.subtype = CATransitionSubtype.fromLeft
+        transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeInEaseOut)
+        view.window!.layer.add(transition, forKey: kCATransition)
+        self.dismiss(animated: false, completion: nil)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "系统设置"
+        let handLeftRight = UISwipeGestureRecognizer(target: self, action: #selector(funLeftRight))
+        //handLeftRight.direction = .left //支持向左
+        self.view.addGestureRecognizer(handLeftRight)
         
         let zhclick = UITapGestureRecognizer(target: self, action: #selector(zhAction))
         zhanyin.addGestureRecognizer(zhclick)
@@ -49,13 +59,13 @@ class SettingViewController: UIViewController {
     @objc func zhAction() -> Void {
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: ZhanyinViewController())))
             as! ZhanyinViewController
-        self.present(controller, animated: true, completion: nil)
+        self.navigationController?.pushViewController(controller, animated: true)
     }
     //点击事件方法
     @objc func abAction() -> Void {
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: AboutusViewController())))
             as! AboutusViewController
-        self.present(controller, animated: true, completion: nil)
+        self.navigationController?.pushViewController(controller, animated: true)
     }
     @objc func losetAction() -> Void {
         userId = ""
@@ -93,5 +103,7 @@ class SettingViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
+    @objc func funLeftRight(sender: UIPanGestureRecognizer){
+        
+    }
 }

@@ -175,16 +175,6 @@ class messageTableViewCell: UITableViewCell {
         
     }
     
-    // 给cell赋值，项目中一般使用model，我这里直接写死了
-    //    func setValueForCell(){
-    //
-    //        rows = rows+1
-    //        iconImage?.image = UIImage(named:"weibo")
-    //        titleLabel?.text = "大大大大的标题"
-    //        subTitleLabel?.text = "副副副副的标题"
-    //    }
-    
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -216,7 +206,7 @@ class messageTableViewCell: UITableViewCell {
                 print("错误:\(code)")
                 var message:String = json["message"].string!
                 print("提示:\(message)")
-                self.root?.getMyNotices()
+                self.root?.Refresh()
                 }
             }
         

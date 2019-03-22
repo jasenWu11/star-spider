@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import UIKit
 import PagingMenuController
 
 //分页菜单配置
@@ -15,11 +14,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     //第1个子视图控制器
     private let viewController1 = MyAppTableViewController()
     //第2个子视图控制器
-    private let viewController2 = MyAppTableViewController()
-    //第3个子视图控制器
-    private let viewController3 = DataSourceTableViewController()
-    //第4个子视图控制器
-    private let viewController4 = MyAppTableViewController()
+    private let viewController2 = DataSourceTableViewController()
     //组件类型
     fileprivate var componentType: ComponentType {
         return .all(menuOptions: MenuOptions(), pagingControllers: pagingControllers)
@@ -27,7 +22,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     
     //所有子视图控制器
     fileprivate var pagingControllers: [UIViewController] {
-        return [viewController1, viewController2, viewController3, viewController4]
+        return [viewController1, viewController2]
     }
     
     //菜单配置项
@@ -38,7 +33,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
         }
         //菜单项
         var itemsOptions: [MenuItemViewCustomizable] {
-            return [MenuItem1(), MenuItem2(), MenuItem3(), MenuItem4()]
+            return [MenuItem1(), MenuItem2()]
         }
     }
     
@@ -46,7 +41,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     fileprivate struct MenuItem1: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "总览"))
+            return .text(title: MenuItemText(text: "爬虫"))
         }
     }
     
@@ -54,21 +49,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     fileprivate struct MenuItem2: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "爬虫"))
-        }
-    }
-    //第3个菜单项
-    fileprivate struct MenuItem3: MenuItemViewCustomizable {
-        //自定义菜单项名称
-        var displayMode: MenuItemDisplayMode {
             return .text(title: MenuItemText(text: "数据源"))
-        }
-    }
-    //第4个菜单项
-    fileprivate struct MenuItem4: MenuItemViewCustomizable {
-        //自定义菜单项名称
-        var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "API"))
         }
     }
 }
@@ -78,21 +59,45 @@ class MyApppagViewController: UIViewController {
     var iskey:Int = 0
     var Ntitle:String = ""
     var dataName:String = ""
+    var crawlername:String = ""
+    var pids:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        //关闭导航栏半透明效果
+        self.navigationController?.navigationBar.isTranslucent = false
         //分页菜单配置
         let options = PagingMenuOptions()
         (options.pagingControllers[0] as! MyAppTableViewController).root = self
-        (options.pagingControllers[1] as! MyAppTableViewController).root = self
-        (options.pagingControllers[2] as! DataSourceTableViewController).root = self
-        (options.pagingControllers[3] as! MyAppTableViewController).root = self
+        (options.pagingControllers[1] as! DataSourceTableViewController).root = self
         //分页菜单控制器初始化
         let pagingMenuController = PagingMenuController(options: options)
         //分页菜单控制器尺寸设置
-        pagingMenuController.view.frame.origin.y += 64
-        pagingMenuController.view.frame.size.height -= 64
-        
+        pagingMenuController.view.frame.origin.y += 0
+        pagingMenuController.view.frame.size.height -= 0
+        pagingMenuController.onMove = { state in
+            switch state {
+            case let .willMoveItem(menuItemView, previousMenuItemView):
+                print("--- 标签将要切换 ---")
+            case let .didMoveItem(menuItemView, previousMenuItemView):
+                print("--- 标签切换完毕 ---")
+                if(menuItemView.titleLabel.text == "爬虫"){
+                    (options.pagingControllers[0] as! MyAppTableViewController).getAllApps()
+                    print("刷新爬虫")
+                }
+                if(menuItemView.titleLabel.text == "数据源"){
+                    (options.pagingControllers[1] as! DataSourceTableViewController).getAllDatasource()
+                    print("刷新数据源")
+                }
+            case let .willMoveController(menuController, previousMenuController):
+                print("--- 页面将要切换 ---")
+            case let .didMoveController(menuController, previousMenuController):
+                print("--- 页面切换完毕 ---")
+            case .didScrollStart:
+                print("--- 分页开始左右滑动 ---")
+            case .didScrollEnd:
+                print("--- 分页停止左右滑动 ---")
+            }
+        }
         //建立父子关系
         addChild(pagingMenuController)
         //分页菜单控制器视图添加到当前视图中
@@ -100,6 +105,33 @@ class MyApppagViewController: UIViewController {
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    @objc func operDetailView() {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: OperateViewController())))
+            as! OperateViewController
+        controller.crawlername = self.crawlername
+        controller.iskey = self.iskey
+        controller.Ntitle = self.Ntitle
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(controller, animated: true)
+        self.hidesBottomBarWhenPushed = false
+    }
+    @objc func MyOrder() {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: BuyappViewController())))
+            as! BuyappViewController
+        controller.pids = pids
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(controller, animated: true)
+        self.hidesBottomBarWhenPushed = false
+    }
+    @objc func datasourceDetailView() {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: DataSourceViewController())))
+            as! DataSourceViewController
+        controller.Ntitle = self.Ntitle
+        controller.dataName = self.dataName
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(controller, animated: true)
+        self.hidesBottomBarWhenPushed = false
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "operDetailView"{

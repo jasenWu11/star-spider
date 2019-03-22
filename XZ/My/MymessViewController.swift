@@ -12,7 +12,6 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
     @IBOutlet weak var v_email: UIView!
     @IBOutlet weak var v_name: UIView!
     @IBOutlet weak var tv_ye: UILabel!
-    @IBOutlet weak var tv_vip: UILabel!
     @IBOutlet weak var iv_head: UIImageView!
     @IBOutlet weak var tv_name: UILabel!
     @IBOutlet weak var tv_phone: UILabel!
@@ -25,21 +24,24 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
     var emailph:String = ""
     var nhead:String = ""
     var phoneph:String = ""
+    let screenWidth =  UIScreen.main.bounds.size.width
     var sourceType = UIImagePickerController.SourceType.photoLibrary //将sourceType赋一个初值类型，防止调用时不赋值出现崩溃
-    @IBAction func back(_ sender: Any) {
-        self.dismiss(animated: true, completion: {
-            self.root!.tv_name.text = self.nameph
-            if(self.headph != ""){
-                let url = URL(string:self.headph)
-                let data = try! Data(contentsOf: url!)
-                let smallImage = UIImage(data: data)
-                self.root!.iv_head.image = smallImage
-            }
-        })
-    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "资料管理"
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"保存",style:UIBarButtonItem.Style.plain,target:self,action:#selector(messagechange))
+        tv_ye.textAlignment = .right
+        tv_name.frame.origin.x = screenWidth-125
+        tv_name.textAlignment = .right
+        
+        tv_phone.frame.origin.x = screenWidth-175
+        tv_phone.textAlignment = .right
+        
+        tv_email.frame.origin.x = screenWidth-275
+        tv_email.textAlignment = .right
+        
         imgs = UIImageView(frame: CGRect(x: 20, y: 120, width: 100, height: 100))
         self.view.addSubview(imgs)
         //头像
@@ -72,7 +74,7 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
         }
         print("获取的用户名\(nameph)")
         if(phoneph != ""){
-            tv_phone.text = phoneph
+            tv_phone.text = replacePhone(phone: phoneph)
         }
         
         if(emailph != ""){
@@ -109,8 +111,6 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
         if UserDefaults.standard.object(forKey: "isVip") != nil {
             vips = UserDefaults.standard.object(forKey: "isVip") as! Int
         }
-        print("VIP\(yuer)")
-        tv_vip.text = "VIP:\(yuer)"
         // Do any additional setup after loading the view.
     }
     var name:String = ""
@@ -136,7 +136,7 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
     @objc func namechange() {
         var inputText:UITextField = UITextField();
         let msgAlertCtr = UIAlertController.init(title: "更改用户名", message: "请输入用户名", preferredStyle: .alert)
-        let ok = UIAlertAction.init(title: "确定", style:.default) { (action:UIAlertAction) ->() in
+        let ok = UIAlertAction.init(title: "确定", style:.destructive) { (action:UIAlertAction) ->() in
             if((inputText.text) != ""){
                 print("你输入的是：\(String(describing: inputText.text))")
                 var nname:String = inputText.text!
@@ -163,7 +163,7 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
     @objc func emailchange() {
         var inputText:UITextField = UITextField();
         let msgAlertCtr = UIAlertController.init(title: "更改邮箱", message: "请输入邮箱", preferredStyle: .alert)
-        let ok = UIAlertAction.init(title: "确定", style:.default) { (action:UIAlertAction) ->() in
+        let ok = UIAlertAction.init(title: "确定", style:.destructive) { (action:UIAlertAction) ->() in
             if((inputText.text) != ""){
                 print("你输入的是：\(String(describing: inputText.text))")
                 var nemail:String = inputText.text!
@@ -200,15 +200,19 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
             (action: UIAlertAction) -> Void in
             //判断是否能进行拍照，可以的话打开相机
             if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                let picker = UIImagePickerController()
-                picker.sourceType = .camera
-                picker.delegate = self
-                picker.allowsEditing = true
-                self.present(picker, animated: true, completion: nil)
-                
-            }
-            else
-            {
+                let imagePicker = UIImagePickerController()
+                // 表示操作为拍照
+                imagePicker.sourceType = .camera
+                // 拍照后允许用户进行编辑
+                imagePicker.allowsEditing = true
+                // 也可以设置成视频
+                imagePicker.cameraCaptureMode = .photo
+                // 设置代理为 ViewController，已经实现了协议
+                imagePicker.delegate = self
+                // 进入拍照界面
+                self.present(imagePicker, animated: true, completion: nil)
+            }else {
+                // 照相机不可用
                 self.showMsgbox(_message: "模拟其中无法打开照相机,请在真机中使用")
             }
             
@@ -300,7 +304,7 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
 
   }
     
-    @IBAction func messagechange(_ sender: Any) {
+    @objc func messagechange(_ sender: Any) {
         let url = "https://www.xingzhu.club/XzTest/users/putUser"
         var nname:String = tv_name.text ?? ""
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
@@ -321,6 +325,14 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
                     var message: String = json["message"].string!
                     print("返回结果\(message)")
                     if(message == "更新成功"){
+                        let alertController = UIAlertController(title: message,
+                                                                message: nil, preferredStyle: .alert)
+                        //显示提示框
+                        self.present(alertController, animated: true, completion: nil)
+                        //两秒钟后自动消失
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                            self.presentedViewController?.dismiss(animated: false, completion: nil)
+                        }
                         self.tv_name.text = nname
                         self.tv_email.text = nemail
                         if(self.nhead != ""){
@@ -334,9 +346,24 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
                         }
                         self.nameph = nname
                         self.headph = self.nhead
+                        self.root!.tv_name.text = self.nameph
+                        if(self.headph != ""){
+                            let url = URL(string:self.headph)
+                            let data = try! Data(contentsOf: url!)
+                            let smallImage = UIImage(data: data)
+                            self.root!.iv_head.image = smallImage
+                        }
                     }
             }
          }
      }
    }
+    //替换字符串
+    func replacePhone(phone:String) -> String {
+        var a=NSString(string:phoneph)
+        print("替换前：\(a)")
+        var b=a.replacingCharacters(in: NSMakeRange(3, 4),with: "****")
+        print("替换后：\(b)")
+        return b
+    }
 }

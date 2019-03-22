@@ -80,7 +80,6 @@ class HanPasswordView: UIView,UITextFieldDelegate {
             paypass = textField.text ?? ""
             print("输入为\(paypass)")
             self.entryCompleteBlock!()
-            root?.Printpass(pass:paypass)
         }
     }
     

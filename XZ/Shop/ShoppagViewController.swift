@@ -62,8 +62,12 @@ class ShoppagViewController: UIViewController {
     var content1:[String] = []
     var image1:[String] = []
     var price1:[Double] = []
+    var Ntitle:String = ""
+    var pids:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
+        //关闭导航栏半透明效果
+        self.navigationController?.navigationBar.isTranslucent = false
         getAllProducts()
         //分页菜单配置
         let options = PagingMenuOptions()
@@ -94,8 +98,8 @@ class ShoppagViewController: UIViewController {
         //分页菜单控制器初始化
         let pagingMenuController = PagingMenuController(options: options)
         //分页菜单控制器尺寸设置
-        pagingMenuController.view.frame.origin.y += 64
-        pagingMenuController.view.frame.size.height -= 64
+        pagingMenuController.view.frame.origin.y += 0
+        pagingMenuController.view.frame.size.height -= 0
         
         //建立父子关系
         addChild(pagingMenuController)
@@ -105,10 +109,28 @@ class ShoppagViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    @objc func todeatil() {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: APImessViewController())))
+            as! APImessViewController
+        controller.pid = self.pids
+        controller.datatitles = self.Ntitle
+        controller.hidesBottomBarWhenPushed = true
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(controller, animated: true)
+        self.hidesBottomBarWhenPushed = false
+    }
+    @objc func custom() {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: CustommadeViewController())))
+            as! CustommadeViewController
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(controller, animated: true)
+        self.hidesBottomBarWhenPushed = false
+    }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "deatil"{
             let controller = segue.destination as! APImessViewController
             controller.pid = (sender as? Int)!
+            controller.datatitles = self.Ntitle
         }
         if segue.identifier == "custom"{
             let controller = segue.destination as! CustommadeViewController
@@ -147,3 +169,4 @@ class ShoppagViewController: UIViewController {
     }
 }
 }
+

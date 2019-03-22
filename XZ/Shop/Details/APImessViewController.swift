@@ -53,7 +53,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     fileprivate struct MenuItem2: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "应用详情"))
+            return .text(title: MenuItemText(text: "数据示例"))
         }
     }
     //第3个菜单项
@@ -74,12 +74,23 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
 
 class APImessViewController: UIViewController {
     var pid:Int = 0
+    var datatitles:String = ""
     var userid:Int = 0
     var proedit : String = ""
     var prouptime : String = ""
     var hight:CGFloat = 0.0
+    var scene = Int32(WXSceneSession.rawValue)
+    let screenWidth =  UIScreen.main.bounds.size.width
+    let screenHeight =  UIScreen.main.bounds.size.height
     override func viewDidLoad() {
         super.viewDidLoad()
+        //导航栏高度
+        let nv_height = self.navigationController?.navigationBar.frame.size.height
+        //状态栏高度
+        let zt_height = UIApplication.shared.statusBarFrame.height
+        self.title = datatitles
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"+",style:UIBarButtonItem.Style.plain,target:self,action:#selector(menu))
+        self.navigationItem.rightBarButtonItem?.image = UIImage(named: "share")
         userid = UserDefaults.standard.object(forKey: "userId") as! Int
         //分页菜单配置
         let options = PagingMenuOptions()
@@ -88,11 +99,12 @@ class APImessViewController: UIViewController {
         (options.pagingControllers[2] as! messViewController).root = self
         (options.pagingControllers[3] as! HistoryViewController).root = self
         (options.pagingControllers[0] as! messViewController).pids = pid
+        (options.pagingControllers[1] as! ShiliViewController).pids = pid
         //分页菜单控制器初始化
         let pagingMenuController = PagingMenuController(options: options)
         //分页菜单控制器尺寸设置
-        pagingMenuController.view.frame.origin.y += 64
-        pagingMenuController.view.frame.size.height -= 119
+        pagingMenuController.view.frame.origin.y += 0
+        pagingMenuController.view.frame.size.height = screenHeight-nv_height!-zt_height
         let hights = pagingMenuController.view.frame.size.height
         hight = hights
         print("高度等于\(hights)")
@@ -103,6 +115,7 @@ class APImessViewController: UIViewController {
         view.addSubview(pagingMenuController.view)
         print("传进来的商品是\(pid)")
     }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -165,10 +178,51 @@ class APImessViewController: UIViewController {
                 print("错误:\(code)")
                 var message:String = json["message"].string!
                 print("创建应用提示:\(message)")
+                let alertController = UIAlertController(title: message,
+                                                        message: nil, preferredStyle: .alert)
+                //显示提示框
+                self.present(alertController, animated: true, completion: nil)
+                //两秒钟后自动消失
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                    self.presentedViewController?.dismiss(animated: false, completion: nil)
+                }
             }
         }
         
     }
-    
+    @objc func menu(_ sender: Any) {
+        let items: [String] = ["分享到微信","分享朋友圈"]
+        let imgSource: [String] = ["wechat","pyq"]
+        NavigationMenuShared.showPopMenuSelecteWithFrameWidth(width: itemWidth, height: 160, point: CGPoint(x: ScreenInfo.Width - 30, y: 0), item: items, imgSource: imgSource) { (index) in
+            ///点击回调
+            switch index{
+            case 0:
+                self.scene = Int32(WXSceneSession.rawValue)
+                self.share()
+            case 1:
+                self.scene = Int32(WXSceneTimeline.rawValue)
+                self.share()
+            default:
+                break
+            }
+        }
+    }
+    func share(){
+        let message =  WXMediaMessage()
+        
+        message.title = "星蛛数据-\(self.datatitles)"
+        message.description = "星蛛数据服务平台，获取您最需要的数据。"
+        message.setThumbImage(UIImage(named:"sendlogo.png"))
+        
+        let ext =  WXWebpageObject()
+        ext.webpageUrl = "https://www.xingzhu.club/v1.0/#/to-mark/crawler/crawler-details?clistId=\(self.pid)"
+        message.mediaObject = ext
+        
+        let req =  SendMessageToWXReq()
+        req.bText = false
+        req.message = message
+        req.scene = scene
+        WXApi.send(req)
+    }
 }
 

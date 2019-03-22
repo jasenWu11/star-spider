@@ -33,11 +33,15 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
                          "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1850075590,3068352838&fm=26&gp=0.jpg",
                          "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428801285&di=669cbde92e7431224a61735411e9f22f&imgtype=0&src=http%3A%2F%2Fwww.xmexpo.cn%2Fuploads%2Fallimg%2F180125%2F1Q91aG5_0.png",
                          "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546428895544&di=edf4a9afdf17a53d702aef9fee17a639&imgtype=0&src=http%3A%2F%2Fphoto.16pic.com%2F00%2F61%2F24%2F16pic_6124483_b.jpg"]
+    var ppid:[Int] = [1,2,3,4,5]
+    var theadvcount:Int = 5
     //图片轮播组件
     var sliderGallery : SliderGalleryController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //关闭导航栏半透明效果
+        self.navigationController?.navigationBar.isTranslucent = false
         getAllAdvs()
         getAllshow()
         //初始化图片轮播组件
@@ -81,6 +85,7 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
         iv_xz?.layer.masksToBounds = true
         iv_xz?.image = UIImage(named:"logo")
         v_xzjj?.addSubview(iv_xz!)
+        v_xzjj?.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
         //文字
         lv_xz = UILabel(frame: CGRect(x:0, y:(iv_xz?.frame.size.height)!, width:(v_xzjj?.frame.size.width)!, height: (v_xzjj?.frame.size.height)!-(iv_xz?.frame.size.height)!))
         lv_xz?.font = UIFont.systemFont(ofSize: 14)
@@ -108,6 +113,7 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
         iv_pc?.layer.masksToBounds = true
         iv_pc?.image = UIImage(named:"pach")
         v_pcjj?.addSubview(iv_pc!)
+        v_pcjj?.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
         //文字
         lv_pc = UILabel(frame: CGRect(x:0, y:(iv_pc?.frame.size.height)!, width:(v_pcjj?.frame.size.width)!, height: (v_pcjj?.frame.size.height)!-(iv_pc?.frame.size.height)!))
         lv_pc?.font = UIFont.systemFont(ofSize: 14)
@@ -135,6 +141,7 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
         iv_api?.layer.masksToBounds = true
         iv_api?.image = UIImage(named:"API")
         v_apijj?.addSubview(iv_api!)
+        v_apijj?.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
         //文字
         lv_api = UILabel(frame: CGRect(x:0, y:(iv_api?.frame.size.height)!, width:(v_apijj?.frame.size.width)!, height: (v_apijj?.frame.size.height)!-(iv_api?.frame.size.height)!))
         lv_api?.font = UIFont.systemFont(ofSize: 14)
@@ -162,6 +169,7 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
         iv_sjy?.layer.masksToBounds = true
         iv_sjy?.image = UIImage(named:"sjy")
         v_sjyjj?.addSubview(iv_sjy!)
+        v_sjyjj?.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
         //文字
         lv_sjy = UILabel(frame: CGRect(x:0, y:(iv_sjy?.frame.size.height)!, width:(v_sjyjj?.frame.size.width)!, height: (v_sjyjj?.frame.size.height)!-(iv_sjy?.frame.size.height)!))
         lv_sjy?.font = UIFont.systemFont(ofSize: 14)
@@ -187,27 +195,14 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
         //获取图片索引值
         let index = sliderGallery.currentIndex
         //弹出索引信息
-        var ids : Int = 0
-        
-        if(index == 0){
-            ids = 2238243
-        }
-        if(index == 1){
-            ids = 2238242
-        }
-        if(index == 2){
-            ids = 2238245
-        }
-        if(index == 3){
-            ids = 2238241
-        }
-        if(index == 4){
-            ids = 2238244
-        }
+
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: APImessViewController())))
             as! APImessViewController
-        controller.pid = ids
-        self.present(controller, animated: true, completion: nil)
+        controller.pid = ppid[index]
+        controller.hidesBottomBarWhenPushed = true
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(controller, animated: true)
+        self.hidesBottomBarWhenPushed = false
 //        let alertController = UIAlertController(title: "您点击的图片索引是：",
 //                                                message: "\(index)", preferredStyle: .alert)
 //        let cancelAction = UIAlertAction(title: "确定", style: .cancel, handler: nil)
@@ -229,9 +224,10 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
     */
     @objc func getAllAdvs()  {
         let url = "https://www.xingzhu.club/XzTest/advs/getAllAdvs"
+        let paras = ["client":2]
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
-        Alamofire.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil).responseJSON { (response) in
-            print("jsonRequest:\(response.result)")
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            //print("jsonRequest:\(response.result)")
             if let data = response.result.value {
                 let json = JSON(data)
                 print("结果:\(json)")
@@ -242,10 +238,15 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
                 if(message == "查询成功"){
                     let provinces = json["data"]
                     self.ppic.removeAll()
+                    self.ppid.removeAll()
+                    self.theadvcount = provinces.count
                     for i in 0..<provinces.count{
                         let advPic: String = provinces[i]["advPic"].string ?? ""
                         
                         self.ppic += [advPic]
+                        let productId: Int = provinces[i]["productId"].int ?? 0
+                        
+                        self.ppid += [productId]
                     }
                     
                     self.sliderGallery.reloadData()
@@ -279,6 +280,33 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
                         self.showurl += [self.httpbefore+url]
                     }
                     print("网址为\(self.showurl)")
+                    let url = URL(string:self.showimg[0])
+                    if let data = try? Data(contentsOf: url!){
+                        let smallImage = UIImage(data: data)
+                        self.iv_xz?.image = smallImage
+                        self.lv_xz?.text = self.showtitle[0]
+                    }
+                    
+                    let url1 = URL(string:self.showimg[1])
+                    if let data1 = try? Data(contentsOf: url1!){
+                        let smallImage1 = UIImage(data: data1)
+                        self.iv_pc?.image = smallImage1
+                        self.lv_pc?.text = self.showtitle[1]
+                    }
+                    
+                    let url2 = URL(string:self.showimg[2])
+                    if let data2 = try? Data(contentsOf: url2!){
+                        let smallImage2 = UIImage(data: data2)
+                        self.iv_api?.image = smallImage2
+                        self.lv_api?.text = self.showtitle[2]
+                    }
+                    
+                    let url3 = URL(string:self.showimg[3])
+                    if let data3 = try? Data(contentsOf: url3!){
+                        let smallImage3 = UIImage(data: data3)
+                        self.iv_sjy?.image = smallImage3
+                        self.lv_sjy?.text = self.showtitle[3]
+                    }
                 }
                 
             }
@@ -292,6 +320,16 @@ class HomeViewController: UIViewController , SliderGalleryControllerDelegate{
             as! ToWebViewController
         controller.theurl = tourl
         controller.thetitle = showname
-        self.present(controller, animated: true, completion: nil)
+//        let transition = CATransition()
+//        transition.duration = 0.6
+//        transition.type = CATransitionType.reveal
+//        transition.subtype = CATransitionSubtype.fromRight
+//        transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeInEaseOut)
+//        view.window!.layer.add(transition, forKey: kCATransition)
+        controller.hidesBottomBarWhenPushed = true
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(controller, animated: true)
+        self.hidesBottomBarWhenPushed = false
     }
+
 }

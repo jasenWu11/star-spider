@@ -17,6 +17,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
     var prices:[Double] = []
     var pricey:[Double] = []
     var pidss:[Int] = []
+    var heights:[Int] = []
     var type:Int = 0
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
@@ -32,11 +33,14 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
     var dzView : UIView?
     var tv_dingzhi : UILabel?
     var bt_dz : UIButton?
+    var widths:Int = 0
     override func loadView() {
         super.loadView()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        //关闭导航栏半透明效果
+        self.navigationController?.navigationBar.isTranslucent = false
         //搜索框
         searchBars = UISearchBar(frame: CGRect(x:0, y: 0, width:screenWidth, height: 44))
         searchBars?.barStyle = .black
@@ -84,20 +88,22 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         dzView?.addSubview(bt_dz!)
         //隐藏时间
         //下拉刷新
-        header.lastUpdatedTimeLabel.isHidden = true
-        header.stateLabel.isHidden = true
+        header.lastUpdatedTimeLabel.isHidden = false
+        header.stateLabel.isHidden = false
         //refreshItemData()
         //创建表视图
-        self.tableView = UITableView(frame: CGRect(x:0, y:84, width:self.screenWidth, height: self.screenHeight-207), style:.plain)
+        self.tableView = UITableView(frame: CGRect(x:0, y:84, width:self.screenWidth, height: self.screenHeight-227), style:.plain)
         //self.tableView = UITableView(frame: self.view.frame, style:.plain)
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
+        tableView?.separatorStyle = .none
         //创建一个重用的单元格
         self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "ShopCell")
         self.view.addSubview(self.tableView!)
         header.setRefreshingTarget(self, refreshingAction: #selector(getAllProducts))
         self.tableView!.mj_header = header
-        getAllProducts()
+        //手动调用刷新效果
+        header.beginRefreshing()
 //        titles = ["微博热搜版","爱奇艺点击率最高电影"]
 //        contents = root?.content1 ?? ["获取微博热搜版，研究大众兴趣","获取爱奇艺点击率最高电影,可以方便找到票房较高的电影，筛选避过烂片"]
 //        images = root?.image1 ?? ["weibo","aiqiyi"]
@@ -136,9 +142,11 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         let smallImage = UIImage(data: data)
         cell.iconImage?.image = smallImage
         cell.subTitleLabel?.text = contents[indexPath.row]
+            widths = Int((cell.subTitleLabel?.frame.size.width)!)
+            cell.subTitleLabel?.frame.size.height = CGFloat(heights[indexPath.row])
         cell.pirceLabel?.text = "¥\(pricem[indexPath.row])"
         cell.subButton!.tag = pidss[indexPath.row]
-        cell.shopcellView!.tag = pidss[indexPath.row]
+        cell.shopcellView!.tag = indexPath.row
         cell.tag = pidss[indexPath.row]
         pids = pidss[indexPath.row]
         return cell
@@ -155,7 +163,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
 //        }
 //    }
     @objc func getAllProducts()  {
-        
+        searchBars?.text = ""
         let url = "https://www.xingzhu.club/XzTest/products/getAllProducts"
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
         Alamofire.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil).responseJSON { (response) in
@@ -175,6 +183,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.pricem.removeAll()
                 self.prices.removeAll()
                 self.pricey.removeAll()
+                self.heights.removeAll()
                 for i in 0..<provinces.count{
                     let productId: Int = provinces[i]["productId"].int ?? 0
                     self.pidss += [productId]
@@ -184,7 +193,10 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
 
                     let productDes: String = provinces[i]["productDes"].string ?? ""
                     self.contents += [productDes]
-
+                    
+                    var protitleheight = self.heightForView(text: productDes, font: UIFont.systemFont(ofSize: 14), width:  CGFloat(self.widths))
+                    self.heights += [Int(protitleheight)]
+                    
                     let productPhoto: String = provinces[i]["productPhoto"].string ?? ""
                     self.images += [productPhoto]
 
@@ -241,6 +253,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     func searchBarCancelButtonClicked(_ searchBar:UISearchBar) {
         print("cancel")
+        searchBars?.text = ""
         getAllProducts()
     }
     @objc func getProducts()  {
@@ -258,6 +271,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
             self.pricem.removeAll()
             self.prices.removeAll()
             self.pricey.removeAll()
+            self.heights.removeAll()
             if let data = response.result.value {
                 let json = JSON(data)
                 print("结果:\(json)")
@@ -275,6 +289,9 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
                     
                     let productDes: String = provinces[i]["productDes"].string ?? ""
                     self.contents += [productDes]
+                    
+                    var protitleheight = self.heightForView(text: productDes, font: UIFont.systemFont(ofSize: 14), width:  CGFloat(self.widths))
+                    self.heights += [Int(protitleheight)]
                     
                     let productPhoto: String = provinces[i]["productPhoto"].string ?? ""
                     self.images += [productPhoto]
@@ -298,6 +315,25 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     @objc func cumaBtnClick(Button: UIButton) {
-       root?.performSegue(withIdentifier: "custommade", sender: "")
+        
+       root?.custom()
+    }
+    //label自适应高度
+    func heightForView(text:String, font:UIFont, width:CGFloat) -> CGFloat{
+        var widths = self.screenWidth-175
+        let label:UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: widths, height: CGFloat.greatestFiniteMagnitude))
+        label.numberOfLines = 0
+        label.lineBreakMode = NSLineBreakMode.byWordWrapping
+        label.font = font
+        label.text = text
+        label.sizeToFit()
+        var heights = 0
+        if(label.frame.height>=50){
+            heights = 50
+        }
+        else{
+            heights = Int(label.frame.height)
+        }
+        return CGFloat(heights)
     }
 }

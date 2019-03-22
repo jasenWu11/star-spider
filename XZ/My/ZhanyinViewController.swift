@@ -17,12 +17,15 @@ class ZhanyinViewController: UIViewController {
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
     var phoneph:String = ""
-    @IBAction func back(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
-    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "账号和隐私设置"
+        let handLeftRight = UISwipeGestureRecognizer(target: self, action: #selector(funLeftRight))
+        //handLeftRight.direction = .left //支持向左
+        self.view.addGestureRecognizer(handLeftRight)
+        
         if UserDefaults.standard.object(forKey: "userPhoneNumber") != nil {
             phoneph = UserDefaults.standard.object(forKey: "userPhoneNumber") as! String
         }
@@ -69,7 +72,7 @@ class ZhanyinViewController: UIViewController {
         return b
     }
     @objc func upassAction() -> Void {
-        viewDidAppear()
+        viewDidAppear1()
     }
     /*
     // MARK: - Navigation
@@ -80,37 +83,99 @@ class ZhanyinViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-    @objc func viewDidAppear(){
+    
+    @objc func viewDidAppear1(){
+        
+        
+        let alertController = UIAlertController(title: "修改密码",
+                                                message: "请输入原始密码", preferredStyle: .alert)
+        alertController.addTextField {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "原密码"
+            textField.addChangeTextTarget()
+            textField.maxTextNumber = 12
+            textField.isSecureTextEntry = true
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        let okAction = UIAlertAction(title: "好的", style: .destructive, handler: {
+            action in
+            //也可以用下标的形式获取textField let login = alertController.textFields![0]
+            let oldpass = alertController.textFields!.first!
+            var opass = oldpass.text
+            print("原密码：\(oldpass.text)")
+            if(opass == ""){
+                self.showMsgbox(_message: "原密码不能为空")
+            }
+            else if((opass?.count)!<6){
+                self.showMsgbox(_message: "密码不能小于6位数")
+            }
+            else if((opass?.count)!>12){
+                self.showMsgbox(_message: "密码不能大于12位数")
+            }
+            else{
+                self.viewDidAppear(oldpass: opass!)
+            }
+        })
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    @objc func viewDidAppear(oldpass: String){
         
         
         let alertController = UIAlertController(title: "修改密码",
                                                 message: "请输入原密码和新密码", preferredStyle: .alert)
         alertController.addTextField {
             (textField: UITextField!) -> Void in
-            textField.placeholder = "原密码"
+            textField.placeholder = "新密码"
+            textField.addChangeTextTarget()
+            textField.maxTextNumber = 12
+            textField.isSecureTextEntry = true
         }
         alertController.addTextField {
             (textField: UITextField!) -> Void in
-            textField.placeholder = "新密码"
+            textField.placeholder = "重复输入密码"
+            textField.addChangeTextTarget()
+            textField.maxTextNumber = 12
             textField.isSecureTextEntry = true
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         let okAction = UIAlertAction(title: "好的", style: .default, handler: {
             action in
             //也可以用下标的形式获取textField let login = alertController.textFields![0]
-            let oldpass = alertController.textFields!.first!
+            let newpass1 = alertController.textFields!.first!
             let newpass = alertController.textFields!.last!
-            var opass = oldpass.text
+            var npass1 = newpass1.text
             var npass = newpass.text
-            print("用户名：\(oldpass.text) 密码：\(newpass.text)")
-            if(opass == ""){
-                self.showMsgbox(_message: "原密码不能为空")
+            print("用户名：\(newpass1.text) 密码：\(newpass.text)")
+            if(npass1 == ""){
+                self.showMsgbox(_message: "密码不能为空")
+                return
+            }
+            else if((npass1?.count)!<6){
+                self.showMsgbox(_message: "密码不能小于6位数")
+                return
+            }
+            else if((npass1?.count)!>12){
+                self.showMsgbox(_message: "密码不能大于6位数")
+                return
             }
             if(npass == ""){
-                self.showMsgbox(_message: "新密码不能为空")
+                self.showMsgbox(_message: "请重复输入密码")
+                return
+            }
+            else if((npass?.count)!<6){
+                self.showMsgbox(_message: "密码不能小于6位数")
+                return
+            }
+            if(npass1 != npass){
+                self.showMsgbox(_message: "两次输入密码不一致")
+                return
             }
             else{
-                self.UpdatepassRequest(oldpass: opass!,newpass: npass!)
+                self.UpdatepassRequest(oldpa: oldpass,newpass: npass!)
+                return
             }
         })
         alertController.addAction(cancelAction)
@@ -125,12 +190,12 @@ class ZhanyinViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
         
     }
-    func UpdatepassRequest(oldpass:String,newpass:String)  {
+    func UpdatepassRequest(oldpa:String,newpass:String)  {
         
         let url = "https://www.xingzhu.club/XzTest/users/updatePwd"
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
-        let paras = ["userId":userid,"userPwdOld":oldpass,"userPwdNew":newpass] as [String : Any]
-        print("用户id\(userid)旧密码\(oldpass)+新密码\(newpass)")
+        let paras = ["userId":userid,"userPwdOld":oldpa,"userPwdNew":newpass] as [String : Any]
+        print("用户id\(userid)旧密码\(oldpa)+新密码\(newpass)")
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
         Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
             print("jsonRequest:\(response.result)")
@@ -158,4 +223,8 @@ class ZhanyinViewController: UIViewController {
             
         }
     }
+    @objc func funLeftRight(sender: UIPanGestureRecognizer){
+       
+    }
+    
 }

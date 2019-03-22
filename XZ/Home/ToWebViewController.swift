@@ -10,17 +10,24 @@ import UIKit
 
 class ToWebViewController: UIViewController {
     @IBOutlet weak var wv_web: UIWebView!
-    @IBOutlet weak var ni_title: UINavigationItem!
     var theurl:String = ""
     var thetitle:String = ""
     override func viewDidLoad() {
         super.viewDidLoad()
-        ni_title.title = thetitle
-        wv_web.loadRequest(URLRequest(url: NSURL(string : theurl) as! URL))
+        self.navigationController?.isNavigationBarHidden = false
+        self.title = thetitle
+        print("标题\(thetitle)")
+        wv_web.loadRequest(URLRequest(url: NSURL(string : theurl)! as URL))
         // Do any additional setup after loading the view.
     }
     @IBAction func back(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
+        let transition = CATransition()
+        transition.duration = 0.6
+        transition.type = CATransitionType.reveal
+        transition.subtype = CATransitionSubtype.fromLeft
+        transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeInEaseOut)
+        view.window!.layer.add(transition, forKey: kCATransition)
+        self.dismiss(animated: false, completion: nil)
     }
 
     /*

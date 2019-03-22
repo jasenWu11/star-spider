@@ -26,13 +26,16 @@ class BuyappViewController: UIViewController {
     var p_tm : UILabel?
     var p_ts : UILabel?
     var p_ty : UILabel?
+    var yuer : Double = 0.0;
     var proname:String = ""
     var pircem:Double = 0.0
     var pircese:Double = 0.0
     var pricey:Double = 0.0
     var userid:Int = 0
+    var ifhasPayPwd : String = "没有设置支付密码"
     override func viewDidLoad() {
         super.viewDidLoad()
+        ifHasPayPwd()
         userid = UserDefaults.standard.object(forKey: "userId") as! Int
         getProducts()
         bt_tobuy?.clipsToBounds=true
@@ -46,8 +49,9 @@ class BuyappViewController: UIViewController {
         
         btwidth =  (bt_mo?.frame.size.width)!
         btheight =  (bt_se?.frame.size.height)!
+        
         bt_mo.backgroundColor = UIColor.white
-        bt_mo?.addTarget(self, action: #selector(composeBtnClick), for: UIControl.Event.touchUpInside)
+        bt_mo?.addTarget(self, action: #selector(moBtnClick), for: UIControl.Event.touchUpInside)
         bt_se.backgroundColor = UIColor.white
         bt_ye.backgroundColor = UIColor.white
         
@@ -61,6 +65,7 @@ class BuyappViewController: UIViewController {
         bt_se?.layer.cornerRadius = 5
         bt_se?.layer.masksToBounds = false
         bt_se?.layer.borderWidth = 1
+        bt_se?.addTarget(self, action: #selector(seBtnClick), for: UIControl.Event.touchUpInside)
         bt_se?.layer.borderColor = UIColor.gray.cgColor
         
         bt_ye?.clipsToBounds=true
@@ -68,6 +73,7 @@ class BuyappViewController: UIViewController {
         bt_ye?.layer.masksToBounds = false
         bt_ye?.layer.borderWidth = 1
         bt_ye?.layer.borderColor = UIColor.gray.cgColor
+        bt_ye?.addTarget(self, action: #selector(yeBtnClick), for: UIControl.Event.touchUpInside)
         
         l_tm = UILabel(frame: CGRect(x:10, y:20, width: btwidth-20, height:20))
         l_tm?.font = UIFont.systemFont(ofSize: 12)
@@ -143,8 +149,8 @@ class BuyappViewController: UIViewController {
         bt_ye?.layer.borderColor = UIColor.gray.cgColor
         sender.isSelected = true
         
-        sender.backgroundColor = UIColor.purple
-        sender.layer.borderColor = UIColor.red.cgColor
+        sender.backgroundColor = UIColor(red: 91.0/255.0, green: 84.0/255.0, blue: 145.0/255.0, alpha: 0.7)
+        sender.layer.borderColor = UIColor(red: 250.0/255.0, green: 245.0/255.0, blue: 219.0/255.0, alpha: 1.0).cgColor
     }
     @IBAction func tobuy(_ sender: Any) {
         if(bt_mo.isSelected == true){
@@ -153,11 +159,13 @@ class BuyappViewController: UIViewController {
             Xiadan()
         }
         else if(bt_se.isSelected == true){
+            
             prices = pircese
             type = 2
             Xiadan()
         }
         else if(bt_ye.isSelected == true){
+            
             prices = pricey
             type = 3
             Xiadan()
@@ -177,8 +185,20 @@ class BuyappViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-    @objc func composeBtnClick(shopcellView: UILabel) {
-        print("哈哈哈")
+    @objc func moBtnClick(shopcellView: UILabel) {
+        l_tm?.textColor = UIColor.white
+        l_ts?.textColor = UIColor.black
+        l_ty?.textColor = UIColor.black
+    }
+    @objc func seBtnClick(shopcellView: UILabel) {
+        l_tm?.textColor = UIColor.black
+        l_ts?.textColor = UIColor.white
+        l_ty?.textColor = UIColor.black
+    }
+    @objc func yeBtnClick(shopcellView: UILabel) {
+        l_tm?.textColor = UIColor.black
+        l_ts?.textColor = UIColor.black
+        l_ty?.textColor = UIColor.white
     }
     func UIColorRGB_Alpha(R:CGFloat, G:CGFloat, B:CGFloat, alpha:CGFloat) -> UIColor
     {
@@ -249,28 +269,115 @@ class BuyappViewController: UIViewController {
                         print("错误:\(code)")
                         var message:String = json["message"].string!
                         print("提示:\(message)")
-//                        if (message == "创建订单成功！") {
-//                            let alertController = UIAlertController(title: "\(message)",
-//                                                                    message: nil, preferredStyle: .alert)
-//                            //显示提示框
-//                            self.present(alertController, animated: true, completion: nil)
-//                            //两秒钟后自动消失
-//                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-//                                self.presentedViewController?.dismiss(animated: false, completion: nil)
-//                            }
-//                        }
-//                        else{
-//                            let alertController = UIAlertController(title: "\(message)",
-//                                                                    message: nil, preferredStyle: .alert)
-//                            //显示提示框
-//                            self.present(alertController, animated: true, completion: nil)
-//                            //两秒钟后自动消失
-//                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-//                                self.presentedViewController?.dismiss(animated: false, completion: nil)
-//                            }
-//                        }
+                        if (message == "创建订单成功！") {
+                           let ordermess = json["data"]
+                            let orderId: Int = ordermess["orderId"].int ?? 0
+                            let productId: Int = ordermess["productId"].int ?? 0
+                            let prices: Double = ordermess["productPriceMonth"].double ?? 0
+                            self.toPay(oids: orderId, pids: productId, price: prices)
+                        }
+                        else{
+                            let alertController = UIAlertController(title: "\(message)",
+                                message: nil, preferredStyle: .alert)
+                            //显示提示框
+                            self.present(alertController, animated: true, completion: nil)
+                            //两秒钟后自动消失
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                                self.presentedViewController?.dismiss(animated: false, completion: nil)
+                            }
+                        }
                     }
                 }
         
+    }
+    func toPay(oids:Int,pids:Int,price:Double){
+        if(ifhasPayPwd == "没有设置支付密码"){
+            let alertController = UIAlertController(title: "提示", message: "您未设置支付密码，请先设置",preferredStyle: .alert)
+            let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
+                action in
+                self.gettopay()
+            })
+            let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+            alertController.addAction(cancelAction1)
+            alertController.addAction(cancelAction2)
+            self.present(alertController, animated: true, completion: nil)
+        }
+        else{
+            WMPasswordView.show(type: WMPwdType.payPwd, amount: price) { [weak self] pwd in
+                self?.payok(orderids: oids, productids: pids, prices: price, ppass: pwd)
+            }
+        }
+        
+    }
+    func payok(orderids:Int,productids:Int,prices:Double,ppass:String){
+        var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
+        let url = "https://www.xingzhu.club/XzTest/orders/payOrder"
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        let paras = ["userId":userid,"orderId":orderids,"productId":productids,"productPriceMonth":prices,"payType":0,"userPayPassword":ppass] as [String : Any]
+        print("订单ID\(orderids)")
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            var request : String = "\(response.result)"
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                let code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("message\(message)")
+                let alertController = UIAlertController(title: "\(message)",
+                    message: nil, preferredStyle: .alert)
+                //显示提示框
+                self.present(alertController, animated: true, completion: nil)
+                //两秒钟后自动消失
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                    self.presentedViewController?.dismiss(animated: false, completion: nil)
+                }
+                if(message == "订单支付成功！"){
+                    if UserDefaults.standard.object(forKey: "userBalance") != nil {
+                        self.yuer = UserDefaults.standard.object(forKey: "userBalance") as! Double
+                    }
+                    UserDefaults.standard.set(self.yuer-prices, forKey: "userBalance")
+                    self.back((Any).self)
+                }
+            }
+
+        }
+    }
+    func ifHasPayPwd(){
+        var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
+        let url = "https://www.xingzhu.club/XzTest/users/ifHasPayPwd"
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        let paras = ["userId":userid]
+        print("用户ID\(userid)")
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            var request : String = "\(response.result)"
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                let code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("message\(message)")
+                if (message == "用户已设置支付密码"){
+                    self.ifhasPayPwd = "已设置支付密码"
+                }else{
+                    self.ifhasPayPwd = "没有设置支付密码"
+                }
+            }
+        }
+    }
+    func gettopay(){
+       self.performSegue(withIdentifier: "setpaypass", sender: nil)
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "setpaypass"{
+            let controller = segue.destination as! SetpaypassViewController
+            controller.ntitle = "设置支付密码"
+            
+        }
     }
 }

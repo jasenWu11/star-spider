@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Alamofire
 class DataSourceTableViewCell: UITableViewCell {
     
     var iconImage     : UIImageView?
@@ -23,7 +23,7 @@ class DataSourceTableViewCell: UITableViewCell {
     var subButton : UIButton?
     let screenWidth =  UIScreen.main.bounds.size.width
     var rows:Int = 0
-    var datasourceView : UIView?
+    var datasourceView : UIButton?
     var root : DataSourceTableViewController?
     var pid:Int = 5
     var pids:Int = 5
@@ -46,11 +46,11 @@ class DataSourceTableViewCell: UITableViewCell {
         var dataname:String = (root?.clns[subButton.tag])!
         root?.root?.Ntitle = Ntitle
         root?.root?.dataName = dataname
-        root?.root?.performSegue(withIdentifier: "datasourceDetailView", sender: nil)
+        root?.root?.datasourceDetailView()
     }
     func setUpUI(){
         //视图
-        datasourceView = UIView(frame: CGRect(x:5, y: 5, width:screenWidth-10, height: 160))
+        datasourceView = UIButton(frame: CGRect(x:5, y: 5, width:screenWidth-10, height: 160))
         datasourceView?.backgroundColor=UIColor.white
         datasourceView?.clipsToBounds=true
         datasourceView?.layer.cornerRadius = 3
@@ -61,6 +61,11 @@ class DataSourceTableViewCell: UITableViewCell {
         datasourceView?.layer.masksToBounds = false
         //datasourceView?.addTarget(self, action: #selector(composeBtnClick), for: UIControl.Event.touchUpInside)
         self.addSubview(datasourceView!)
+        //增加长按手势
+        datasourceView?.isUserInteractionEnabled = true
+        let longGress = UILongPressGestureRecognizer()
+        longGress.addTarget(self, action: #selector(longGressGestrue(longGress:)))
+        datasourceView?.addGestureRecognizer(longGress)
         // 图片
         iconImage = UIImageView(frame: CGRect(x:0, y: 0, width:120, height: 160))
         iconImage?.layer.cornerRadius = 3.0
@@ -162,5 +167,51 @@ class DataSourceTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
         // Configure the view for the selected state
     }
-    
+    @objc private func longGressGestrue(longGress:UILongPressGestureRecognizer){
+        
+          if longGress.state == UIGestureRecognizer.State.began {
+            var sourcename : String = (root?.dsns[(datasourceView?.tag)!])!
+            var dataname : String = (root?.clns[(datasourceView?.tag)!])!
+            Deleactions(datanames: dataname,sourcenames:sourcename)
+        }
+    }
+    func Deleactions(datanames:String,sourcenames:String) {
+        let alertController = UIAlertController(title: "提示", message: "是否删除数据源\"\(sourcenames)\"？",preferredStyle: .alert)
+        let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
+            action in
+            self.deleteok(dataname: datanames)
+        })
+        let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction1)
+        alertController.addAction(cancelAction2)
+        root?.present(alertController, animated: true, completion: nil)
+    }
+    func deleteok(dataname:String){
+        
+        var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
+        let url = "https://www.xingzhu.club/XzTest/datasource/deleteDataSource"
+        let paras = ["userId":userid,"crawlerName":dataname] as [String : Any]
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("提示:\(message)")
+                let alertController = UIAlertController(title: "\(message)",
+                    message: nil, preferredStyle: .alert)
+                //显示提示框
+                self.root?.present(alertController, animated: true, completion: nil)
+                //两秒钟后自动消失
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                    self.root?.presentedViewController?.dismiss(animated: false, completion: nil)
+                }
+                self.root?.getAllDatasource()
+            }
+        }
+        
+    }
 }

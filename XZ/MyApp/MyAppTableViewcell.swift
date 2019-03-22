@@ -41,17 +41,18 @@ class MyAppTableViewcell: UITableViewCell {
     @objc func Operactions(subButton: UIButton) {
         print("支付状态\(root?.appPayStatus)")
         let appPayStatus:String = (root?.appPayStatus[subButton.tag])!
-        var crawlername : String = (root?.crawlerName[subButton.tag])!
+        var crawlernames : String = (root?.crawlerName[subButton.tag])!
         var iskey : Int = (root?.iskeywords[subButton.tag])!
         var pidss : Int = (root?.pidss[subButton.tag])!
         var Ntitle:String = (root?.titles[subButton.tag])!
         root?.root?.Ntitle = Ntitle
         root?.root?.iskey = iskey
+        root?.root?.crawlername = crawlernames
         print("支付状态\(appPayStatus)")
         print("产品编号\(pids)")
         print("是否需要keyword\(iskey)")
         if(appPayStatus == "已支付"){
-            root?.root?.performSegue(withIdentifier: "operDetailView", sender: crawlername)
+            root?.root?.operDetailView()
         }
         else{
             let alertController = UIAlertController(title: "提示", message: "该应用使用天数不够，是否前往购买？",preferredStyle: .alert)
@@ -66,7 +67,8 @@ class MyAppTableViewcell: UITableViewCell {
         }
     }
     func payok(thepid:Int){
-        root?.root?.performSegue(withIdentifier: "MyOrder", sender: thepid)
+        root?.root?.pids = thepid
+        root?.root?.MyOrder()
     }
     func Deleactions(appids:Int,appnames:String) {
         print("确定删除应用ID为\(appids)的应用\(appnames)吗？")
