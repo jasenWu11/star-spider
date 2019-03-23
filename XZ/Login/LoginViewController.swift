@@ -24,6 +24,10 @@ class LoginViewController: UIViewController {
     let screenHeight =  UIScreen.main.bounds.size.height
     override func viewDidLoad() {
         super.viewDidLoad()
+        tv_phone.addChangeTextTarget()
+        tv_phone.maxTextNumber = 11
+        tv_pwd.addChangeTextTarget()
+        tv_pwd.maxTextNumber = 12
         self.view.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(LoginViewController.handleTap(sender:))))
         self.navigationController?.navigationBar.isHidden = true
         iv_logo.frame.origin.y = screenHeight/10
@@ -244,7 +248,7 @@ class LoginViewController: UIViewController {
                 if(message == "登录成功"){
                     let usermess = json["data"]
                     let userId: Int = usermess["userId"].int ?? 0
-                    let userPwd: String = usermess["userPwd"].string ?? ""
+                    let userPwd: String = self.pass
                     let userEmail: String = usermess["userEmail"].string ?? ""
                     let userBalance: Double = usermess["userBalance"].double ?? 0.0
                     let userProfilePhoto: String = usermess["userProfilePhoto"].string ?? ""
@@ -279,8 +283,8 @@ class LoginViewController: UIViewController {
                         UserDefaults.standard.set(isVip, forKey: "isVip")
                         UserDefaults.standard.set(userPhoneNumber, forKey: "userPhoneNumber")
                         UserDefaults.standard.set(userPwdSalt, forKey: "userPwdSalt")
-                }
                     }
+                }
 
             }
             

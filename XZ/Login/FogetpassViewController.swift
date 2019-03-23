@@ -31,6 +31,13 @@ class FogetpassViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //限制输入最大值
+        tv_phone.addChangeTextTarget()
+        tv_phone.maxTextNumber = 11
+        tv_pass.addChangeTextTarget()
+        tv_pass.maxTextNumber = 12
+        tv_yanzh.addChangeTextTarget()
+        tv_yanzh.maxTextNumber = 4
         self.view.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(FogetpassViewController.handleTap(sender:))))
         //注册信息视图圆角
         v_xinxi?.clipsToBounds=true

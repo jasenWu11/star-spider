@@ -66,8 +66,19 @@ class messagepagViewcontroller: UIViewController {
     var iskey:Int = 0
     var Ntitle:String = ""
     var dataName:String = ""
+    var quitheight:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
+        //导航栏高度
+        let nv_height = self.navigationController?.navigationBar.frame.size.height
+        //状态栏高度
+        let zt_height = UIApplication.shared.statusBarFrame.height
+        quitheight = Int(nv_height!+zt_height)
+        print("高度是\(nv_height)和\(zt_height)")
+        let tabBarHeight = (zt_height==44 ? 83 : 49)
+        let theheight = CGFloat((tabBarHeight))
+        quitheight = Int(nv_height!+zt_height)
+        print("高度是\(quitheight)和\(nv_height)和\(zt_height)")
         self.title = "消息中心"
         //分页菜单配置
         let options = PagingMenuOptions()
@@ -76,7 +87,8 @@ class messagepagViewcontroller: UIViewController {
         (options.pagingControllers[2] as! messagereadnTableViewController).root = self
         //分页菜单控制器初始化
         let pagingMenuController = PagingMenuController(options: options)
-        
+       
+       
         pagingMenuController.onMove = { state in
             switch state {
             case let .willMoveItem(menuItemView, previousMenuItemView):

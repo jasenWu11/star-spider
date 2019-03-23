@@ -8,7 +8,7 @@
 
 import UIKit
 import Alamofire
-class DataSourceViewController: UIViewController, UICollectionGridViewSortDelegate {
+class DataSourceViewController: UIViewController{
     var iskey:Int = 0
     var Ntitle:String = ""
     var dataName:String = ""
@@ -57,37 +57,7 @@ class DataSourceViewController: UIViewController, UICollectionGridViewSortDelega
         self.dismiss(animated: true, completion: nil)
     }
     
-    //表格排序函数
-    func sort(colIndex: Int, asc: Bool, rows: [[Any]]) -> [[Any]] {
-        let sortedRows = rows.sorted { (firstRow: [Any], secondRow: [Any])
-            -> Bool in
-            let firstRowValue = firstRow[colIndex] as! String
-            let secondRowValue = secondRow[colIndex] as! String
-            if colIndex == 0 || colIndex == 1 {
-                //首例、姓名使用字典排序法
-                if asc {
-                    return firstRowValue < secondRowValue
-                }
-                return firstRowValue > secondRowValue
-            } else if colIndex == 2 || colIndex == 3 {
-                //中间两列使用数字排序
-                if asc {
-                    return Int(firstRowValue)! < Int(secondRowValue)!
-                }
-                return Int(firstRowValue)! > Int(secondRowValue)!
-            }
-            //最后一列数据先去掉百分号，再转成数字比较
-            let firstRowValuePercent = Int(firstRowValue.substring(to:
-                firstRowValue.index(before: firstRowValue.endIndex)))!
-            let secondRowValuePercent = Int(secondRowValue.substring(to:
-                secondRowValue.index(before: secondRowValue.endIndex)))!
-            if asc {
-                return firstRowValuePercent < secondRowValuePercent
-            }
-            return firstRowValuePercent > secondRowValuePercent
-        }
-        return sortedRows
-    }
+    
     func UIColorRGB_Alpha(R:CGFloat, G:CGFloat, B:CGFloat, alpha:CGFloat) -> UIColor
     {
         let color = UIColor.init(red: (R / 255.0), green: (G / 255.0), blue: (B / 255.0), alpha: alpha);
@@ -184,7 +154,7 @@ class DataSourceViewController: UIViewController, UICollectionGridViewSortDelega
                         for arrayItem in self.therows {
                             self.gridViewController.addRow(row: arrayItem)
                         }
-                        self.gridViewController.sortDelegate = self
+                        
                     }
 
                     

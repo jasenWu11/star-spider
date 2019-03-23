@@ -22,6 +22,19 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
     @IBOutlet weak var sett: UIView!
     @IBOutlet weak var tv_phone: UILabel!
     @IBOutlet weak var tv_name: UILabel!
+    var olduser : String = ""
+    var oldpwd : String = ""
+    var userId: Int = 0
+    var userPwd: String = ""
+    var userEmail: String = ""
+    var userBalance: Double = 0.0
+    var userProfilePhoto: String = ""
+    var userName: String = ""
+    var userRegisterTime: String = ""
+    var isVip: Int = 0
+    var userPhoneNumber: String =  ""
+    var userPwdSalt: String =  ""
+    var headph : String = "";
     /// lazy load
     lazy var payPasswordView: WMPasswordView = {
         let pwdView = WMPasswordView(type: WMPwdType.payPwd, amount: 250.0)
@@ -52,13 +65,14 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         getAllDataname()
         iv_head.frame.origin.x = (screenWidth-70)/2
         //关闭导航栏半透明效果
         self.navigationController?.navigationBar.isTranslucent = false
         tv_name!.frame.origin.x = (screenWidth-100)/2
         tv_name?.textAlignment=NSTextAlignment.center
-        var headph : String = "";
+        
         if UserDefaults.standard.object(forKey: "userProfilePhoto") != nil {
             headph = UserDefaults.standard.object(forKey: "userProfilePhoto") as! String
         }
@@ -69,17 +83,7 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
         iv_head.layer.cornerRadius = 35
         iv_head.layer.masksToBounds = true
         print("头像\(headph)")
-        if(headph != ""){
-            if let url = URL(string:headph){
-                let data = try! Data(contentsOf: url)
-                let smallImage = UIImage(data: data)
-                iv_head.image = smallImage
-            }
-            
-        }
-        if(nameph != ""){
-            tv_name.text = nameph
-        }
+        setmess()
         let myclick = UITapGestureRecognizer(target: self, action: #selector(myAction))
         iv_head.addGestureRecognizer(myclick)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
@@ -122,8 +126,27 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         print("我的前台显示")
+        if UserDefaults.standard.object(forKey: "userPhoneNumber") != nil {
+            olduser = UserDefaults.standard.object(forKey: "userPhoneNumber") as! String
+            oldpwd = UserDefaults.standard.object(forKey: "userPwd") as! String
+            
+        }
+        textzm()
         getUnreadNoticeCount()
         // The rest of your code.
+    }
+    func setmess(){
+        if(headph != ""){
+            if let url = URL(string:headph){
+                let data = try! Data(contentsOf: url)
+                let smallImage = UIImage(data: data)
+                iv_head.image = smallImage
+            }
+            
+        }
+        if(nameph != ""){
+            tv_name.text = nameph
+        }
     }
     func jsonRequest()  {
         
@@ -369,7 +392,12 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
         //设置邮件地址、主题及正文
         mailComposeVC.setToRecipients(["1252279088@qq.com"])
         mailComposeVC.setSubject("所有最新数据源")
-        mailComposeVC.setMessageBody("发送所有最新数据源至邮箱", isHTML: false)
+        if(pwd == ""){
+            mailComposeVC.setMessageBody("发送所有最新数据源至邮箱", isHTML: false)
+        }
+        else{
+            mailComposeVC.setMessageBody("发送所有最新数据源至邮箱,压缩密码为\(pwd)", isHTML: false)
+        }
         //添加文件附件
         let url = URL(fileURLWithPath: zipPath3)
         let mimeType2 = mimeType(pathExtension: url.pathExtension)
@@ -428,5 +456,57 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
         alert.addAction(btnOK)
         self.present(alert, animated: true, completion: nil)
         
+    }
+    func textzm(){
+        let url = "https://www.xingzhu.club/XzTest/users/login"
+        let paras = ["userPhoneNumber":self.olduser,"userPwd":self.oldpwd]
+        print("手机号\(self.olduser)和密码\(self.oldpwd)")
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            if let jdata = response.result.value {
+                let json = JSON(jdata)
+                print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message: String = json["message"].string!
+                
+                if(message == "登录成功"){
+                    let usermess = json["data"]
+                    self.userProfilePhoto = usermess["userProfilePhoto"].string ?? ""
+                    self.userName = usermess["userName"].string ?? ""
+                    self.tomainor()
+                }
+                else if(message == "帐号或密码不正确"){
+                    let alertController = UIAlertController(title: "账号密码被修改，请重新登录",
+                                                            message: nil, preferredStyle: .alert)
+                    //显示提示框
+                    self.present(alertController, animated: true, completion: nil)
+                    //两秒钟后自动消失
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                        self.presentedViewController?.dismiss(animated: false, completion: nil)
+                    }
+                    let time: TimeInterval = 1
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
+                        self.ToLoginAction()
+                    }
+                }
+            }
+        }
+    }
+    func tomainor() {
+        UserDefaults.standard.set(userProfilePhoto, forKey: "userProfilePhoto")
+        UserDefaults.standard.set(userName, forKey: "userName")
+        tv_name.text = self.userName
+        if let url = URL(string:self.userProfilePhoto){
+            let data = try! Data(contentsOf: url)
+            let smallImage = UIImage(data: data)
+            iv_head.image = smallImage
+        }
+    }
+    @objc func ToLoginAction() -> Void {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: theloginUINavigationController())))
+            as! theloginUINavigationController
+        self.present(controller, animated: true, completion: nil)
     }
 }

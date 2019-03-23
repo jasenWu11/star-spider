@@ -18,6 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate , WXApiDelegate {
         // Override point for customization after application launch.
         // 注册app
         UITabBar.appearance().isTranslucent = false
+        UITabBar.appearance().tintColor = UIColor.orange
         WXApi.registerApp("wx81e05f32561a3b3f")
         return true
     }

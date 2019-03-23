@@ -64,11 +64,22 @@ class ShoppagViewController: UIViewController {
     var price1:[Double] = []
     var Ntitle:String = ""
     var pids:Int = 0
+    var quitheight:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
+        //导航栏高度
+        let nv_height = self.navigationController?.navigationBar.frame.size.height
+        //状态栏高度
+        let zt_height = UIApplication.shared.statusBarFrame.height
+        
+        let tabBarHeight = (zt_height==44 ? 83 : 49)
+        let theheight = CGFloat((tabBarHeight))
+        quitheight = Int(nv_height!+zt_height+theheight)
+        print("高度是\(quitheight)和\(nv_height)和\(zt_height)")
         //关闭导航栏半透明效果
         self.navigationController?.navigationBar.isTranslucent = false
         getAllProducts()
+        
         //分页菜单配置
         let options = PagingMenuOptions()
         (options.pagingControllers[0] as! ShopTableViewController).root = self

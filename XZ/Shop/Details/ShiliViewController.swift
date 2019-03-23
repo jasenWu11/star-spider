@@ -8,7 +8,7 @@
 
 import UIKit
 import Alamofire
-class ShiliViewController: UIViewController, UICollectionGridViewSortDelegate{
+class ShiliViewController: UIViewController{
     @IBOutlet weak var ni_title: UINavigationItem!
     @IBOutlet weak var bt_com: UIButton!
     @IBOutlet weak var tf_data: UITextField!
@@ -197,7 +197,7 @@ class ShiliViewController: UIViewController, UICollectionGridViewSortDelegate{
                     for arrayItem in self.therows {
                         self.gridViewController.addRow(row: arrayItem)
                     }
-                    self.gridViewController.sortDelegate = self
+                    //self.gridViewController.sortDelegate = self
                 }
             }
             

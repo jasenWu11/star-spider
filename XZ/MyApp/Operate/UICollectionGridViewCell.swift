@@ -41,7 +41,7 @@ class UICollectionGridViewCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-    
+        
         label.frame = CGRect(x: paddingLeft, y: 0,
                              width: frame.width - paddingLeft * 2,
                              height: frame.height)

@@ -61,8 +61,9 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
         //下拉刷新
         header.lastUpdatedTimeLabel.isHidden = false
         header.stateLabel.isHidden = false
+        let theheight = CGFloat((root?.quitheight)!)
         //创建表视图
-        self.tableView = UITableView(frame: CGRect(x:0, y:44, width:screenWidth, height: screenHeight-187), style:.plain)
+        self.tableView = UITableView(frame: CGRect(x:0, y:44, width:screenWidth, height: screenHeight-50-44-theheight), style:.plain)
         //self.tableView = UITableView(frame: self.view.frame, style:.plain)
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
@@ -365,4 +366,5 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
             self.tableView!.mj_header.endRefreshing()
         }
     }
+
 }

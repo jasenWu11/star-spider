@@ -61,24 +61,10 @@ class MyorderTableViewcell: UITableViewCell {
         var isapy : String = (root?.pstatus[subButton.tag])!
         //print("支付状态\(isapy)")
         if(isapy == "已支付"){
-            let alertController = UIAlertController(title: "订单成功已支付，无需重复支付！",
-                                                    message: nil, preferredStyle: .alert)
-            //显示提示框
-            self.root?.root?.present(alertController, animated: true, completion: nil)
-            //两秒钟后自动消失
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-                self.root?.root?.presentedViewController?.dismiss(animated: false, completion: nil)
-            }
+            print("已支付啦")
         }
-        if(isapy == "已关闭"){
-            let alertController = UIAlertController(title: "订单成功已关闭，无需支付！",
-                                                    message: nil, preferredStyle: .alert)
-            //显示提示框
-            self.root?.root?.present(alertController, animated: true, completion: nil)
-            //两秒钟后自动消失
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-                self.root?.root?.presentedViewController?.dismiss(animated: false, completion: nil)
-            }
+        else if(isapy == "已关闭"){
+            
         }
         else{
             let alertController = UIAlertController(title: "提示", message: "是否支付该订单？共\(price)元",preferredStyle: .alert)
@@ -159,15 +145,26 @@ class MyorderTableViewcell: UITableViewCell {
     }
     @objc func Deleactions(subButton: UIButton) {
         //print(subButton.tag)
-        let alertController = UIAlertController(title: "提示", message: "是否关闭该订单？",preferredStyle: .alert)
-        let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
-            action in
-            self.deleteok(orderids: subButton.tag)
-        })
-        let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-        alertController.addAction(cancelAction1)
-        alertController.addAction(cancelAction2)
-        root?.root?.present(alertController, animated: true, completion: nil)
+        var oids : Int = (root?.oidss[subButton.tag])!
+        var isapy : String = (root?.pstatus[subButton.tag])!
+        if(isapy == "已支付"){
+            
+        }
+        else if(isapy == "已关闭"){
+            
+        }
+        else {
+            let alertController = UIAlertController(title: "提示", message: "是否关闭该订单？",preferredStyle: .alert)
+            let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
+                action in
+                self.deleteok(orderids: oids)
+            })
+            let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+            alertController.addAction(cancelAction1)
+            alertController.addAction(cancelAction2)
+            root?.root?.present(alertController, animated: true, completion: nil)
+            
+        }
     }
     func deleteok(orderids:Int){
         let url = "https://www.xingzhu.club/XzTest/orders/closeOrder"
@@ -322,7 +319,7 @@ class MyorderTableViewcell: UITableViewCell {
         tv_ctime?.font = UIFont.systemFont(ofSize: 14)
         tv_ctime?.textColor = UIColor.black
         v_order?.addSubview(tv_ctime!)
-        // 状态
+        // 结束时间
         tv_etimes = UILabel(frame: CGRect(x:10, y:155, width:100, height: 20))
         tv_etimes?.font = UIFont.systemFont(ofSize: 14)
         tv_etimes?.textColor = UIColor.black

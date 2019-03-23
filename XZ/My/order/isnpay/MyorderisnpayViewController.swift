@@ -42,8 +42,9 @@ class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITabl
         header.stateLabel.isHidden = true
         userid = UserDefaults.standard.object(forKey: "userId") as! Int
         //refreshItemData()
+        let theheight = CGFloat((root?.quitheight)!)
         //创建表视图
-        self.tableView = UITableView(frame: CGRect(x:0, y:0, width:screenWidth, height: screenHeight-123), style:.plain)
+        self.tableView = UITableView(frame: CGRect(x:0, y:44, width:screenWidth, height: screenHeight-50-44-theheight), style:.plain)
         //self.tableView = UITableView(frame: self.view.frame, style:.plain)
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
@@ -86,7 +87,7 @@ class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITabl
             cell.tv_price?.text = "\(prices[indexPath.row])"
             cell.tv_ptime?.text = optimes[indexPath.row]
             cell.bt_oper!.tag = indexPath.row
-            cell.bt_dele!.tag = oidss[indexPath.row]
+            cell.bt_dele!.tag = indexPath.row
             cell.bt_oper!.setTitle(apybutton[indexPath.row], for: UIControl.State.normal)
             return cell
     }

@@ -297,6 +297,8 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
         tf_url?.clipsToBounds=true
         tf_url?.layer.cornerRadius = 5
         tf_url?.layer.masksToBounds = false
+        tf_url?.placeholder = "请输入带网络协议的完整网址"
+        tf_url?.text = "https://"
         v_url?.addSubview(tf_url!)
         //输入框左边缩进
         let leftView1 = UILabel()

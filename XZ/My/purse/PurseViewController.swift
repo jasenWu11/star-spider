@@ -8,17 +8,25 @@
 
 import UIKit
 import Alamofire
-class PurseViewController: UIViewController ,UITextFieldDelegate{
+class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelegate{
     @IBOutlet weak var tv_money: UILabel!
     @IBOutlet weak var v_Topup: UIView!
     var yuer : Double = 0.0;
     @IBOutlet weak var l_pursedeail: UILabel!
     var moneys:String = ""
-
+    //个人信息更新
+    var olduser : String = ""
+    var oldpwd : String = ""
+    var userBalance: Double = 0.0
     var ifhasPayPwd : String = "设置支付密码"
+    let screenWidth =  UIScreen.main.bounds.size.width
+    let screenHeight =  UIScreen.main.bounds.size.height
     override func viewDidLoad() {
         super.viewDidLoad()
+        textzm()
         self.title = "我的钱包"
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"+",style:UIBarButtonItem.Style.plain,target:self,action:#selector(menu))
+        self.navigationItem.rightBarButtonItem?.image = UIImage(named: "settings")
         let handLeftRight = UISwipeGestureRecognizer(target: self, action: #selector(funLeftRight))
         //handLeftRight.direction = .left //支持向左
         self.view.addGestureRecognizer(handLeftRight)
@@ -44,7 +52,56 @@ class PurseViewController: UIViewController ,UITextFieldDelegate{
         v_Topup.isUserInteractionEnabled = true
         // Do any additional setup after loading the view.
     }
-    
+    func textzm(){
+        if UserDefaults.standard.object(forKey: "userPhoneNumber") != nil {
+            olduser = UserDefaults.standard.object(forKey: "userPhoneNumber") as! String
+            oldpwd = UserDefaults.standard.object(forKey: "userPwd") as! String
+            
+        }
+        let url = "https://www.xingzhu.club/XzTest/users/login"
+        let paras = ["userPhoneNumber":self.olduser,"userPwd":self.oldpwd]
+        print("手机号\(self.olduser)和密码\(self.oldpwd)")
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            if let jdata = response.result.value {
+                let json = JSON(jdata)
+                print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message: String = json["message"].string!
+                
+                if(message == "登录成功"){
+                    let usermess = json["data"]
+                    self.userBalance = usermess["userBalance"].double ?? 0.0
+                    self.tomainor()
+                }
+                else if(message == "帐号或密码不正确"){
+                    let alertController = UIAlertController(title: "账号密码被修改，请重新登录",
+                                                            message: nil, preferredStyle: .alert)
+                    //显示提示框
+                    self.present(alertController, animated: true, completion: nil)
+                    //两秒钟后自动消失
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                        self.presentedViewController?.dismiss(animated: false, completion: nil)
+                    }
+                    let time: TimeInterval = 1
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
+                        self.ToLoginAction()
+                    }
+                }
+            }
+        }
+    }
+    @objc func ToLoginAction() -> Void {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: theloginUINavigationController())))
+            as! theloginUINavigationController
+        self.present(controller, animated: true, completion: nil)
+    }
+    func tomainor() {
+        UserDefaults.standard.set(userBalance, forKey: "userBalance")
+        tv_money.text = "¥\(userBalance)"
+    }
     @objc func funLeftRight(sender: UIPanGestureRecognizer){
 
     }
@@ -108,9 +165,9 @@ class PurseViewController: UIViewController ,UITextFieldDelegate{
                         print("错误:\(code)")
                         var message:String = json["message"].string!
                         print("message\(message)")
-                        self.showMsgbox(_message: "充值成功")
-                        return
+                        self.showMsgbox(_message: message)
                         if(message == "充值成功！"){
+                            print("金钱是\(mons)")
                           UserDefaults.standard.set(mons, forKey: "userBalance")
                             self.tv_money.text = "\(mons)"
                         }
@@ -173,16 +230,16 @@ class PurseViewController: UIViewController ,UITextFieldDelegate{
         // Pass the selected object to the new view controller.
     }
     */
-    @IBAction func menu(_ sender: Any) {
-        let items: [String] = [ifhasPayPwd]
-        let imgSource: [String] = ["close"]
+    @objc func menu(_ sender: Any) {
+        let items: [String] = [ifhasPayPwd,"联系QQ客服"]
+        let imgSource: [String] = ["close","QQ"]
         NavigationMenuShared.showPopMenuSelecteWithFrameWidth(width: itemWidth, height: 160, point: CGPoint(x: ScreenInfo.Width - 30, y: 0), item: items, imgSource: imgSource) { (index) in
             ///点击回调
             switch index{
             case 0:
                 self.clicktheMenu()
             case 1:
-                self.clicktheMenu()
+                self.callhelp()
             default:
                 break
             }
@@ -195,16 +252,38 @@ class PurseViewController: UIViewController ,UITextFieldDelegate{
             let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: SetpaypassViewController())))
                 as! SetpaypassViewController
             controller.ntitle = "修改支付密码"
-            self.present(controller, animated: true, completion: nil)
+            self.navigationController?.pushViewController(controller, animated: true)
         }
         else if(ifhasPayPwd == "设置支付密码"){
             let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: SetpaypassViewController())))
                 as! SetpaypassViewController
             controller.ntitle = "设置支付密码"
-            self.present(controller, animated: true, completion: nil)
+           self.navigationController?.pushViewController(controller, animated: true)
         }
     }
-    
+    func callhelp() {
+        print("即将打开QQ，联系客服？")
+        let alertController = UIAlertController(title: "联系客服", message: "即将打开QQ，联系客服？",preferredStyle: .alert)
+        let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
+            action in
+            self.CallQQ()
+        })
+        let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction1)
+        alertController.addAction(cancelAction2)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    func CallQQ() {
+        print("帮助哟")
+        // 按钮事件中唤醒QQ聊天界面
+        let webView = UIWebView(frame: CGRect(x:30, y: (screenHeight-130)/2, width:screenWidth-60, height: 130))
+        let url1 = URL(string: "mqq://im/chat?chat_type=wpa&uin=1252279088&version=1&src_type=web")
+        let request = NSURLRequest(url: url1!)
+        webView.delegate = self
+        webView.loadRequest(request as URLRequest)
+        webView.isHidden = true
+        view.addSubview(webView)
+    }
     func ifHasPayPwd(){
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
         let url = "https://www.xingzhu.club/XzTest/users/ifHasPayPwd"

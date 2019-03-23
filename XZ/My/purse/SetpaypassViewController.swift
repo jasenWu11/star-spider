@@ -17,31 +17,27 @@ class SetpaypassViewController: UIViewController {
     @IBOutlet weak var tv_yanzh: UITextField!
     @IBOutlet weak var bt_Yz: UIButton!
     var oldphone = ""
-    
+    var zt_hqyz:Int = 0
     var phone: String = ""
     var pass: String = ""
     var yanzh: String = ""
     var verifyCode : String = ""
     var root : LoginViewController?
     var ntitle:String = ""
-    @IBAction func back(_ sender: Any) {
-        let transition = CATransition()
-        transition.duration = 0.6
-        transition.type = CATransitionType.reveal
-        transition.subtype = CATransitionSubtype.fromLeft
-        transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeInEaseOut)
-        view.window!.layer.add(transition, forKey: kCATransition)
-        self.dismiss(animated: false, completion: nil)
-    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tv_yanzh.addChangeTextTarget()
+        tv_yanzh.maxTextNumber = 4
+        
+        self.view.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(LoginViewController.handleTap(sender:))))
         let handLeftRight = UISwipeGestureRecognizer(target: self, action: #selector(funLeftRight))
         //handLeftRight.direction = .left //支持向左
         self.view.addGestureRecognizer(handLeftRight)
         
-        nv_title.title = ntitle
+        self.title = ntitle
         l_title.text = ntitle
         //验证码
         v_yzm?.clipsToBounds=true
@@ -70,6 +66,13 @@ class SetpaypassViewController: UIViewController {
         //        tv_yanzh.leftViewMode = UITextField.ViewMode.always
         // Do any additional setup after loading the view.
     }
+    //收起键盘
+    @objc func handleTap(sender: UITapGestureRecognizer) {
+        if sender.state == .ended {
+            tv_yanzh.resignFirstResponder()
+        }
+        sender.cancelsTouchesInView = false
+    }
     //左边栏图片
     func setBottomBorder(textField:UITextField){
         let border = CALayer()
@@ -97,6 +100,7 @@ class SetpaypassViewController: UIViewController {
         
     }
     func CodeRequest()  {
+        self.zt_hqyz = 1
         yanzh=tv_yanzh.text!
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
         let url = "https://www.xingzhu.club/XzTest/users/getResetPayPwdVerifyCode"
@@ -118,7 +122,7 @@ class SetpaypassViewController: UIViewController {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
                 self.presentedViewController?.dismiss(animated: false, completion: nil)
             }
-            if(message == "发送验证码信息成功！"){
+            if(message == "发送信息成功！"){
                 let codemess = json["data"]
                 self.verifyCode = codemess["verifyCode"].string ?? ""
                 print("数据\(codemess)")
@@ -180,17 +184,21 @@ class SetpaypassViewController: UIViewController {
         codeTimer.resume()
     }
     @IBAction func ToFoget(_ sender: Any) {
-        if(tv_yanzh.text! == ""){
-            showMsgbox(_message: "验证码不能为空")
-            return
+        if(zt_hqyz == 0){
+             showMsgbox(_message: "请先获取验证码")
         }
-        if(yanzh != verifyCode){
-            print("输入\(yanzh),收到的是\(verifyCode)")
-            showMsgbox(_message: "验证码不正确")
-            return
-        }
-        else {
-            setPay()
+        else{
+            yanzh=tv_yanzh.text!
+            if(tv_yanzh.text! == ""){
+                showMsgbox(_message: "验证码不能为空")
+            }
+            else if(yanzh != verifyCode){
+                print("输入\(yanzh),收到的是\(verifyCode)")
+                showMsgbox(_message: "验证码不正确")
+            }
+            else {
+                setPay()
+            }
         }
         
     }
@@ -231,6 +239,9 @@ class SetpaypassViewController: UIViewController {
                 //两秒钟后自动消失
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
                     self.presentedViewController?.dismiss(animated: false, completion: nil)
+                    if(message == "设置支付密码成功"){
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             }
         }
@@ -242,12 +253,6 @@ class SetpaypassViewController: UIViewController {
         return color;
     }
     @objc func funLeftRight(sender: UIPanGestureRecognizer){
-        let transition = CATransition()
-        transition.duration = 0.6
-        transition.type = CATransitionType.reveal
-        transition.subtype = CATransitionSubtype.fromLeft
-        transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeInEaseOut)
-        view.window!.layer.add(transition, forKey: kCATransition)
-        self.dismiss(animated: false, completion: nil)
+       
     }
 }

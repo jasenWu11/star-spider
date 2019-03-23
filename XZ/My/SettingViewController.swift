@@ -89,8 +89,8 @@ class SettingViewController: UIViewController {
         UserDefaults.standard.set(isVip, forKey: "isVip")
         UserDefaults.standard.set(userPhoneNumber, forKey: "userPhoneNumber")
           UserDefaults.standard.set(userPwdSalt, forKey: "userPwdSalt")
-        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: LoginViewController())))
-            as! LoginViewController
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: theloginUINavigationController())))
+            as! theloginUINavigationController
         self.present(controller, animated: true, completion: nil)
         
     }

@@ -30,6 +30,13 @@ class RegisterViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        //限制输入最大值
+        tv_phone.addChangeTextTarget()
+        tv_phone.maxTextNumber = 11
+        tv_pass.addChangeTextTarget()
+        tv_pass.maxTextNumber = 12
+        tv_yanzh.addChangeTextTarget()
+        tv_yanzh.maxTextNumber = 4
         self.view.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(RegisterViewController.handleTap(sender:))))
         let xieyiclick = UITapGestureRecognizer(target: self, action: #selector(xieyiAction))
         l_xieyi.addGestureRecognizer(xieyiclick)

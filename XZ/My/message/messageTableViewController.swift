@@ -30,6 +30,7 @@ class messageTableViewController: UIViewController, UITableViewDelegate, UITable
     var indexs:Int = 0
     var maxcount:Int = 20
     var chongzhi:Int = 0
+    var theid:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -41,8 +42,10 @@ class messageTableViewController: UIViewController, UITableViewDelegate, UITable
         header.stateLabel.isHidden = true
         userid = UserDefaults.standard.object(forKey: "userId") as! Int
         //refreshItemData()
+        let theheight = CGFloat((root?.quitheight)!)
+        print("高度是\(root?.quitheight)变成了\(theheight)")
         //创建表视图
-        self.tableView = UITableView(frame: CGRect(x:0, y:0, width:screenWidth, height: screenHeight-143), style:.plain)
+        self.tableView = UITableView(frame: CGRect(x:0, y:0, width:screenWidth, height: screenHeight-50-theheight), style:.plain)
         //self.tableView = UITableView(frame: self.view.frame, style:.plain)
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
@@ -127,9 +130,9 @@ class messageTableViewController: UIViewController, UITableViewDelegate, UITable
                     jndex = self.maxcount
                     self.tableView!.mj_footer.endRefreshingWithNoMoreData()
                 }
+                self.theid = provinces.count
                 for i in index..<jndex{
-                    self.noid += ["\(i+1)"]
-                    
+                    self.noid += ["\(self.theid-i)"]
                     let noticeId: Int = provinces[i]["noticeId"].int ?? 0
                     self.midss += [noticeId]
                     

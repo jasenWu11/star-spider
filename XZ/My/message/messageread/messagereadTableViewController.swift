@@ -30,6 +30,7 @@ class messagereadTableViewController: UIViewController, UITableViewDelegate, UIT
     var indexs:Int = 0
     var maxcount:Int = 20
     var chongzhi:Int = 0
+    var theid:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -41,8 +42,9 @@ class messagereadTableViewController: UIViewController, UITableViewDelegate, UIT
         header.stateLabel.isHidden = true
         userid = UserDefaults.standard.object(forKey: "userId") as! Int
         //refreshItemData()
+        let theheight = CGFloat((root?.quitheight)!)
         //创建表视图
-        self.tableView = UITableView(frame: CGRect(x:0, y:0, width:screenWidth, height: screenHeight-123), style:.plain)
+        self.tableView = UITableView(frame: CGRect(x:0, y:0, width:screenWidth, height: screenHeight-50-theheight), style:.plain)
         //self.tableView = UITableView(frame: self.view.frame, style:.plain)
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
@@ -127,8 +129,9 @@ class messagereadTableViewController: UIViewController, UITableViewDelegate, UIT
                     jndex = self.maxcount
                     self.tableView!.mj_footer.endRefreshingWithNoMoreData()
                 }
+                self.theid = provinces.count
                 for i in index..<jndex{
-                    self.noid += ["\(i+1)"]
+                    let nodeid = "\(self.theid-i)"
                     
                     let noticeId: Int = provinces[i]["noticeId"].int ?? 0
                     
@@ -143,6 +146,8 @@ class messagereadTableViewController: UIViewController, UITableViewDelegate, UIT
                     var mstatus = ""
                     if (sendStatus == 1){
                         mstatus = "已读"
+                        self.noid += [nodeid]
+                        
                         self.midss += [noticeId]
                         
                         self.titles += [noticeTitle]

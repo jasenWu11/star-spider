@@ -60,8 +60,9 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
         header.lastUpdatedTimeLabel.isHidden = false
         header.stateLabel.isHidden = false
         //refreshItemData()
+        let theheight = CGFloat((root?.quitheight)!)
         //创建表视图
-        self.tableView = UITableView(frame: CGRect(x:0, y:44, width:self.screenWidth, height: self.screenHeight-167), style:.plain)
+        self.tableView = UITableView(frame: CGRect(x:0, y:44, width:self.screenWidth, height: self.screenHeight-50-44-theheight), style:.plain)
         //self.tableView = UITableView(frame: self.view.frame, style:.plain)
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
@@ -119,6 +120,9 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
             cell.tag = pidss[indexPath.row]
             pids = pidss[indexPath.row]
             return cell
+    }
+    func headerres(){
+        header.beginRefreshing()
     }
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath){
         print(indexPath.row)

@@ -91,8 +91,9 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         header.lastUpdatedTimeLabel.isHidden = false
         header.stateLabel.isHidden = false
         //refreshItemData()
+        let theheight = CGFloat((root?.quitheight)!)
         //创建表视图
-        self.tableView = UITableView(frame: CGRect(x:0, y:84, width:self.screenWidth, height: self.screenHeight-227), style:.plain)
+        self.tableView = UITableView(frame: CGRect(x:0, y:84, width:self.screenWidth, height: screenHeight-50-44-40-theheight), style:.plain)
         //self.tableView = UITableView(frame: self.view.frame, style:.plain)
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
@@ -135,6 +136,8 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         
         let identifier = "ShopCell"
         let cell = ShopTableViewCell.init(style: UITableViewCell.CellStyle.default, reuseIdentifier: identifier) as! ShopTableViewCell
+            cell.layer.shouldRasterize = true
+            cell.layer.rasterizationScale = UIScreen.main.scale
         cell.root = self
         cell.titleLabel?.text = titles[indexPath.row]
         let url = URL(string:images[indexPath.row])
@@ -143,7 +146,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         cell.iconImage?.image = smallImage
         cell.subTitleLabel?.text = contents[indexPath.row]
             widths = Int((cell.subTitleLabel?.frame.size.width)!)
-            cell.subTitleLabel?.frame.size.height = CGFloat(heights[indexPath.row])
+            //cell.subTitleLabel?.frame.size.height = CGFloat(heights[indexPath.row])
         cell.pirceLabel?.text = "¥\(pricem[indexPath.row])"
         cell.subButton!.tag = pidss[indexPath.row]
         cell.shopcellView!.tag = indexPath.row
@@ -194,8 +197,8 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
                     let productDes: String = provinces[i]["productDes"].string ?? ""
                     self.contents += [productDes]
                     
-                    var protitleheight = self.heightForView(text: productDes, font: UIFont.systemFont(ofSize: 14), width:  CGFloat(self.widths))
-                    self.heights += [Int(protitleheight)]
+//                    var protitleheight = self.heightForView(text: productDes, font: UIFont.systemFont(ofSize: 14), width:  CGFloat(self.widths))
+//                    self.heights += [Int(protitleheight)]
                     
                     let productPhoto: String = provinces[i]["productPhoto"].string ?? ""
                     self.images += [productPhoto]
@@ -290,8 +293,8 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
                     let productDes: String = provinces[i]["productDes"].string ?? ""
                     self.contents += [productDes]
                     
-                    var protitleheight = self.heightForView(text: productDes, font: UIFont.systemFont(ofSize: 14), width:  CGFloat(self.widths))
-                    self.heights += [Int(protitleheight)]
+//                    var protitleheight = self.heightForView(text: productDes, font: UIFont.systemFont(ofSize: 14), width:  CGFloat(self.widths))
+//                    self.heights += [Int(protitleheight)]
                     
                     let productPhoto: String = provinces[i]["productPhoto"].string ?? ""
                     self.images += [productPhoto]
@@ -319,21 +322,21 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
        root?.custom()
     }
     //label自适应高度
-    func heightForView(text:String, font:UIFont, width:CGFloat) -> CGFloat{
-        var widths = self.screenWidth-175
-        let label:UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: widths, height: CGFloat.greatestFiniteMagnitude))
-        label.numberOfLines = 0
-        label.lineBreakMode = NSLineBreakMode.byWordWrapping
-        label.font = font
-        label.text = text
-        label.sizeToFit()
-        var heights = 0
-        if(label.frame.height>=50){
-            heights = 50
-        }
-        else{
-            heights = Int(label.frame.height)
-        }
-        return CGFloat(heights)
-    }
+//    func heightForView(text:String, font:UIFont, width:CGFloat) -> CGFloat{
+//        var widths = self.screenWidth-175
+//        let label:UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: widths, height: CGFloat.greatestFiniteMagnitude))
+//        label.numberOfLines = 0
+//        label.lineBreakMode = NSLineBreakMode.byWordWrapping
+//        label.font = font
+//        label.text = text
+//        label.sizeToFit()
+//        var heights = 0
+//        if(label.frame.height>=50){
+//            heights = 50
+//        }
+//        else{
+//            heights = Int(label.frame.height)
+//        }
+//        return CGFloat(heights)
+//    }
 }

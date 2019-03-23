@@ -16,6 +16,21 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
     @IBOutlet weak var tv_name: UILabel!
     @IBOutlet weak var tv_phone: UILabel!
     @IBOutlet weak var tv_email: UILabel!
+    //个人信息更新
+    var olduser : String = ""
+    var oldhead : String = ""
+    var oldpwd : String = ""
+    var zhmm : Int = 0
+    var userId: Int = 0
+    var userPwd: String = ""
+    var userEmail: String = ""
+    var userBalance: Double = 0.0
+    var userProfilePhoto: String = ""
+    var userName: String = ""
+    var userRegisterTime: String = ""
+    var isVip: Int = 0
+    var userPhoneNumber: String =  ""
+    var userPwdSalt: String =  ""
     var root : MyViewController?
     var imgs :UIImageView!
     var sheet:UIAlertController!
@@ -30,6 +45,12 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if UserDefaults.standard.object(forKey: "userPhoneNumber") != nil {
+            olduser = UserDefaults.standard.object(forKey: "userPhoneNumber") as! String
+            oldpwd = UserDefaults.standard.object(forKey: "userPwd") as! String
+            
+        }
+        textzm()
         self.title = "资料管理"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"保存",style:UIBarButtonItem.Style.plain,target:self,action:#selector(messagechange))
         tv_ye.textAlignment = .right
@@ -62,24 +83,7 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
         iv_head.layer.cornerRadius = 18
         iv_head.layer.masksToBounds = true
         print("头像\(headph)")
-        if(headph != ""){
-            let url = URL(string:headph)
-            let data = try! Data(contentsOf: url!)
-            let smallImage = UIImage(data: data)
-            iv_head.image = smallImage
-        }
-        
-        if(nameph != ""){
-            tv_name.text = nameph
-        }
-        print("获取的用户名\(nameph)")
-        if(phoneph != ""){
-            tv_phone.text = replacePhone(phone: phoneph)
-        }
-        
-        if(emailph != ""){
-            tv_email.text = emailph
-        }
+        setmess()
         
         let headch = UITapGestureRecognizer(target: self, action: #selector(showActionSheet))
         iv_head.addGestureRecognizer(headch)
@@ -115,15 +119,64 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     var name:String = ""
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func textzm(){
+        let url = "https://www.xingzhu.club/XzTest/users/login"
+        let paras = ["userPhoneNumber":self.olduser,"userPwd":self.oldpwd]
+        print("手机号\(self.olduser)和密码\(self.oldpwd)")
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            if let jdata = response.result.value {
+                let json = JSON(jdata)
+                print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message: String = json["message"].string!
+                
+                if(message == "登录成功"){
+                    let usermess = json["data"]
+                    self.userEmail = usermess["userEmail"].string ?? ""
+                    self.userProfilePhoto = usermess["userProfilePhoto"].string ?? ""
+                    self.userName = usermess["userName"].string ?? ""
+                    self.userBalance = usermess["userBalance"].double ?? 0.0
+                    self.tomainor()
+                }
+                else if(message == "帐号或密码不正确"){
+                    let alertController = UIAlertController(title: "账号密码被修改，请重新登录",
+                                                            message: nil, preferredStyle: .alert)
+                    //显示提示框
+                    self.present(alertController, animated: true, completion: nil)
+                    //两秒钟后自动消失
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                        self.presentedViewController?.dismiss(animated: false, completion: nil)
+                    }
+                    let time: TimeInterval = 1
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
+                        self.ToLoginAction()
+                    }
+                }
+            }
+        }
     }
-    */
+    @objc func ToLoginAction() -> Void {
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: theloginUINavigationController())))
+            as! theloginUINavigationController
+        self.present(controller, animated: true, completion: nil)
+    }
+    func tomainor() {
+        UserDefaults.standard.set(userEmail, forKey: "userEmail")
+        UserDefaults.standard.set(userProfilePhoto, forKey: "userProfilePhoto")
+        UserDefaults.standard.set(userName, forKey: "userName")
+        UserDefaults.standard.set(userBalance, forKey: "userBalance")
+        tv_name.text = self.userName
+        if let url = URL(string:self.userProfilePhoto){
+            let data = try! Data(contentsOf: url)
+            let smallImage = UIImage(data: data)
+            iv_head.image = smallImage
+        }
+        self.tv_email.text = userEmail
+        tv_ye.text = "¥\(userBalance)"
+    }
     //对话框
     func showMsgbox(_message: String, _title: String = "提示"){
         
@@ -170,7 +223,7 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
                 self.tv_email.text = nemail
             }
             else if(inputText.text == ""){
-                self.showMsgbox(_message: "用户名不能为空")
+                self.showMsgbox(_message: "邮箱不能为空")
             }
         }
         
@@ -324,15 +377,15 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
                     print("错误:\(code)")
                     var message: String = json["message"].string!
                     print("返回结果\(message)")
+                    let alertController = UIAlertController(title: message,
+                                                            message: nil, preferredStyle: .alert)
+                    //显示提示框
+                    self.present(alertController, animated: true, completion: nil)
+                    //两秒钟后自动消失
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                        self.presentedViewController?.dismiss(animated: false, completion: nil)
+                    }
                     if(message == "更新成功"){
-                        let alertController = UIAlertController(title: message,
-                                                                message: nil, preferredStyle: .alert)
-                        //显示提示框
-                        self.present(alertController, animated: true, completion: nil)
-                        //两秒钟后自动消失
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
-                            self.presentedViewController?.dismiss(animated: false, completion: nil)
-                        }
                         self.tv_name.text = nname
                         self.tv_email.text = nemail
                         if(self.nhead != ""){
@@ -365,5 +418,25 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
         var b=a.replacingCharacters(in: NSMakeRange(3, 4),with: "****")
         print("替换后：\(b)")
         return b
+    }
+    func setmess(){
+        if(headph != ""){
+            let url = URL(string:headph)
+            let data = try! Data(contentsOf: url!)
+            let smallImage = UIImage(data: data)
+            iv_head.image = smallImage
+        }
+        
+        if(nameph != ""){
+            tv_name.text = nameph
+        }
+        print("获取的用户名\(nameph)")
+        if(phoneph != ""){
+            tv_phone.text = replacePhone(phone: phoneph)
+        }
+        
+        if(emailph != ""){
+            tv_email.text = emailph
+        }
     }
 }

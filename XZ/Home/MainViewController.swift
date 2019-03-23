@@ -40,9 +40,11 @@ class MainViewController: UITabBarController {
         }
     }
     //代理点击事件
-    
+    func getheight()->CGFloat{
+        let height = self.tabBar.frame.size.height
+        return height
+    }
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        print("点击了\(item.tag)")
     }
     /*
     // MARK: - Navigation

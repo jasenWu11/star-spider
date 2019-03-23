@@ -49,7 +49,7 @@ class UICollectionGridViewLayout: UICollectionViewLayout {
                 let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
                 //除第一列，其它列位置都左移一个像素，防止左右单元格间显示两条边框线
                 attributes.frame = CGRect(x:xOffset, y:yOffset, width:itemSize.width,
-                                              height:itemSize.height).integral
+                                          height:itemSize.height).integral
                 
                 //将表头、首列单元格置为最顶层
                 if section == 0 && index == 0 {
@@ -113,7 +113,7 @@ class UICollectionGridViewLayout: UICollectionViewLayout {
     // 这个方法返回每个单元格的位置和大小
     override func layoutAttributesForItem(at indexPath: IndexPath)
         -> UICollectionViewLayoutAttributes? {
-        return itemAttributes[indexPath.section][indexPath.row]
+            return itemAttributes[indexPath.section][indexPath.row]
     }
     
     // 返回所有单元格位置属性
@@ -151,6 +151,20 @@ class UICollectionGridViewLayout: UICollectionViewLayout {
         }
     }
     
+//    //计算某一列的单元格尺寸
+//    func sizeForItemWithColumnIndex(columnIndex: Int, remainingWidth: CGFloat) -> CGSize {
+//        let columnString = viewController.cols[columnIndex]
+//        //根据列头标题文件，估算各列的宽度
+//        let size = NSString(string: columnString).size(withAttributes: [
+//            NSAttributedString.Key.font:UIFont.systemFont(ofSize: 15),
+//            NSAttributedString.Key.underlineStyle:NSUnderlineStyle.single.rawValue
+//            ])
+//
+//        //修改成所有列都平均分配（但宽度不能小于90）
+//        let width = max(remainingWidth/CGFloat(columnIndex+1), 60)
+//        //计算好的宽度还要取整，避免偏移
+//        return CGSize(width: ceil(width), height:size.height + 30)
+//    }
     //计算某一列的单元格尺寸
     func sizeForItemWithColumnIndex(columnIndex: Int, remainingWidth: CGFloat) -> CGSize {
         let columnString = viewController.cols[columnIndex]
@@ -160,9 +174,15 @@ class UICollectionGridViewLayout: UICollectionViewLayout {
             NSAttributedString.Key.underlineStyle:NSUnderlineStyle.single.rawValue
             ])
         
-        //修改成所有列都平均分配（但宽度不能小于90）
-        let width = max(remainingWidth/CGFloat(columnIndex+1), 120)
-        //计算好的宽度还要取整，避免偏移
-        return CGSize(width: ceil(width), height:size.height + 10)
+        //如果有剩余的空间则都给第一列
+        if columnIndex == 0 {
+            return CGSize(width: 100, height:size.height + 30)
+        }
+        else if columnIndex == 1 {
+                return CGSize(width: collectionView!.frame.width-100, height:size.height + 30)
+            
+        }
+        //行高增加10像素，列宽增加17像素
+        return CGSize(width:size.width + 17, height:size.height + 0)
     }
 }

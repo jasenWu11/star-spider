@@ -19,7 +19,7 @@ class BuyappViewController: UIViewController {
     var btheight =  UIScreen.main.bounds.size.width
     var prices :Double = 0.0
     var pids :Int = 0
-    var type:Int = 0
+    var btype:Int = 0
     var l_tm : UILabel?
     var l_ts : UILabel?
     var l_ty : UILabel?
@@ -35,6 +35,7 @@ class BuyappViewController: UIViewController {
     var ifhasPayPwd : String = "没有设置支付密码"
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "购买应用"
         ifHasPayPwd()
         userid = UserDefaults.standard.object(forKey: "userId") as! Int
         getProducts()
@@ -155,19 +156,19 @@ class BuyappViewController: UIViewController {
     @IBAction func tobuy(_ sender: Any) {
         if(bt_mo.isSelected == true){
             prices = pircem
-            type = 1
+            btype = 1
             Xiadan()
         }
         else if(bt_se.isSelected == true){
             
             prices = pircese
-            type = 2
+            btype = 2
             Xiadan()
         }
         else if(bt_ye.isSelected == true){
             
             prices = pricey
-            type = 3
+            btype = 3
             Xiadan()
         }
         else{
@@ -256,8 +257,8 @@ class BuyappViewController: UIViewController {
     func Xiadan() {
         
                 let url = "https://www.xingzhu.club/XzTest/orders/postOrder"
-        let paras = ["productId":self.pids,"userId":self.userid,"orderSpec":self.type]
-                print("商品ID\(self.pids),用户\(self.userid),规格\(self.type)")
+        let paras = ["productId":self.pids,"userId":self.userid,"orderSpec":self.btype]
+                print("商品ID\(self.pids),用户\(self.userid),规格\(self.btype)")
                 // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
                 Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
                     print("jsonRequest:\(response.result)")
@@ -371,13 +372,9 @@ class BuyappViewController: UIViewController {
         }
     }
     func gettopay(){
-       self.performSegue(withIdentifier: "setpaypass", sender: nil)
-    }
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "setpaypass"{
-            let controller = segue.destination as! SetpaypassViewController
-            controller.ntitle = "设置支付密码"
-            
-        }
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: SetpaypassViewController())))
+            as! SetpaypassViewController
+        controller.ntitle = "设置支付密码"
+        self.navigationController?.pushViewController(controller, animated: true)
     }
 }
