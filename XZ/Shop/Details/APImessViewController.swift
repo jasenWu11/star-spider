@@ -16,9 +16,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     //第2个子视图控制器
     private let viewController2 = ShiliViewController()
     //第3个子视图控制器
-    private let viewController3 = messViewController()
-    //第4个子视图控制器
-    private let viewController4 = HistoryViewController()
+    private let viewController3 = HistoryViewController()
     //组件类型
     fileprivate var componentType: ComponentType {
         return .all(menuOptions: MenuOptions(), pagingControllers: pagingControllers)
@@ -26,7 +24,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     
     //所有子视图控制器
     fileprivate var pagingControllers: [UIViewController] {
-        return [viewController1, viewController2, viewController3, viewController4]
+        return [viewController1, viewController2, viewController3]
     }
     
     //菜单配置项
@@ -37,7 +35,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
         }
         //菜单项
         var itemsOptions: [MenuItemViewCustomizable] {
-            return [MenuItem1(), MenuItem2(), MenuItem3(), MenuItem4()]
+            return [MenuItem1(), MenuItem2(), MenuItem3()]
         }
     }
     
@@ -56,15 +54,8 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
             return .text(title: MenuItemText(text: "数据示例"))
         }
     }
-    //第3个菜单项
-    fileprivate struct MenuItem3: MenuItemViewCustomizable {
-        //自定义菜单项名称
-        var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "API调用说明"))
-        }
-    }
     //第4个菜单项
-    fileprivate struct MenuItem4: MenuItemViewCustomizable {
+    fileprivate struct MenuItem3: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
             return .text(title: MenuItemText(text: "版本说明"))
@@ -79,15 +70,18 @@ class APImessViewController: UIViewController {
     var proedit : String = ""
     var prouptime : String = ""
     var hight:CGFloat = 0.0
+    var thesly:CGFloat = 0.0
     var scene = Int32(WXSceneSession.rawValue)
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         //导航栏高度
         let nv_height = self.navigationController?.navigationBar.frame.size.height
         //状态栏高度
         let zt_height = UIApplication.shared.statusBarFrame.height
+        thesly = nv_height!+zt_height
         self.title = datatitles
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"+",style:UIBarButtonItem.Style.plain,target:self,action:#selector(menu))
         self.navigationItem.rightBarButtonItem?.image = UIImage(named: "share")
@@ -96,8 +90,7 @@ class APImessViewController: UIViewController {
         let options = PagingMenuOptions()
         (options.pagingControllers[0] as! messViewController).root = self
         (options.pagingControllers[1] as! ShiliViewController).root = self
-        (options.pagingControllers[2] as! messViewController).root = self
-        (options.pagingControllers[3] as! HistoryViewController).root = self
+        (options.pagingControllers[2] as! HistoryViewController).root = self
         (options.pagingControllers[0] as! messViewController).pids = pid
         (options.pagingControllers[1] as! ShiliViewController).pids = pid
         //分页菜单控制器初始化
@@ -106,8 +99,9 @@ class APImessViewController: UIViewController {
         pagingMenuController.view.frame.origin.y += 0
         pagingMenuController.view.frame.size.height = screenHeight-nv_height!-zt_height
         let hights = pagingMenuController.view.frame.size.height
-        hight = hights
-        print("高度等于\(hights)")
+        let tabBarHeight = (zt_height==44 ? 34 : 0)
+        hight = hights-55-CGFloat(tabBarHeight)
+        print("高度等于\(hight)")
         
         //建立父子关系
         addChild(pagingMenuController)
@@ -124,43 +118,6 @@ class APImessViewController: UIViewController {
     }
     @IBAction func Xiadan(_ sender: Any) {
         self.createApp()
-//        let url = "https://www.xingzhu.club/XzTest/orders/postOrder"
-//        let paras = ["productId":self.pid,"userId":self.userid]
-//        print("商品ID\(self.pid),用户\(self.userid)")
-//        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
-//        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
-//            print("jsonRequest:\(response.result)")
-//
-//            if let data = response.result.value {
-//                let json = JSON(data)
-//                print("结果:\(json)")
-//                var code: Int = json["code"].int!
-//                print("错误:\(code)")
-//                var message:String = json["message"].string!
-//                print("提示:\(message)")
-//                if (message == "创建订单成功！") {
-//                    self.createApp()
-//                    let alertController = UIAlertController(title: "\(message)",
-//                                                            message: nil, preferredStyle: .alert)
-//                    //显示提示框
-//                    self.present(alertController, animated: true, completion: nil)
-//                    //两秒钟后自动消失
-//                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-//                        self.presentedViewController?.dismiss(animated: false, completion: nil)
-//                    }
-//                }
-//                else{
-//                    let alertController = UIAlertController(title: "\(message)",
-//                                                            message: nil, preferredStyle: .alert)
-//                    //显示提示框
-//                    self.present(alertController, animated: true, completion: nil)
-//                    //两秒钟后自动消失
-//                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-//                        self.presentedViewController?.dismiss(animated: false, completion: nil)
-//                    }
-//                }
-//            }
-//        }
        
     }
     func createApp() {
@@ -191,8 +148,8 @@ class APImessViewController: UIViewController {
         
     }
     @objc func menu(_ sender: Any) {
-        let items: [String] = ["分享到微信","分享朋友圈"]
-        let imgSource: [String] = ["wechat","pyq"]
+        let items: [String] = ["分享到微信","分享朋友圈","生成二维码"]
+        let imgSource: [String] = ["wechat","pyq","erweima"]
         NavigationMenuShared.showPopMenuSelecteWithFrameWidth(width: itemWidth, height: 160, point: CGPoint(x: ScreenInfo.Width - 30, y: 0), item: items, imgSource: imgSource) { (index) in
             ///点击回调
             switch index{

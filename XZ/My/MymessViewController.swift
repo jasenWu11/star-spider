@@ -215,6 +215,8 @@ class MymessViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     @objc func emailchange() {
         var inputText:UITextField = UITextField();
+        inputText.textContentType = UITextContentType.emailAddress
+        inputText.keyboardType = UIKeyboardType.emailAddress
         let msgAlertCtr = UIAlertController.init(title: "更改邮箱", message: "请输入邮箱", preferredStyle: .alert)
         let ok = UIAlertAction.init(title: "确定", style:.destructive) { (action:UIAlertAction) ->() in
             if((inputText.text) != ""){

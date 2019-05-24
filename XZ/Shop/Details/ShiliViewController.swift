@@ -187,7 +187,11 @@ class ShiliViewController: UIViewController{
                         self.therows += [self.therow]
                         self.therow.removeAll()
                     }
-                    self.gridViewController.setViewY(type: 1)
+                    //导航栏状态栏高度
+                    let getheight = self.root?.thesly
+                    let theheight = self.screenHeight-getheight!-50-55
+                    let they = getheight!+50
+                    self.gridViewController.setViewY(sjthey: 0, sjheight: theheight,ctype:1)
                     self.gridViewController.setColumns(columns: self.columns)
                     self.gridViewController.setColumd(columd: self.columd)
                     self.gridViewController.setRow(row: self.rows)

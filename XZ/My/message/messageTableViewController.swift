@@ -33,7 +33,7 @@ class messageTableViewController: UIViewController, UITableViewDelegate, UITable
     var theid:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.view.backgroundColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
         let handLeftRight = UISwipeGestureRecognizer(target: self, action: #selector(funLeftRight))
         //handLeftRight.direction = .left //支持向左
         self.view.addGestureRecognizer(handLeftRight)

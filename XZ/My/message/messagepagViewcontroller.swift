@@ -96,15 +96,15 @@ class messagepagViewcontroller: UIViewController {
             case let .didMoveItem(menuItemView, previousMenuItemView):
                 print("--- 标签切换完毕 ---")
                 if(menuItemView.titleLabel.text == "全部"){
-                   (options.pagingControllers[0] as! messageTableViewController).headerres()
+                   (options.pagingControllers[0] as! messageTableViewController).Refresh()
                     print("刷新已读")
                 }
                 if(menuItemView.titleLabel.text == "已读"){
-                    (options.pagingControllers[1] as! messagereadTableViewController).headerres()
+                    (options.pagingControllers[1] as! messagereadTableViewController).Refresh()
                     print("刷新已读")
                 }
                 if(menuItemView.titleLabel.text == "未读"){
-                    (options.pagingControllers[2] as! messagereadnTableViewController).headerres()
+                    (options.pagingControllers[2] as! messagereadnTableViewController).Refresh()
                     print("刷新已读")
                 }
             case let .willMoveController(menuController, previousMenuController):

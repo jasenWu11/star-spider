@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Alamofire
 class ShopTableViewCell: UITableViewCell{
     var iconImage     : UIImageView?
     var titleLabel    : UILabel?
@@ -31,7 +31,7 @@ class ShopTableViewCell: UITableViewCell{
         self.setUpUI()
     }
     @objc func composeBtnClick(shopcellView: UILabel) {
-        print(shopcellView.tag)
+        //print(shopcellView.tag)
         var pid = (root?.pidss[shopcellView.tag])!
         var ntitle:String = (root?.titles[shopcellView.tag])!
         root?.root?.pids = pid
@@ -39,43 +39,45 @@ class ShopTableViewCell: UITableViewCell{
         root?.root?.todeatil()
     }
     @objc func BuyClick(subButton: UIButton) {
-        let optionMenuController = UIAlertController(title: nil, message: "选择支付方式", preferredStyle: .actionSheet)
-        
-        let AlipayAction = UIAlertAction(title: "支付宝", style: .default, handler: {
-            (alert: UIAlertAction!) -> Void in
-            self.pid = subButton.tag
-            let alertController = UIAlertController(title: "使用支付宝支付购买商品\(self.pid)",
-                                                    message: nil, preferredStyle: .alert)
-            //显示提示框
-            self.root?.present(alertController, animated: true, completion: nil)
-            //两秒钟后自动消失
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
-            self.root?.presentedViewController?.dismiss(animated: false, completion: nil)
+        var pid = (root?.pidss[subButton.tag])!
+        var proname:String = (root?.titles[subButton.tag])!
+        let alertController = UIAlertController(title: "提示", message: "是否获取应用\"\(proname)\"？",preferredStyle: .alert)
+        let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
+            action in
+            self.createApp(pids: pid)
+        })
+        let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction1)
+        alertController.addAction(cancelAction2)
+        root?.present(alertController, animated: true, completion: nil)
+    }
+    func createApp(pids:Int) {
+        var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
+        let url = "https://www.xingzhu.club/XzTest/apps/createApp"
+        let paras = ["productId":pids,"userId":userid]
+        //print("商品ID\(pids),用户\(userid)")
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            //print("jsonRequest:\(response.result)")
+            
+            if let data = response.result.value {
+                let json = JSON(data)
+                //print("结果:\(json)")
+                var code: Int = json["code"].int!
+                //print("错误:\(code)")
+                var message:String = json["message"].string!
+                //print("创建应用提示:\(message)")
+                let alertController = UIAlertController(title: message,
+                                                        message: nil, preferredStyle: .alert)
+                //显示提示框
+                self.root?.present(alertController, animated: true, completion: nil)
+                //两秒钟后自动消失
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                    self.root?.presentedViewController?.dismiss(animated: false, completion: nil)
+                }
             }
-        })
+        }
         
-        let WechatAction = UIAlertAction(title: "微信", style: .default, handler: {
-            (alert: UIAlertAction!) -> Void in
-            self.pid = subButton.tag
-            let alertController = UIAlertController(title: "使用微信支付购买商品\(self.pid)",
-                message: nil, preferredStyle: .alert)
-            //显示提示框
-            self.root?.present(alertController, animated: true, completion: nil)
-            //两秒钟后自动消失
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
-                self.root?.presentedViewController?.dismiss(animated: false, completion: nil)
-            }
-        })
-        
-        let cancelAction = UIAlertAction(title: "取消", style: .default, handler: {
-            (alert: UIAlertAction!) -> Void in
-        })
-        
-        optionMenuController.addAction(AlipayAction)
-        optionMenuController.addAction(WechatAction)
-        optionMenuController.addAction(cancelAction)
-        
-        root?.present(optionMenuController, animated: true, completion: nil)
     }
     func setUpUI(){
         //视图
@@ -121,7 +123,7 @@ class ShopTableViewCell: UITableViewCell{
         shopcellView?.addSubview(pirceLabel!)
         // 按钮
         subButton = UIButton(frame: CGRect(x:screenWidth-80-25, y:(iconImage?.frame.size.height)!-35, width:80, height: 25))
-        subButton?.setTitle("购买", for: UIControl.State.normal)
+        subButton?.setTitle("获取应用", for: UIControl.State.normal)
         subButton?.setTitleColor(UIColor.white, for: UIControl.State.normal)
         subButton?.backgroundColor = UIColor.black
         subButton?.titleLabel?.font = UIFont.systemFont(ofSize: 14)
@@ -150,5 +152,20 @@ class ShopTableViewCell: UITableViewCell{
         super.setSelected(selected, animated: animated)
         // Configure the view for the selected state
     }
-    
+    //label自适应高度
+    func heightForView(text:String, font:UIFont, width:CGFloat) -> CGFloat{
+        var theheight:CGFloat = 0.0
+        let label:UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: width, height: CGFloat.greatestFiniteMagnitude))
+        label.numberOfLines = 0
+        label.lineBreakMode = NSLineBreakMode.byWordWrapping
+        label.font = font
+        label.text = text
+        label.sizeToFit()
+        if(label.frame.height>50.5){
+            theheight = 50.5
+        }else{
+            theheight = label.frame.height
+        }
+        return theheight
+    }
 }

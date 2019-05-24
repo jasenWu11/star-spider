@@ -22,6 +22,7 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
     var productType:[String] = []
     var iskeywords:[Int] = []
     var endtime:[String] = []
+    var xufeiPayStatus:[String] = []
     var iskey:Int = 0
 //    var states:[String] = ["未开始","已停止","已停止","暂停","未开始","正在操作","正在操作"]
 //    var counts:[String] = ["0","16","30","15","0","20","18"]
@@ -36,8 +37,15 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
     let header = MJRefreshNormalHeader()
     var searchBars:UISearchBar?
     var searchtext:String = ""
+    // 底部加载
+    let footer = MJRefreshAutoNormalFooter()
+    var indexs:Int = 0
+    var maxcount:Int = 10
+    var chongzhi:Int = 0
+    var issear:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
         //关闭导航栏半透明效果
         self.navigationController?.navigationBar.isTranslucent = false
         self.tableView?.separatorStyle = .none
@@ -58,6 +66,7 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
         searchBars?.keyboardType = .default
         //        searchBars?.addTarget(self, action: #selector(composeBtnClick), for: UIControl.Event.touchUpInside)
         view.addSubview(searchBars!)
+       
         //下拉刷新
         header.lastUpdatedTimeLabel.isHidden = false
         header.stateLabel.isHidden = false
@@ -68,8 +77,13 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
         tableView?.separatorStyle = .none
+        //上刷新相关设置
+        footer.setRefreshingTarget(self, refreshingAction: #selector(MyAppTableViewController.footerLoad))
+        //是否自动加载（默认为true，即表格滑到底部就自动加载）
+        footer.isAutomaticallyRefresh = false
+        self.tableView!.mj_footer = footer
         //下拉刷新
-        header.setRefreshingTarget(self, refreshingAction: #selector(getAllApps))
+        header.setRefreshingTarget(self, refreshingAction: #selector(Refresh))
         self.tableView!.mj_header = header
         //创建一个重用的单元格
         self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "ShopCell")
@@ -80,7 +94,7 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewDidAppear(animated)
         print("我的应用前台显示")
         //手动调用刷新效果
-        getAllApps()
+        Refresh()
         // The rest of your code.
     }
     // MARK: - Table view data source
@@ -103,8 +117,9 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
             cell.root = self
             cell.tv_title?.text = titles[indexPath.row]
             cell.tv_stime?.text = ctimes[indexPath.row]
-            cell.tv_etime?.text = appStatus[indexPath.row]
-            cell.tv_states?.text = appPayStatus[indexPath.row]
+            cell.tv_etime?.text = appPayStatus[indexPath.row]
+            cell.tv_states?.setTitle(xufeiPayStatus[indexPath.row], for: .normal)
+            cell.tv_states?.tag = indexPath.row
             cell.v_oper!.tag = indexPath.row
             cell.bt_oper!.tag = indexPath.row
             //cell.bt_dele!.tag = pidss[indexPath.row]
@@ -113,7 +128,30 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath){
         print(indexPath.row)
     }
-    @objc func getAllApps()  {
+    func headerres(){
+        header.beginRefreshing()
+    }
+    @objc func Refresh(){
+        self.titles.removeAll()
+        self.ctimes.removeAll()
+        self.etimes.removeAll()
+        self.pidss.removeAll()
+        self.productParams.removeAll()
+        self.appId.removeAll()
+        self.crawlerName.removeAll()
+        self.appStatus.removeAll()
+        self.appPayStatus.removeAll()
+        self.productType.removeAll()
+        self.iskeywords.removeAll()
+        self.endtime.removeAll()
+        self.xufeiPayStatus.removeAll()
+        getAllApps(index: 0)
+        if (chongzhi == 1) {
+            self.tableView!.mj_footer.resetNoMoreData()
+        }
+    }
+    @objc func getAllApps(index:Int)  {
+        issear = 0
         searchBars?.text = ""
         let now = Date()
         // 创建一个日期格式器
@@ -135,19 +173,13 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
                 var message:String = json["message"].string!
                 print("提示:\(message)")
                 let provinces = json["data"]
-                self.titles.removeAll()
-                self.ctimes.removeAll()
-                self.etimes.removeAll()
-                self.pidss.removeAll()
-                self.productParams.removeAll()
-                self.appId.removeAll()
-                self.crawlerName.removeAll()
-                self.appStatus.removeAll()
-                self.appPayStatus.removeAll()
-                self.productType.removeAll()
-                self.iskeywords.removeAll()
-                self.endtime.removeAll()
-                for i in 0..<provinces.count{
+                var jndex = index+10
+                self.maxcount = provinces.count
+                if (jndex>=provinces.count){
+                    jndex = provinces.count
+                    self.tableView!.mj_footer.endRefreshingWithNoMoreData()
+                }
+                for i in index..<jndex{
                     let appIds: Int = provinces[i]["appId"].int ?? 0
                     self.appId += [appIds]
                     
@@ -211,6 +243,25 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                     self.appPayStatus += [apStatus]
                     
+                    var xfStatus = ""
+                    if (apaystatus == 1){
+                        xfStatus = "购买"
+                    }
+                    else if (apaystatus == 2){
+                        
+                        if eTime.compare(savetime) == .orderedAscending
+                        {
+                            print("续费")
+                            xfStatus = "续费"
+                        }
+                        else if eTime.compare(savetime) == .orderedDescending
+                        {
+                            print("续费")
+                            xfStatus = "续费"
+                        }
+                    }
+                    self.xufeiPayStatus += [xfStatus]
+                    
                     let producttype: Int = provinces[i]["productType"].int ?? 0
                     
                     var ptype = ""
@@ -225,12 +276,16 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                     self.productType += [ptype]
                 }
+                 self.indexs = jndex
             }
-             print("剩下的时间\(self.endtime)")
-            self.tableView!.reloadData()
-            //结束刷新
-            self.tableView!.mj_header.endRefreshing()
+            self.reloadData()
         }
+    }
+    func reloadData(){
+        //重现加载表格数据
+        self.tableView!.reloadData()
+        //结束刷新
+        self.tableView!.mj_header.endRefreshing()
     }
     func searchBar(_ searchBar:UISearchBar, textDidChange searchText:String) {
         
@@ -238,17 +293,31 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
         searchtext = searchBars?.text! ?? ""
         print(searchtext)
         //print("searchtext")
-        getApps()
+        self.titles.removeAll()
+        self.ctimes.removeAll()
+        self.etimes.removeAll()
+        self.pidss.removeAll()
+        self.productParams.removeAll()
+        self.appId.removeAll()
+        self.crawlerName.removeAll()
+        self.appStatus.removeAll()
+        self.appPayStatus.removeAll()
+        self.productType.removeAll()
+        self.iskeywords.removeAll()
+        self.endtime.removeAll()
+        self.xufeiPayStatus.removeAll()
+        getApps(index: 0)
         if (searchtext == "") {
-            getAllApps()
+            Refresh()
         }
     }
     func searchBarCancelButtonClicked(_ searchBar:UISearchBar) {
         print("cancel")
         searchBars?.text = ""
-        getAllApps()
+        Refresh()
     }
-    @objc func getApps()  {
+    @objc func getApps(index:Int) {
+        issear = 1
         let now = Date()
         // 创建一个日期格式器
         let dformatter = DateFormatter()
@@ -269,19 +338,13 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
                 var message:String = json["message"].string!
                 print("提示:\(message)")
                 let provinces = json["data"]
-                self.titles.removeAll()
-                self.ctimes.removeAll()
-                self.etimes.removeAll()
-                self.pidss.removeAll()
-                self.productParams.removeAll()
-                self.appId.removeAll()
-                self.crawlerName.removeAll()
-                self.appStatus.removeAll()
-                self.appPayStatus.removeAll()
-                self.productType.removeAll()
-                self.iskeywords.removeAll()
-                self.endtime.removeAll()
-                for i in 0..<provinces.count{
+                var jndex = index+10
+                self.maxcount = provinces.count
+                if (jndex>=provinces.count){
+                    jndex = provinces.count
+                    self.tableView!.mj_footer.endRefreshingWithNoMoreData()
+                }
+                for i in index..<jndex{
                     let appIds: Int = provinces[i]["appId"].int ?? 0
                     self.appId += [appIds]
                     
@@ -345,6 +408,25 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                     self.appPayStatus += [apStatus]
                     
+                    var xfStatus = ""
+                    if (apaystatus == 1){
+                        xfStatus = "购买"
+                    }
+                    else if (apaystatus == 2){
+                        
+                        if eTime.compare(savetime) == .orderedAscending
+                        {
+                            print("续费")
+                            xfStatus = "续费"
+                        }
+                        else if eTime.compare(savetime) == .orderedDescending
+                        {
+                            print("续费")
+                            xfStatus = "续费"
+                        }
+                    }
+                    self.xufeiPayStatus += [xfStatus]
+                    
                     let producttype: Int = provinces[i]["productType"].int ?? 0
                     
                     var ptype = ""
@@ -359,12 +441,21 @@ class MyAppTableViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                     self.productType += [ptype]
                 }
+                self.indexs = jndex
             }
-            print("剩下的时间\(self.endtime)")
-            self.tableView!.reloadData()
-            //结束刷新
-            self.tableView!.mj_header.endRefreshing()
+             self.reloadData()
         }
     }
-
+    //底部上拉加载
+    @objc func footerLoad(){
+        //print("上拉加载.")
+        chongzhi = 1
+        //生成并添加数据
+        if(issear == 0){
+            getApps(index: indexs)
+        }
+        else{
+            getAllApps(index: indexs)
+        }
+    }
 }

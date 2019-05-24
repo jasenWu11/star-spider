@@ -47,6 +47,8 @@ class OperateViewController: UIViewController {
     var bezierText:BezierText!
     var cantouch:Int = 0
     var text:String = "loading..."
+    let screenWidth =  UIScreen.main.bounds.size.width
+    let screenHeight =  UIScreen.main.bounds.size.height
     override func viewDidLoad() {
         super.viewDidLoad()
         //关闭导航栏半透明效果
@@ -129,7 +131,7 @@ class OperateViewController: UIViewController {
                 self.gridViewController.removeRow()
                 self.qdata = tf_data.text!
                 let url = "https://www.xingzhu.club/XzTest/spiders/crawlers"
-                let paras = ["crawlerName":self.crawlername,"keyword":self.qdata,"max_page":8,"page_info_number":30,"userId":self.userid] as [String : Any]
+                let paras = ["crawlerName":self.crawlername,"keyword":self.qdata,"max_page":8,"page_info_number":30,"userId":self.userid,"number":50] as [String : Any]
                 print("开始爬取--爬虫名\(self.crawlername)，关键字\(self.qdata)")
                 // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
                 Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
@@ -189,7 +191,14 @@ class OperateViewController: UIViewController {
                             //关闭定时d任务
                             MCGCDTimer.shared.cancleTimer(WithTimerName: "GCDTimer")
                             self.gridViewController.bezierText.removeFromSuperview()
-                            self.gridViewController.setViewY(type: 0)
+                            //导航栏高度
+                            let nv_height = self.navigationController?.navigationBar.frame.size.height
+                            //状态栏高度
+                            let zt_height = UIApplication.shared.statusBarFrame.height
+                            let theheight = nv_height!+zt_height+36
+                            let thisheight = self.screenHeight-theheight
+                            let they = theheight
+                            self.gridViewController.setViewY(sjthey: 0, sjheight: thisheight,ctype:1)
                             self.gridViewController.setColumns(columns: self.columns)
                             self.gridViewController.setColumd(columd: self.columd)
                             self.gridViewController.setRow(row: self.rows)

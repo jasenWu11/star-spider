@@ -32,9 +32,22 @@ class messViewController: UIViewController {
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
     var pids:Int = 0
+    var sv_yxx:UIScrollView?
     override func viewDidLoad() {
         super.viewDidLoad()
+        //状态栏高度
+        let zt_height = UIApplication.shared.statusBarFrame.height
+        var thehei = screenHeight-zt_height-44-55-50
         view.backgroundColor = UIColorRGB_Alpha(R: 238.0, G: 238.0, B: 238.0, alpha: 1.0);
+        sv_yxx = UIScrollView(frame: CGRect(x:0, y: 0, width:view.frame.size.width, height: thehei))
+        sv_yxx?.backgroundColor = UIColor.white
+        view.addSubview(sv_yxx!)
+        //是否可以滚动
+        sv_yxx?.isScrollEnabled = true
+        //垂直方向反弹
+        sv_yxx?.alwaysBounceVertical = true
+        //垂直方向是否显示滚动条
+        sv_yxx?.showsVerticalScrollIndicator = false
         //商品视图
         proView = UIView(frame: CGRect(x:0, y: 0, width:screenWidth, height: screenWidth*3/4))
         proView?.backgroundColor=UIColor.white
@@ -44,7 +57,7 @@ class messViewController: UIViewController {
         proView?.layer.shadowOffset = CGSize(width: 0, height: 0)
         proView?.layer.shadowRadius = 4
         proView?.layer.masksToBounds = false
-        view.addSubview(proView!)
+        sv_yxx?.addSubview(proView!)
         //图片
         proPhoto = UIImageView(frame: CGRect(x:0, y: 0, width:screenWidth, height: screenWidth*3/4))
         proView?.addSubview(proPhoto!)
@@ -60,7 +73,7 @@ class messViewController: UIViewController {
         versView?.layer.shadowOffset = CGSize(width: 0, height: 0)
         versView?.layer.shadowRadius = 4
         versView?.layer.masksToBounds = false
-        view.addSubview(versView!)
+        sv_yxx?.addSubview(versView!)
         let versViewWidth =  (UIScreen.main.bounds.size.width)/2
         let versViewHeight =  ((versView?.frame.size.height)!)/2
         //标题
@@ -162,6 +175,8 @@ class messViewController: UIViewController {
         versView?.addSubview(qixian!)
         qixian?.adjustsFontSizeToFitWidth=true
         qixian?.text = "一个月"
+        sv_yxx?.contentSize = CGSize(width: screenWidth,
+                                     height: thehei);
 //        //价格视图
 //        priceView = UIView(frame: CGRect(x:0, y: (proView?.frame.size.height)!+(versView?.frame.size.height)!+25, width:screenWidth
 //            , height: 55))
@@ -193,7 +208,7 @@ class messViewController: UIViewController {
         jingaoView?.layer.shadowOffset = CGSize(width: 0, height: 0)
         jingaoView?.layer.shadowRadius = 4
         jingaoView?.layer.masksToBounds = false
-        view.addSubview(jingaoView!)
+        sv_yxx?.addSubview(jingaoView!)
         //警告内容
         tv_jg = UITextView(frame: CGRect(x:15, y:0, width: screenWidth-30, height:50))
         tv_jg?.font = UIFont.systemFont(ofSize: 14)
@@ -295,6 +310,7 @@ class messViewController: UIViewController {
             qixian?.frame.origin.y -= they
             versView?.frame.size.height -= they
             jingaoView?.frame.origin.y -= they
+            sv_yxx?.contentSize.height += they
         }
         if (wheres == "prodes") {
             var they = 50-label.frame.height
@@ -308,6 +324,7 @@ class messViewController: UIViewController {
             qixian?.frame.origin.y -= they
             versView?.frame.size.height -= they
             jingaoView?.frame.origin.y -= they
+            sv_yxx?.contentSize.height += they
         }
         
         return label.frame.height

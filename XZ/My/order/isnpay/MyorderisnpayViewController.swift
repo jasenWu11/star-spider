@@ -10,7 +10,7 @@ import UIKit
 import UIKit
 import Alamofire
 import MJRefresh
-class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITableViewDataSource , UISearchBarDelegate{
     var titles:[String] = []
     var pstatus:[String] = []
     var ctimes:[String] = []
@@ -35,9 +35,29 @@ class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITabl
     var indexs:Int = 0
     var maxcount:Int = 10
     var chongzhi:Int = 0
-    var count:Int = 0
+    var searchBars:UISearchBar?
+    var searchtext:String = ""
+    var issear:Int = 0
+    var ops:Int = 1
     override func viewDidLoad() {
         super.viewDidLoad()
+        //搜索框
+        searchBars = UISearchBar(frame: CGRect(x:0, y: 0, width:screenWidth, height: 44))
+        searchBars?.barStyle = .black
+        searchBars?.showsCancelButton = true
+        searchBars?.keyboardAppearance = .default
+        searchBars?.delegate = self
+        let bt_cancel = searchBars?.value(forKey: "cancelButton") as! UIButton
+        bt_cancel.setTitle("Cancel", for: .normal)
+        bt_cancel.setTitleColor(UIColor.white,for: .normal)
+        let seartext = searchBars?.value(forKey: "searchField") as! UITextField
+        seartext.textColor = UIColor.white
+        searchBars?.tintColor = UIColor.blue
+        //光标颜色
+        searchBars?.subviews[0].subviews[1].tintColor = UIColor.white
+        searchBars?.keyboardType = .default
+        //        searchBars?.addTarget(self, action: #selector(composeBtnClick), for: UIControl.Event.touchUpInside)
+        view.addSubview(searchBars!)
         header.lastUpdatedTimeLabel.isHidden = true
         header.stateLabel.isHidden = true
         userid = UserDefaults.standard.object(forKey: "userId") as! Int
@@ -48,15 +68,15 @@ class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITabl
         //self.tableView = UITableView(frame: self.view.frame, style:.plain)
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
-        tableView?.separatorStyle = .none
         //创建一个重用的单元格
         self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "ShopCell")
+        tableView?.separatorStyle = .none
         view.addSubview(self.tableView!)
         header.setRefreshingTarget(self, refreshingAction: #selector(Refresh))
         self.tableView!.mj_header = header
         Refresh()
         //上刷新相关设置
-        footer.setRefreshingTarget(self, refreshingAction: #selector(MyorderisnpayViewController.footerLoad))
+        footer.setRefreshingTarget(self, refreshingAction: #selector(MyorderTableViewController.footerLoad))
         //是否自动加载（默认为true，即表格滑到底部就自动加载）
         footer.isAutomaticallyRefresh = false
         self.tableView!.mj_footer = footer
@@ -76,7 +96,7 @@ class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
         -> UITableViewCell {
-            let identifier = "MyappisnpayCell"
+            let identifier = "MyappCell"
             let cell = MyorderisnpayTableViewCell.init(style: UITableViewCell.CellStyle.default, reuseIdentifier: identifier) as! MyorderisnpayTableViewCell
             cell.root = self
             cell.tv_title?.text = titles[indexPath.row]
@@ -84,7 +104,7 @@ class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITabl
             cell.tv_pstate?.text = pstatus[indexPath.row]
             cell.tv_oid?.text = "\(oidss[indexPath.row])"
             cell.tv_ctime?.text = ctimes[indexPath.row]
-            cell.tv_price?.text = "\(prices[indexPath.row])"
+            cell.tv_price?.text = "\(prices[indexPath.row])元"
             cell.tv_ptime?.text = optimes[indexPath.row]
             cell.bt_oper!.tag = indexPath.row
             cell.bt_dele!.tag = indexPath.row
@@ -113,16 +133,44 @@ class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITabl
             self.tableView!.mj_footer.resetNoMoreData()
         }
     }
+    func searchBar(_ searchBar:UISearchBar, textDidChange searchText:String) {
+        
+        //searchBars?.resignFirstResponder()
+        searchtext = searchBars?.text! ?? ""
+        print(searchtext)
+        //print("searchtext")
+        self.oidss.removeAll()
+        self.titles.removeAll()
+        self.etimes.removeAll()
+        self.ctimes.removeAll()
+        self.prices.removeAll()
+        self.pstatus.removeAll()
+        self.pidss.removeAll()
+        self.optimes.removeAll()
+        self.ostatus.removeAll()
+        self.apybutton.removeAll()
+        gettheOrders(index: 0)
+        if (searchtext == "") {
+            Refresh()
+        }
+    }
+    func searchBarCancelButtonClicked(_ searchBar:UISearchBar) {
+        print("cancel")
+        searchBars?.text = ""
+        Refresh()
+    }
     @objc func getMyOrders(index:Int)  {
-        let url = "https://www.xingzhu.club/XzTest/orders/getMyOrders"
-        let paras = ["userId":self.userid]
+        searchBars?.text = ""
+        issear = 0
+        let url = "https://www.xingzhu.club/XzTest/orders/selectOrderByUidAndPayStatus"
+        let paras = ["userId":self.userid,"orderPaymentStatus":self.ops]
         print("用户ID\(self.userid)")
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
         Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
-            print("jsonRequest:\(response.result)")
+            //print("jsonRequest:\(response.result)")
             if let data = response.result.value {
                 let json = JSON(data)
-                print("结果:\(json)")
+                //print("结果:\(json)")
                 var code: Int = json["code"].int!
                 print("错误:\(code)")
                 var message:String = json["message"].string!
@@ -134,71 +182,60 @@ class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITabl
                     jndex = provinces.count
                     self.tableView!.mj_footer.endRefreshingWithNoMoreData()
                 }
-                else{
-                    var indexss = index
-                    for i in 0..<100{
-                        let orderId: Int = provinces[indexss]["orderId"].int ?? 0
-                        
-                        let productId: Int = provinces[indexss]["productId"].int ?? 0
-                        
-                        let productTitle: String = provinces[indexss]["productTitle"].string ?? ""
-                        
-                        
-                        let orderEndTime: String = provinces[indexss]["orderEndTime"].string ?? ""
-                        
-                        
-                        let orderCreateTime: String = provinces[indexss]["orderCreateTime"].string ?? ""
-                        
-                        
-                        let orderPayTime: String = provinces[indexss]["orderPayTime"].string ?? ""
-                        
-                        
-                        let productPriceMonth: Double = provinces[indexss]["productPriceMonth"].double ?? 0
-                        
-                        
-                        let orderPaymentStatus: Int = provinces[indexss]["orderPaymentStatus"].int ?? 0
-                        
-                        let orderStatus: Int = provinces[indexss]["orderStatus"].int ?? 0
-                        var oPStatus = ""
-                        if (orderPaymentStatus == 1){
-                            self.count += 1
-                            oPStatus = "未支付"
-                            self.oidss += [orderId]
-                            self.pidss += [productId]
-                            self.titles += [productTitle]
-                            self.etimes += [orderEndTime]
-                            self.ctimes += [orderCreateTime]
-                            self.optimes += [orderPayTime]
-                            self.prices += [productPriceMonth]
-                            self.apybutton += ["未支付"]
-                            var oStatus = ""
-                            if (orderStatus == 1){
-                                oStatus = "暂停"
-                            }
-                            else if (orderStatus == 2){
-                                oStatus = "进行中"
-                            }
-                            else if (orderStatus == 3){
-                                oStatus = "已完成"
-                            }
-                            self.ostatus += [oStatus]
-                            self.pstatus += [oPStatus]
-                        }
-                        
-                        indexss += 1
-                        if(self.count == 10){
-                            break
-                        }
+                for i in index..<jndex{
+                    let orderId: Int = provinces[i]["orderId"].int ?? 0
+                    self.oidss += [orderId]
+                    let productId: Int = provinces[i]["productId"].int ?? 0
+                    self.pidss += [productId]
+                    let productTitle: String = provinces[i]["productTitle"].string ?? ""
+                    self.titles += [productTitle]
+                    
+                    let orderEndTime: String = provinces[i]["orderEndTime"].string ?? ""
+                    self.etimes += [orderEndTime]
+                    
+                    let orderCreateTime: String = provinces[i]["orderCreateTime"].string ?? ""
+                    self.ctimes += [orderCreateTime]
+                    
+                    let orderPayTime: String = provinces[i]["orderPayTime"].string ?? ""
+                    self.optimes += [orderPayTime]
+                    
+                    let productPriceMonth: Double = provinces[i]["productPriceMonth"].double ?? 0
+                    self.prices += [productPriceMonth]
+                    
+                    let orderPaymentStatus: Int = provinces[i]["orderPaymentStatus"].int ?? 0
+                    
+                    var oPStatus = ""
+                    if (orderPaymentStatus == 1){
+                        oPStatus = "未支付"
+                        self.apybutton += ["支付"]
                     }
-                    self.indexs = indexss
-                    self.count = 0
+                    else if (orderPaymentStatus == 2){
+                        oPStatus = "已支付"
+                        self.apybutton += ["已支付"]
+                    }
+                    else if (orderPaymentStatus == 3){
+                        oPStatus = "已关闭"
+                        self.apybutton += ["已关闭"]
+                    }
+                    self.pstatus += [oPStatus]
+                    
+                    let orderStatus: Int = provinces[i]["orderStatus"].int ?? 0
+                    
+                    var oStatus = ""
+                    if (orderStatus == 1){
+                        oStatus = "暂停"
+                    }
+                    else if (orderStatus == 2){
+                        oStatus = "进行中"
+                    }
+                    else if (orderStatus == 3){
+                        oStatus = "已完成"
+                    }
+                    self.ostatus += [oStatus]
                 }
-                
+                self.indexs = jndex
             }
-            //重现加载表格数据
-            self.tableView!.reloadData()
-            //结束刷新
-            self.tableView!.mj_header.endRefreshing()
+            self.reloadData()
         }
     }
     //初始化数据
@@ -215,10 +252,111 @@ class MyorderisnpayViewController: UIViewController, UITableViewDelegate, UITabl
     }
     //底部上拉加载
     @objc func footerLoad(){
-        print("上拉加载.")
+        //print("上拉加载.")
         chongzhi = 1
         //生成并添加数据
-        getMyOrders(index: indexs)
+        if(issear == 0){
+            getMyOrders(index: indexs)
+        }
+        else{
+            gettheOrders(index: indexs)
+        }
+        //        //重现加载表格数据
+        //        self.tableView!.reloadData()
+        //        //结束刷新
+        //        self.tableView!.mj_footer.endRefreshing()
         
+    }
+    func reloadData(){
+        //重现加载表格数据
+        self.tableView!.reloadData()
+        //结束刷新
+        self.tableView!.mj_header.endRefreshing()
+    }
+    @objc func gettheOrders(index:Int)  {
+        issear = 1
+        let url = "https://www.xingzhu.club/XzTest/orders/getMyOrders"
+        let paras = ["userId":self.userid]
+        print("用户ID\(self.userid)")
+        var searfor:String = self.searchtext
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            //print("jsonRequest:\(response.result)")
+            if let data = response.result.value {
+                let json = JSON(data)
+                //print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("提示:\(message)")
+                let provinces = json["data"]
+                var jndex = index+10
+                self.maxcount = provinces.count
+                if (jndex>=provinces.count){
+                    jndex = provinces.count
+                    self.tableView!.mj_footer.endRefreshingWithNoMoreData()
+                }
+                for i in index..<jndex{
+                    let productTitle: String = provinces[i]["productTitle"].string ?? ""
+                    let stringResult = productTitle.contains(searfor)
+                    print("包含图吗？\(stringResult)")
+                    if(stringResult == true){
+                        self.titles += [productTitle]
+                        
+                        let orderId: Int = provinces[i]["orderId"].int ?? 0
+                        self.oidss += [orderId]
+                        
+                        let productId: Int = provinces[i]["productId"].int ?? 0
+                        self.pidss += [productId]
+                        
+                        let orderEndTime: String = provinces[i]["orderEndTime"].string ?? ""
+                        self.etimes += [orderEndTime]
+                        
+                        let orderCreateTime: String = provinces[i]["orderCreateTime"].string ?? ""
+                        self.ctimes += [orderCreateTime]
+                        
+                        let orderPayTime: String = provinces[i]["orderPayTime"].string ?? ""
+                        self.optimes += [orderPayTime]
+                        
+                        let productPriceMonth: Double = provinces[i]["productPriceMonth"].double ?? 0
+                        self.prices += [productPriceMonth]
+                        
+                        let orderPaymentStatus: Int = provinces[i]["orderPaymentStatus"].int ?? 0
+                        
+                        var oPStatus = ""
+                        if (orderPaymentStatus == 1){
+                            oPStatus = "未支付"
+                            self.apybutton += ["支付"]
+                        }
+                        else if (orderPaymentStatus == 2){
+                            oPStatus = "已支付"
+                            self.apybutton += ["已支付"]
+                        }
+                        else if (orderPaymentStatus == 3){
+                            oPStatus = "已关闭"
+                            self.apybutton += ["已关闭"]
+                        }
+                        self.pstatus += [oPStatus]
+                        
+                        let orderStatus: Int = provinces[i]["orderStatus"].int ?? 0
+                        
+                        var oStatus = ""
+                        if (orderStatus == 1){
+                            oStatus = "暂停"
+                        }
+                        else if (orderStatus == 2){
+                            oStatus = "进行中"
+                        }
+                        else if (orderStatus == 3){
+                            oStatus = "已完成"
+                        }
+                        self.ostatus += [oStatus]
+                    }
+                    
+                }
+                self.indexs = jndex
+            }
+            self.reloadData()
+        }
     }
 }

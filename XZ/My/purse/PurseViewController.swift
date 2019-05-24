@@ -52,6 +52,13 @@ class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelega
         v_Topup.isUserInteractionEnabled = true
         // Do any additional setup after loading the view.
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print("我的详细信息前台显示")
+        //手动调用刷新效果
+        selctyue()
+        // The rest of your code.
+    }
     func textzm(){
         if UserDefaults.standard.object(forKey: "userPhoneNumber") != nil {
             olduser = UserDefaults.standard.object(forKey: "userPhoneNumber") as! String
@@ -106,8 +113,6 @@ class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelega
 
     }
     
-    
-    
     //点击事件方法
     @objc func pursedeailAction() -> Void {
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: PursedeailTableViewController())))
@@ -119,65 +124,73 @@ class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelega
        viewDidAppear()
     }
     @objc func viewDidAppear(){
+        var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
+        let to_url = "http://www.xingzhu.club/v1.0/#/iosPay?Id=\(userid)"
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: ToWebViewController())))
+            as! ToWebViewController
+        controller.theurl = to_url
+        controller.thetitle = "钱包充值"
+        controller.hidesBottomBarWhenPushed = true
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(controller, animated: true)
         
-        
-        let alertController = UIAlertController(title: "钱包充值",
-                                                message: "请输入100000以内充值金额(元)", preferredStyle: .alert)
-        alertController.addTextField {
-            (textField: UITextField!) -> Void in
-            textField.placeholder = "充值金额(元)"
-            textField.clearButtonMode=UITextField.ViewMode.whileEditing  //编辑时出现清除按钮
-            textField.clearButtonMode=UITextField.ViewMode.unlessEditing  //编辑时不出现，编辑后才出现清除按钮
-            textField.clearButtonMode=UITextField.ViewMode.always  //一直显示清除按钮
-            textField.delegate = self
-        }
-        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-        let okAction = UIAlertAction(title: "好的", style: .destructive, handler: {
-            action in
-            //也可以用下标的形式获取textField let login = alertController.textFields![0]
-            let money = alertController.textFields!.first!
-            var mon:String = money.text ?? ""
-            print("充值金额：\(mon)")
-            if(mon == ""){
-                self.showMsgbox(_message: "充值金额不能为空")
-            }
-            else{
-                let mon1 = Double(self.moneys)!
-                let mon2 = Double(mon)!
-                print("充值金额\(mon2)")
-//                let mon2 = Double("\(String(describing: mon))")!
-                var mons:Double = mon1+mon2
-                self.moneys = "\(mons)"
-                
-                
-                var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
-                let url = "https://www.xingzhu.club/XzTest/recharges/recharge"
-                // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
-                let paras = ["userId":userid,"rechargerMoney":mon2] as [String : Any]
-                // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
-                Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
-                    print("jsonRequest:\(response.result)")
-                    var request : String = "\(response.result)"
-                    if let data = response.result.value {
-                        let json = JSON(data)
-                        print("结果:\(json)")
-                        let code: Int = json["code"].int!
-                        print("错误:\(code)")
-                        var message:String = json["message"].string!
-                        print("message\(message)")
-                        self.showMsgbox(_message: message)
-                        if(message == "充值成功！"){
-                            print("金钱是\(mons)")
-                          UserDefaults.standard.set(mons, forKey: "userBalance")
-                            self.tv_money.text = "\(mons)"
-                        }
-                    }
-                }
-            }
-        })
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        self.present(alertController, animated: true, completion: nil)
+//        let alertController = UIAlertController(title: "钱包充值",
+//                                                message: "请输入100000以内充值金额(元)", preferredStyle: .alert)
+//        alertController.addTextField {
+//            (textField: UITextField!) -> Void in
+//            textField.placeholder = "充值金额(元)"
+//            textField.clearButtonMode=UITextField.ViewMode.whileEditing  //编辑时出现清除按钮
+//            textField.clearButtonMode=UITextField.ViewMode.unlessEditing  //编辑时不出现，编辑后才出现清除按钮
+//            textField.clearButtonMode=UITextField.ViewMode.always  //一直显示清除按钮
+//            textField.delegate = self
+//        }
+//        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+//        let okAction = UIAlertAction(title: "好的", style: .destructive, handler: {
+//            action in
+//            //也可以用下标的形式获取textField let login = alertController.textFields![0]
+//            let money = alertController.textFields!.first!
+//            var mon:String = money.text ?? ""
+//            print("充值金额：\(mon)")
+//            if(mon == ""){
+//                self.showMsgbox(_message: "充值金额不能为空")
+//            }
+//            else{
+//                let mon1 = Double(self.moneys)!
+//                let mon2 = Double(mon)!
+//                print("充值金额\(mon2)")
+////                let mon2 = Double("\(String(describing: mon))")!
+//                var mons:Double = mon1+mon2
+//                self.moneys = "\(mons)"
+//
+//
+//                var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
+//                let url = "https://www.xingzhu.club/XzTest/recharges/recharge"
+//                // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+//                let paras = ["userId":userid,"rechargerMoney":mon2] as [String : Any]
+//                // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+//                Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+//                    print("jsonRequest:\(response.result)")
+//                    var request : String = "\(response.result)"
+//                    if let data = response.result.value {
+//                        let json = JSON(data)
+//                        print("结果:\(json)")
+//                        let code: Int = json["code"].int!
+//                        print("错误:\(code)")
+//                        var message:String = json["message"].string!
+//                        print("message\(message)")
+//                        self.showMsgbox(_message: message)
+//                        if(message == "充值成功！"){
+//                            print("金钱是\(mons)")
+//                          UserDefaults.standard.set(mons, forKey: "userBalance")
+//                            self.tv_money.text = "\(mons)"
+//                        }
+//                    }
+//                }
+//            }
+//        })
+//        alertController.addAction(cancelAction)
+//        alertController.addAction(okAction)
+//        self.present(alertController, animated: true, completion: nil)
     }
     func showMsgbox(_message: String, _title: String = "提示"){
         
@@ -309,5 +322,27 @@ class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelega
             }
         }
     }
-
+    func selctyue(){
+        var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
+        let url = "https://www.xingzhu.club/XzTest/users/ selectUserById"
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        let paras = ["userId":userid]
+        print("用户ID\(userid)")
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            var request : String = "\(response.result)"
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                let code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("message\(message)")
+                let usermess = json["data"]
+                self.userBalance = usermess["userBalance"].double ?? 0.0
+                UserDefaults.standard.set(self.userBalance, forKey: "userBalance")
+                self.tv_money.text = "¥\(self.userBalance)"
+            }
+        }
+    }
 }

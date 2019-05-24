@@ -264,7 +264,7 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
         bt_tj?.backgroundColor = UIColorRGB_Alpha(R: 0.0, G: 140.0, B: 255.0, alpha: 0.8);
         v_url = UIView(frame: CGRect(x:0, y:screenHeight, width:screenWidth, height: screenHeight-20))
         
-        v_url?.backgroundColor = UIColor.white
+        v_url?.backgroundColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
         self.view.addSubview(v_url!)
         
         bt_close = UIButton(frame: CGRect(x:15, y:15, width:40, height: 40))

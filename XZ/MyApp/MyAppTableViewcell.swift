@@ -21,7 +21,7 @@ class MyAppTableViewcell: UITableViewCell {
     var bt_dele : UIButton?
     var tv_stimes: UILabel?
     var tv_etimes: UILabel?
-    var tv_states: UILabel?
+    var tv_states: UIButton?
     var tv_counts: UILabel?
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
@@ -44,6 +44,7 @@ class MyAppTableViewcell: UITableViewCell {
         var crawlernames : String = (root?.crawlerName[subButton.tag])!
         var iskey : Int = (root?.iskeywords[subButton.tag])!
         var pidss : Int = (root?.pidss[subButton.tag])!
+        var endtimes : String = (root?.endtime[subButton.tag])!
         var Ntitle:String = (root?.titles[subButton.tag])!
         root?.root?.Ntitle = Ntitle
         root?.root?.iskey = iskey
@@ -58,7 +59,7 @@ class MyAppTableViewcell: UITableViewCell {
             let alertController = UIAlertController(title: "提示", message: "该应用使用天数不够，是否前往购买？",preferredStyle: .alert)
             let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
                 action in
-                self.payok(thepid: pidss)
+                self.payok(thepid: pidss,theendtime:endtimes)
             })
             let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
             alertController.addAction(cancelAction1)
@@ -66,8 +67,9 @@ class MyAppTableViewcell: UITableViewCell {
             root?.present(alertController, animated: true, completion: nil)
         }
     }
-    func payok(thepid:Int){
+    func payok(thepid:Int,theendtime:String){
         root?.root?.pids = thepid
+        root?.root?.etimes = theendtime
         root?.root?.MyOrder()
     }
     func Deleactions(appids:Int,appnames:String) {
@@ -105,7 +107,7 @@ class MyAppTableViewcell: UITableViewCell {
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
                     self.root?.presentedViewController?.dismiss(animated: false, completion: nil)
                 }
-                self.root?.getAllApps()
+                self.root?.Refresh()
             }
         }
         
@@ -186,7 +188,7 @@ class MyAppTableViewcell: UITableViewCell {
         tv_etimes = UILabel(frame: CGRect(x:15, y:80, width:80, height: 20))
         tv_etimes?.font = UIFont.systemFont(ofSize: 14)
         tv_etimes?.textColor = UIColor.gray
-        tv_etimes?.text = "运行状态："
+        tv_etimes?.text = "支付状态："
         v_oper?.addSubview(tv_etimes!)
         // 结束时间
         tv_etime = UILabel(frame: CGRect(x:90, y:80, width:200, height: 20))
@@ -194,16 +196,17 @@ class MyAppTableViewcell: UITableViewCell {
         tv_etime?.textColor = UIColor.gray
         v_oper?.addSubview(tv_etime!)
         // 状态
-        tv_states = UILabel(frame: CGRect(x:screenWidth-80, y:30, width:60, height: 60))
-        tv_states?.font = UIFont.systemFont(ofSize: 14)
-        tv_states?.textColor = UIColor.black
-        tv_states?.text = "状态"
+        tv_states = UIButton(frame: CGRect(x:screenWidth-80, y:30, width:60, height: 60))
+        tv_states?.setTitleColor(UIColor.black, for: .normal)
+        tv_states?.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        tv_states?.setTitle("状态", for: .normal)
         tv_states?.layer.cornerRadius = 30.0
         tv_states?.layer.borderWidth = 0.5
         tv_states?.layer.masksToBounds = true
-        tv_states?.textAlignment=NSTextAlignment.center
         v_oper?.addSubview(tv_states!)
-//
+        tv_states?.addTarget(self, action: #selector(xufeiAction), for: UIControl.Event.touchUpInside)
+        //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
+        tv_states?.isUserInteractionEnabled = true
 //        tv_state = UILabel(frame: CGRect(x:50, y:85, width:100, height: 20))
 //        tv_state?.font = UIFont.systemFont(ofSize: 14)
 //        tv_state?.textColor = UIColor.black
@@ -293,4 +296,41 @@ class MyAppTableViewcell: UITableViewCell {
 //                            }
         
    }
+    @objc func xufeiAction(subButton: UIButton){
+        print("支付状态\(root?.appPayStatus)")
+        let xufeiPayStatus:String = (root?.xufeiPayStatus[subButton.tag])!
+        var crawlernames : String = (root?.crawlerName[subButton.tag])!
+        var iskey : Int = (root?.iskeywords[subButton.tag])!
+        var pidss : Int = (root?.pidss[subButton.tag])!
+        var Ntitle:String = (root?.titles[subButton.tag])!
+        var endtimes : String = (root?.endtime[subButton.tag])!
+        root?.root?.Ntitle = Ntitle
+        root?.root?.iskey = iskey
+        root?.root?.crawlername = crawlernames
+        print("支付状态\(xufeiPayStatus)")
+        print("产品编号\(pids)")
+        print("是否需要keyword\(iskey)")
+        if(xufeiPayStatus == "续费"){
+            let alertController = UIAlertController(title: "提示", message: "你已支付该应用，是否续费？",preferredStyle: .alert)
+            let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
+                action in
+                self.payok(thepid: pidss, theendtime: endtimes)
+            })
+            let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+            alertController.addAction(cancelAction1)
+            alertController.addAction(cancelAction2)
+            root?.present(alertController, animated: true, completion: nil)
+        }
+        if(xufeiPayStatus == "购买"){
+            let alertController = UIAlertController(title: "提示", message: "该应用使用天数不够，是否前往购买？",preferredStyle: .alert)
+            let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
+                action in
+                self.payok(thepid: pidss, theendtime: endtimes)
+            })
+            let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+            alertController.addAction(cancelAction1)
+            alertController.addAction(cancelAction2)
+            root?.present(alertController, animated: true, completion: nil)
+        }
+    }
 }

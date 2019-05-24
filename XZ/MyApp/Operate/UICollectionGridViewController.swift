@@ -10,9 +10,9 @@ import Foundation
 import UIKit
 import MessageUI
 import MobileCoreServices
+import SafariServices
 
-
-//多列表格组件（通过CollectionView实现）
+//多列表格组v件（通过CollectionView实现）
 class UICollectionGridViewController: UICollectionViewController ,MFMailComposeViewControllerDelegate{
     //表头数据
     var cols: [String]! = []
@@ -34,6 +34,8 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     //var bt_min:UIButton?
     var bt_left:UIButton?
     var bt_right:UIButton?
+    var sw_bj:UISwitch?
+    var bt_save:UIButton?
     var height:Int = 0
     var they:Int = 0
     let screenWidth =  UIScreen.main.bounds.size.width
@@ -45,11 +47,18 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     var phoitem:Int = -1
     var page:Int = 0
     var xiangqing:Int = 0
+    var safariurl:String = ""
     var _scene = Int32(WXSceneSession.rawValue)
     var _tencentOAuth:TencentOAuth!
     //动画
     var bezierText:BezierText!
     var v_web:UIView?
+    var smallImage:UIImage?
+    var emailph:String = ""
+    var alltext:[UITextView] = []
+    var zhongjihei:CGFloat = 0.0
+    var tczt:Int = 0
+    var xg_view:UIView?
     init() {
         
         //初始化表格布局
@@ -87,7 +96,13 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         collectionView!.collectionViewLayout.invalidateLayout()
         collectionView!.reloadData()
     }
+    //添加真的行数据
     
+    func addRows(row: [Any]) {
+        therow.append(row)
+        collectionView!.collectionViewLayout.invalidateLayout()
+        collectionView!.reloadData()
+    }
     
     //添加实际行数据
     func setRow(row: [[Any]]) {
@@ -107,13 +122,17 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        NotificationCenter.default.addObserver(self, selector: #selector(UICollectionGridViewController.keyboardWillChangeFrame), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(UICollectionGridViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        //获取屏幕大小
+        let screenSize : CGSize = UIScreen.main.bounds.size
+        
         _tencentOAuth = TencentOAuth.init(appId: "101552319", andDelegate: nil)
         //初始化文字笔迹书写组件
         bezierText = BezierText(frame: CGRect(x: 0, y: 160,
                                               width: self.view.bounds.width, height: 50))
         
-        v_datasource = UIButton(frame: CGRect(x:20, y: screenHeight, width:screenWidth-40, height: screenHeight/5*3))
+        v_datasource = UIButton(frame: CGRect(x:0, y: screenHeight, width:screenWidth, height: screenHeight/5*3))
         v_datasource?.backgroundColor=UIColor.white
         v_datasource?.clipsToBounds=true
         v_datasource?.layer.cornerRadius = 3
@@ -163,8 +182,7 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         bt_right?.setImage(UIImage(named:"right"), for: .normal)
         bt_right?.addTarget(self, action: #selector(funbuttonLeft(sender:)), for: UIControl.Event.touchUpInside)
         v_datasource?.addSubview(bt_right!)
-        
-        datasourceView = UIScrollView(frame: CGRect(x:0, y: 40, width:screenWidth-40, height: (v_datasource?.frame.size.height)!-40))
+        datasourceView = UIScrollView(frame: CGRect(x:0, y: 40, width:screenWidth, height: (v_datasource?.frame.size.height)!-40))
         datasourceView?.backgroundColor=UIColor.white
         datasourceView?.clipsToBounds=true
         datasourceView?.layer.cornerRadius = 3
@@ -193,7 +211,9 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         view.addSubview(v_web!)
         v_web?.addGestureRecognizer(webdown)
     }
-    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     override func viewDidLayoutSubviews() {
         collectionView!.frame = CGRect(x:0, y:0,
                                        width:view.frame.width, height:view.frame.height)
@@ -281,10 +301,11 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
 //        }
         if(indexPath.section>0){
             if (xiangqing == 0) {
-                UIView.animate(withDuration: 1 , delay: 0 , usingSpringWithDamping: 0.5 , initialSpringVelocity: 8 , options: [] , animations: {
+               UIView.animate(withDuration: 0.4) {
                     self.v_datasource?.center.y -= self.screenHeight
-                }, completion: nil)
-                xiangqing = 1
+                self.tczt = 1
+                }
+            xiangqing = 1
             }
             self.Setdatasource(section: indexPath.section)
         }
@@ -301,6 +322,7 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         self.v_datasource?.transform = CGAffineTransform.identity
         UIView.animate(withDuration: 0.4) {
             self.v_datasource?.center.y += self.screenHeight
+            self.tczt = 0
         }
         xiangqing = 0
     }
@@ -322,6 +344,8 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         }
     }
     func Setdatasource(section:Int){
+        bt_save?.isHidden = true
+        sw_bj?.isOn = false
         if(section>0){
             self.page = section
             //print("列数是\(self.colum.count)")
@@ -351,11 +375,14 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
                         dataImage.contentMode = UIView.ContentMode.scaleAspectFit
                         let url = URL(string:Imageurl)
                         if let data = try? Data(contentsOf: url!){
-                            let smallImage = UIImage(data: data)
+                            smallImage = UIImage(data: data)
                             dataImage.image = smallImage
                             datasourceView?.addSubview(dataImage)
                             they=they+Int((dataImage.frame.size.height)+10)
                         }
+                        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(self.longPressClick))
+                        dataImage.isUserInteractionEnabled = true
+                        dataImage.addGestureRecognizer(longPress)
                     }
                 }
                 
@@ -453,18 +480,240 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
             datasourceView?.contentSize = CGSize(width: 200,
                                                  height: they);
         }
-        
-
     }
-    func setViewY(type:Int){
-        if(type == 1){
-            v_datasource!.frame.origin.y = screenHeight/5-84+screenHeight // 获取坐标Y
+    func Setdatasource2(section:Int){
+        alltext.removeAll()
+        if(section>0){
+            self.page = section
+            //print("列数是\(self.colum.count)")
+            v_datasource?.isHidden = false
+            //print("表头数据\(self.colum)")
+            //先清除datasourceView视图下所有子视图，避免叠加
+            let chilrenviews = datasourceView?.subviews
+            
+            for chilren in chilrenviews! {
+                
+                chilren.removeFromSuperview()
+                
+            }
+            they = 0
+            rowdata = self.therow[section-1] as! [String]
+            if(phoitem != -1){
+                print("第\(phoitem)列")
+                print(self.rowdata[phoitem])
+                var Imageurl = self.rowdata[phoitem]
+                // 图片
+                if(Imageurl != ""&&Imageurl != "null"){
+                    let stringResult = Imageurl.contains("http")
+                    print("\(index)包含图吗？\(stringResult)")
+                    if(stringResult == true){
+                        var dataImage = UIImageView(frame: CGRect(x:0, y: they, width:Int((datasourceView?.frame.size.width)!), height: Int((datasourceView?.frame.size.width)!)))
+                        dataImage.contentMode = UIView.ContentMode.scaleAspectFit
+                        let url = URL(string:Imageurl)
+                        if let data = try? Data(contentsOf: url!){
+                            smallImage = UIImage(data: data)
+                            dataImage.image = smallImage
+                            datasourceView?.addSubview(dataImage)
+                            they=they+Int((dataImage.frame.size.height)+10)
+                        }
+                        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(self.longPressClick))
+                        dataImage.isUserInteractionEnabled = true
+                        dataImage.addGestureRecognizer(longPress)
+                    }
+                }
+                
+            }
+            //print("行\(rowdata)")
+            for i in 0..<colum.count{
+                var long = self.colum[i].count
+                if (long>5){
+                    var a = UILabel(frame: CGRect(x:10, y: they, width:105, height: 30))
+                    a.text = self.colum[i]
+                    a.font = UIFont.systemFont(ofSize: 16)
+                    a.textColor = UIColor(red: 91.0/225.0, green: 84.0/225.0, blue: 145.0/225.0, alpha: 1.0)
+                    a.layer.cornerRadius = 3
+                    a.layer.borderWidth = 1
+                    a.layer.borderColor = UIColor(red: 91.0/225.0, green: 84.0/225.0, blue: 145.0/225.0, alpha: 1.0).cgColor
+                    a.layer.masksToBounds = true
+                    a.textAlignment = .center
+                    they=they+35
+                    datasourceView?.addSubview(a)
+                }
+                else{
+                    var a = UILabel(frame: CGRect(x:10, y: they, width:90, height: 30))
+                    a.text = self.colum[i]
+                    a.font = UIFont.systemFont(ofSize: 16)
+                    a.textColor = UIColor(red: 91.0/225.0, green: 84.0/225.0, blue: 145.0/225.0, alpha: 1.0)
+                    a.layer.cornerRadius = 3
+                    a.layer.borderWidth = 1
+                    a.layer.borderColor = UIColor(red: 91.0/225.0, green: 84.0/225.0, blue: 145.0/225.0, alpha: 1.0).cgColor
+                    a.layer.masksToBounds = true
+                    a.textAlignment = .center
+                    they=they+35
+                    datasourceView?.addSubview(a)
+                }
+                if(i == 1){
+                    var b = UIButton(frame: CGRect(x:Int((datasourceView?.frame.size.width)!-120), y: they-35, width:110, height: 30))
+                    b.setTitle("跳转链接", for: .normal)
+                    b.backgroundColor = UIColor(red: 91.0/225.0, green: 84.0/225.0, blue: 145.0/225.0, alpha: 1.0)
+                    b.setTitleColor(UIColor.white, for: .normal)
+                    b.layer.cornerRadius = 3
+                    b.layer.borderWidth = 1
+                    b.layer.masksToBounds = true
+                    b.setImage(UIImage(named: "jumpto"), for: .normal)
+                    b.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
+                    b.addTarget(self, action: #selector(toweburl), for: UIControl.Event.touchUpInside)
+                    datasourceView?.addSubview(b)
+                }
+                //print("字符串长度为\(self.rowdata[i].count)")
+                var strcou = self.rowdata[i].count
+                if(strcou<=13){
+                    var b = UITextView(frame: CGRect(x:Int((datasourceView?.frame.size.width)!-20)/2-40, y: they-35, width:Int((datasourceView?.frame.size.width)!-20)+40, height: 30))
+                    b.text = self.rowdata[i]
+                    b.font = UIFont.systemFont(ofSize: 16)
+                    b.textColor = UIColor.black
+                    b.isScrollEnabled = false
+                    datasourceView?.addSubview(b)
+                    alltext += [b]
+                    if(i == 0){
+                        b.isEditable = false
+                    }
+                }
+                if(strcou>13&&strcou<=20){
+                    var b = UITextView(frame: CGRect(x:10, y: they, width:Int((datasourceView?.frame.size.width)!-20), height: 30))
+                    b.text = self.rowdata[i]
+                    b.font = UIFont.systemFont(ofSize: 16)
+                    b.textColor = UIColor.black
+                    they=they+Int((b.frame.size.height)+5)
+                    datasourceView?.addSubview(b)
+                    alltext += [b]
+                }
+                else if(strcou<=60 && strcou>20){
+                    var b = UITextView(frame: CGRect(x:10, y: they, width:Int((datasourceView?.frame.size.width)!-20), height: 60))
+                    b.text = self.rowdata[i]
+                    b.font = UIFont.systemFont(ofSize: 16)
+                    b.textColor = UIColor.black
+                    b.backgroundColor = UIColor(red: 91.0/225.0, green: 84.0/225.0, blue: 145.0/225.0, alpha: 0.2)
+                    they=they+Int((b.frame.size.height)+5)
+                    datasourceView?.addSubview(b)
+                    alltext += [b]
+                }
+                else if(strcou<=100 && strcou>60){
+                    var b = UITextView(frame: CGRect(x:10, y: they, width:Int((datasourceView?.frame.size.width)!-20), height: 90))
+                    b.text = self.rowdata[i]
+                    b.font = UIFont.systemFont(ofSize: 16)
+                    b.textColor = UIColor.black
+                    b.backgroundColor = UIColor(red: 91.0/225.0, green: 84.0/225.0, blue: 145.0/225.0, alpha: 0.2)
+                    they=they+Int((b.frame.size.height)+5)
+                    datasourceView?.addSubview(b)
+                    alltext += [b]
+                }
+                else if(strcou>100){
+                    var b = UITextView(frame: CGRect(x:10, y: they, width:Int((datasourceView?.frame.size.width)!-20), height: 150))
+                    b.text = self.rowdata[i]
+                    b.font = UIFont.systemFont(ofSize: 16)
+                    b.textColor = UIColor.black
+                    b.backgroundColor = UIColor(red: 91.0/225.0, green: 84.0/225.0, blue: 145.0/225.0, alpha: 0.2)
+                    they=they+Int((b.frame.size.height)+5)
+                    datasourceView?.addSubview(b)
+                    alltext += [b]
+                }
+            }
+            datasourceView?.contentSize = CGSize(width: 200,
+                                                 height: they);
         }
-        else if(type == 0){
-            v_datasource!.frame.origin.y = screenHeight/5-64+screenHeight  // 获取坐标Y
-            //修改视图高度
-            v_datasource!.frame.size.height += 40
-            datasourceView!.frame.size.height += 40
+    }
+    func setViewY(sjthey:CGFloat,sjheight:CGFloat,ctype:Int){
+        if(ctype == 1){
+            v_datasource!.frame.origin.y = sjthey+screenHeight
+            v_datasource!.frame.size.height = sjheight
+            zhongjihei = sjheight
+            datasourceView!.frame.size.height = sjheight-40
+            let vwidth = v_datasource?.frame.size.width
+            let vheight = v_datasource?.frame.size.height
+        }else{
+            v_datasource!.frame.origin.y = sjthey+screenHeight
+            v_datasource!.frame.size.height = sjheight
+            zhongjihei = sjheight
+            datasourceView!.frame.size.height = sjheight-80
+            let vwidth = v_datasource?.frame.size.width
+            let vheight = v_datasource?.frame.size.height
+            xg_view = UIView(frame: CGRect(x:(vwidth!-120)/2, y: vheight!-35, width:80, height: 30))
+            v_datasource?.addSubview(xg_view!)
+            var l_xiugai = UILabel(frame: CGRect(x:0, y: 0, width:40, height: 30))
+            l_xiugai.text = "编辑"
+            xg_view?.addSubview(l_xiugai)
+            sw_bj = UISwitch(frame: CGRect(x:40, y: 0, width:80, height: 30))
+            //添加状态变化监听器
+            sw_bj?.addTarget(self, action: #selector(switchDidChange(_:)), for: .valueChanged)
+            xg_view?.addSubview(sw_bj!)
+            bt_save = UIButton(frame: CGRect(x:vwidth!-90, y: vheight!-35, width:80, height: 30))
+            bt_save?.backgroundColor = UIColor(red: 91.0/255.0, green: 84.0/255.0, blue: 145.0/255.0, alpha: 0.7)
+            bt_save?.setTitle("保存修改", for: .normal)
+            bt_save?.isHidden = true
+            v_datasource?.addSubview(bt_save!)
+            bt_save?.addTarget(self, action: #selector(saveData), for: UIControl.Event.touchUpInside)
+            //        if(type == 1){
+            //            v_datasource!.frame.origin.y = screenHeight/5-84+screenHeight // 获取坐标Y
+            //        }
+            //        else if(type == 0){
+            //            v_datasource!.frame.origin.y = screenHeight/5-64+screenHeight  // 获取坐标Y
+            //            //修改视图高度
+            //            v_datasource!.frame.size.height += 40
+            //            datasourceView!.frame.size.height += 40
+            //        }
+        }
+    }
+    func setaddY(){
+        v_datasource?.frame.origin.y = self.screenHeight
+        print("窗口y值为\(v_datasource?.frame.origin.y)")
+        xiangqing = 0
+    }
+    func getckzt() -> Int {
+        return tczt
+    }
+    @objc func switchDidChange(_ sender: UISwitch){
+        //打印当前值
+        print(sender.isOn)
+        if(sender.isOn == true) {
+            Setdatasource2(section: page)
+            //rowdata = self.therow[page-1] as! [String]
+            //print("该行数据是\(rowdata)")
+            bt_save?.isHidden = false
+        }
+        else{
+            Setdatasource(section: page)
+        }
+    }
+    @objc func saveData(){
+        //rowdata = self.therow[page-1] as! [String]
+        var xsz:[String] = []
+        var jxsz:[String] = []
+        for index in 0..<colum.count{
+            var sz = alltext[index].text as! String
+            xsz += [sz]
+            print("第\(index)个数据是\(sz)")
+        }
+        jxsz += [alltext[0].text as! String]
+        jxsz += [alltext[2].text as! String]
+        print("改了之后的数据是\(xsz)")
+        rows.remove(at: page-1)
+        therow.remove(at: page-1)
+        var xrows:[[String]] = []
+        var jxrows:[[String]] = []
+        addRow(row: jxsz)
+        addRows(row: xsz)
+        Setdatasource(section: rows.count)
+        UIView.animate(withDuration: 0.3) {
+            self.v_web?.frame.origin.y = self.screenHeight
+            let alertController = UIAlertController(title: "修改成功",
+                                                    message: nil, preferredStyle: .alert)
+            //显示提示框
+            self.present(alertController, animated: true, completion: nil)
+            //两秒钟后自动消失
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                self.presentedViewController?.dismiss(animated: false, completion: nil)
+            }
         }
     }
     //到处excel
@@ -719,11 +968,13 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         }
     }
     @objc func funDown(sender: UIPanGestureRecognizer){
-        UIView.animate(withDuration: 0.6) {
-            self.v_datasource?.transform = CGAffineTransform.identity
-                .translatedBy(x: -100, y: 0)
-                //.rotated(by:CGFloat(Double.pi/4))
-                .scaledBy(x: 0.5, y: 0.5)
+        if(sw_bj?.isOn != true){
+            UIView.animate(withDuration: 0.6) {
+                self.v_datasource?.transform = CGAffineTransform.identity
+                    .translatedBy(x: -100, y: 0)
+                    //.rotated(by:CGFloat(Double.pi/4))
+                    .scaledBy(x: 0.5, y: 0.5)
+            }
         }
     }
     //处理分享返回结果
@@ -775,6 +1026,9 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         //测试1
         let mimeType1 = mimeType(pathExtension: "gif")
         print("文件1是\(mimeType1)")
+        if UserDefaults.standard.object(forKey: "userEmail") != nil {
+            emailph = UserDefaults.standard.object(forKey: "userEmail") as! String
+        }
         //设置邮件地址、主题及正文
         mailComposeVC.setToRecipients(["1252279088@qq.com"])
         mailComposeVC.setSubject("\(excelname2)")
@@ -864,15 +1118,21 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         let nv_height = CGFloat((dh_height))
         let tourl = rowdata[1]
         let showname = rowdata[2]
-        
+        self.safariurl = tourl
         UIView.animate(withDuration: 0.3) {
             self.v_web?.frame.origin.y -= self.screenHeight
+            self.tczt = 1
         }
         //返回按钮
         var bt_back = UIButton(frame: CGRect(x:5, y: 5, width:30, height: 30))
         bt_back.setImage(UIImage(named: "close"), for: .normal)
         self.v_web?.addSubview(bt_back)
         bt_back.addTarget(self, action: #selector(closewebView), for: UIControl.Event.touchUpInside)
+        //跳转浏览器
+        var bt_safari = UIButton(frame: CGRect(x:screenWidth-30-5, y:5, width:30, height: 30))
+        bt_safari.setImage(UIImage(named: "jumpto"), for: .normal)
+        self.v_web?.addSubview(bt_safari)
+        bt_safari.addTarget(self, action: #selector(tosafari), for: UIControl.Event.touchUpInside)
         //标题
         var l_title = UILabel(frame: CGRect(x:40,y:5,width:(v_web?.frame.size.width)! - 80,height:30))
         l_title.text = showname
@@ -892,6 +1152,72 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     @objc func closewebView(){
         UIView.animate(withDuration: 0.3) {
             self.v_web?.frame.origin.y += self.screenHeight
+            self.tczt = 0
+        }
+    }
+    //长按手势事件
+    @objc func longPressClick() {
+        let headph = UserDefaults.standard.object(forKey: "userProfilePhoto") as! String
+        let alert = UIAlertController(title: "请选择", message: nil, preferredStyle: .actionSheet)
+        let action1 = UIAlertAction(title: "保存到相册", style: .default) { [weak self](_) in
+            //按着command键，同时点击UIImageWriteToSavedPhotosAlbum方法可以看到
+            let smallImages = self!.smallImage?.drawTextInImage(text: "星蛛服务", textColor: UIColor(red: 91.0/255.0, green: 84.0/255.0, blue: 145.0/255.0, alpha: 0.7), textFont: UIFont.systemFont(ofSize: 8), suffixText: nil, suffixFont: nil, suffixColor: nil)
+            UIImageWriteToSavedPhotosAlbum(smallImages!,self, #selector(self!.image(_:didFinishSavingWithError:contextInfo:)), nil)
+        }
+        let cancel = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        alert.addAction(action1)
+        alert.addAction(cancel)
+        self.present(alert, animated: true, completion: nil)
+    }
+    @objc func image(_ image: UIImage, didFinishSavingWithError: NSError?, contextInfo: AnyObject){
+        if didFinishSavingWithError != nil {
+            let alertController = UIAlertController(title: "请开启访问相册权限后使用此功能",
+                                                    message: nil, preferredStyle: .alert)
+            //显示提示框
+            self.present(alertController, animated: true, completion: nil)
+            //两秒钟后自动消失
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                self.presentedViewController?.dismiss(animated: false, completion: nil)
+            }
+        } else {
+            let alertController = UIAlertController(title: "图片保存成功",
+                                                    message: nil, preferredStyle: .alert)
+            //显示提示框
+            self.present(alertController, animated: true, completion: nil)
+            //两秒钟后自动消失
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
+                self.presentedViewController?.dismiss(animated: false, completion: nil)
+            }
+        }
+    }
+    @objc func tosafari(){
+        let urls = URL(string: self.safariurl)
+        UIApplication.shared.open(urls!, options: [UIApplication.OpenExternalURLOptionsKey(rawValue: ""):""], completionHandler: nil)
+    }
+    /// 监听键盘弹出
+    @objc private func keyboardWillChangeFrame(node : Notification){
+        //1.获取动画执行的时间
+        let duration =  node.userInfo!["UIKeyboardAnimationDurationUserInfoKey"] as! Double
+        //2. 获取键盘最终的Y值
+        let endFrame = (node.userInfo!["UIKeyboardFrameEndUserInfoKey"] as! NSValue).cgRectValue
+        let y = endFrame.origin.y
+        //3.计算工具栏距离底部的间距
+        let margin =  UIScreen.main.bounds.height - y
+        //4.执行动画
+        print("高度是\(zhongjihei)")
+        if(sw_bj?.isOn == true){
+            v_datasource?.frame.size.height = zhongjihei
+            v_datasource?.frame.size.height -= margin
+            datasourceView?.frame.size.height = zhongjihei-80
+            datasourceView?.frame.size.height -= margin
+            print("视图的高度为\(v_datasource?.frame.size.height)")
+        }
+    }
+    /// 监听键盘收回
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if(sw_bj?.isOn == true){
+            v_datasource?.frame.size.height = zhongjihei
+            datasourceView?.frame.size.height = zhongjihei-80
         }
     }
 }

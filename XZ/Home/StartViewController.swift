@@ -148,4 +148,24 @@ class StartViewController: UIViewController {
             }
         }
     }
+    //Alamofire监控网络，只能调用一次监听一次
+    func AlamofiremonitorNet() {
+        let manager = NetworkReachabilityManager(host: "www.apple.com")
+        manager?.listener = { status in
+            print("网络状态: \(status)")
+            if status == .reachable(.ethernetOrWiFi) { //WIFI
+                print("wifi")
+            } else if status == .reachable(.wwan) { // 蜂窝网络
+                print("4G")
+            } else if status == .notReachable { // 无网络
+                print("无网络")
+            } else { // 其他
+                
+            }
+            
+        }
+        manager?.startListening()//开始监听网络
+    }
+    
+
 }

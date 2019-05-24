@@ -9,6 +9,7 @@
 import UIKit
 import Alamofire
 class BuyappViewController: UIViewController {
+    @IBOutlet weak var l_sxd: UILabel!
     @IBOutlet weak var tv_proname: UILabel!
     @IBOutlet weak var bt_tobuy: UIButton!
     @IBOutlet weak var v_price: UIView!
@@ -19,6 +20,7 @@ class BuyappViewController: UIViewController {
     var btheight =  UIScreen.main.bounds.size.width
     var prices :Double = 0.0
     var pids :Int = 0
+    var etime:String = ""
     var btype:Int = 0
     var l_tm : UILabel?
     var l_ts : UILabel?
@@ -35,7 +37,14 @@ class BuyappViewController: UIViewController {
     var ifhasPayPwd : String = "没有设置支付密码"
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.title = "购买应用"
+        if(etime == ""){
+            l_sxd.text = "0天"
+        }else{
+            l_sxd.text = etime
+        }
+        
         ifHasPayPwd()
         userid = UserDefaults.standard.object(forKey: "userId") as! Int
         getProducts()
@@ -332,7 +341,7 @@ class BuyappViewController: UIViewController {
                 //显示提示框
                 self.present(alertController, animated: true, completion: nil)
                 //两秒钟后自动消失
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
                     self.presentedViewController?.dismiss(animated: false, completion: nil)
                 }
                 if(message == "订单支付成功！"){
@@ -340,7 +349,10 @@ class BuyappViewController: UIViewController {
                         self.yuer = UserDefaults.standard.object(forKey: "userBalance") as! Double
                     }
                     UserDefaults.standard.set(self.yuer-prices, forKey: "userBalance")
-                    self.back((Any).self)
+                    let time: TimeInterval = 0.8
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             }
 

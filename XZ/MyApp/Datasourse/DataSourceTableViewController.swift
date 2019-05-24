@@ -18,6 +18,7 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
     var dsct:[String] = []
     var dsut:[String] = []
     var pidss:[Int] = []
+    var tp_sjy:[String] = []
     var type:Int = 0
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
@@ -30,6 +31,12 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
     let header = MJRefreshNormalHeader()
     var searchBars:UISearchBar?
     var searchtext:String = ""
+    // 底部加载
+    let footer = MJRefreshAutoNormalFooter()
+    var indexs:Int = 0
+    var maxcount:Int = 10
+    var chongzhi:Int = 0
+    var issear:Int = 0
     var dzView : UIView?
     var tv_dingzhi : UILabel?
     var bt_dz : UIButton?
@@ -38,6 +45,7 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
         //搜索框
         searchBars = UISearchBar(frame: CGRect(x:0, y: 0, width:screenWidth, height: 44))
         searchBars?.barStyle = .black
@@ -55,7 +63,7 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
         searchBars?.keyboardType = .default
         //        searchBars?.addTarget(self, action: #selector(composeBtnClick), for: UIControl.Event.touchUpInside)
         view.addSubview(searchBars!)
-        
+        tp_sjy = ["datas","sjy1","sjy2","sjy3","sjy4","sjy5","sjy6","sjy7","sjy8","sjy9","sjy10"]
         //下拉刷新
         header.lastUpdatedTimeLabel.isHidden = false
         header.stateLabel.isHidden = false
@@ -70,9 +78,14 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
         //创建一个重用的单元格
         self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "ShopCell")
         self.view.addSubview(self.tableView!)
-        header.setRefreshingTarget(self, refreshingAction: #selector(getAllDatasource))
+        header.setRefreshingTarget(self, refreshingAction: #selector(Refresh))
         self.tableView!.mj_header = header
-        getAllDatasource()
+        //上刷新相关设置
+        footer.setRefreshingTarget(self, refreshingAction: #selector(DataSourceTableViewController.footerLoad))
+        //是否自动加载（默认为true，即表格滑到底部就自动加载）
+        footer.isAutomaticallyRefresh = false
+        self.tableView!.mj_footer = footer
+        
         //        dsns = ["微博热搜版","爱奇艺点击率最高电影"]
         //        clns = root?.content1 ?? ["获取微博热搜版，研究大众兴趣","获取爱奇艺点击率最高电影,可以方便找到票房较高的电影，筛选避过烂片"]
         //        images = root?.image1 ?? ["weibo","aiqiyi"]
@@ -83,7 +96,7 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        print("市场前台显示")
+        print("数据源显示")
         
         // The rest of your code.
     }
@@ -118,6 +131,7 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
             cell.subButton!.tag = indexPath.row
             cell.datasourceView!.tag = indexPath.row
             cell.tag = pidss[indexPath.row]
+            cell.iconImage?.image = UIImage(named:tp_sjy[indexPath.row])
             pids = pidss[indexPath.row]
             return cell
     }
@@ -135,7 +149,19 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
     //            controller.pid = (sender as? Int)!
     //        }
     //    }
-    @objc func getAllDatasource()  {
+    @objc func Refresh(){
+        self.dsns.removeAll()
+        self.pidss.removeAll()
+        self.clns.removeAll()
+        self.images.removeAll()
+        self.dsnu.removeAll()
+        getAllDatasource(index:0)
+        if (chongzhi == 1) {
+            self.tableView!.mj_footer.resetNoMoreData()
+        }
+    }
+    @objc func getAllDatasource(index:Int)  {
+        issear = 0
         searchBars?.text = ""
         let url = "https://www.xingzhu.club/XzTest/datasource/getAllDataSource"
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
@@ -151,12 +177,13 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
                 var message:String = json["message"].string!
                 print("提示:\(message)")
                 let provinces = json["data"]
-                self.dsns.removeAll()
-                self.pidss.removeAll()
-                self.clns.removeAll()
-                self.images.removeAll()
-                self.dsnu.removeAll()
-                for i in 0..<provinces.count{
+                var jndex = index+10
+                self.maxcount = provinces.count
+                if (jndex>=provinces.count){
+                    jndex = provinces.count
+                    self.tableView!.mj_footer.endRefreshingWithNoMoreData()
+                }
+                for i in index..<jndex{
                     let productId: Int = provinces[i]["productId"].int ?? 0
                     self.pidss += [productId]
                     
@@ -198,14 +225,16 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
                     }
                     self.dsss += [datassring]
                 }
+                self.indexs = jndex
             }
-            print("数据源名是\(self.clns)")
-            print("图片是\(self.images)")
-            //重现加载表格数据
-            self.tableView!.reloadData()
-            //结束刷新
-            self.tableView!.mj_header.endRefreshing()
+            self.reloadData()
         }
+    }
+    func reloadData(){
+        //重现加载表格数据
+        self.tableView!.reloadData()
+        //结束刷新
+        self.tableView!.mj_header.endRefreshing()
     }
     //初始化数据
     func refreshItemData() {
@@ -234,18 +263,23 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
         //searchBars?.resignFirstResponder()
         searchtext = searchBars?.text! ?? ""
         print(searchtext)
-        //print("searchtext")
-        getDatasource()
+        self.dsns.removeAll()
+        self.pidss.removeAll()
+        self.clns.removeAll()
+        self.images.removeAll()
+        self.dsnu.removeAll()
+        getDatasource(index: 0)
         if (searchtext == "") {
-            getAllDatasource()
+            Refresh()
         }
     }
     func searchBarCancelButtonClicked(_ searchBar:UISearchBar) {
         print("cancel")
         searchBars?.text = ""
-        getAllDatasource()
+        Refresh()
     }
-    @objc func getDatasource()  {
+    @objc func getDatasource(index:Int)  {
+        issear = 1
         let url = "https://www.xingzhu.club/XzTest/datasource/getDataSourceByContent"
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
@@ -262,12 +296,13 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
                 var message:String = json["message"].string!
                 print("提示:\(message)")
                 let provinces = json["data"]
-                self.dsns.removeAll()
-                self.pidss.removeAll()
-                self.clns.removeAll()
-                self.images.removeAll()
-                self.dsnu.removeAll()
-                for i in 0..<provinces.count{
+                var jndex = index+10
+                self.maxcount = provinces.count
+                if (jndex>=provinces.count){
+                    jndex = provinces.count
+                    self.tableView!.mj_footer.endRefreshingWithNoMoreData()
+                }
+                for i in index..<jndex{
                     let productId: Int = provinces[i]["productId"].int ?? 0
                     self.pidss += [productId]
                     
@@ -309,16 +344,25 @@ class DataSourceTableViewController: UIViewController, UITableViewDelegate, UITa
                     }
                     self.dsss += [datassring]
                 }
+                self.indexs = jndex
             }
-            print("标题是\(self.dsns)")
-            print("图片是\(self.images)")
-            //重现加载表格数据
-            self.tableView!.reloadData()
-            //结束刷新
-            self.tableView!.mj_header.endRefreshing()
+            self.reloadData()
         }
     }
     @objc func cumaBtnClick(Button: UIButton) {
         root?.performSegue(withIdentifier: "custommade", sender: "")
+    }
+    //底部上拉加载
+    @objc func footerLoad(){
+        //print("上拉加载.")
+        chongzhi = 1
+        //生成并添加数据
+        if(issear == 0){
+            getDatasource(index: indexs)
+        }
+        else{
+            getAllDatasource(index: indexs)
+        }
+        
     }
 }

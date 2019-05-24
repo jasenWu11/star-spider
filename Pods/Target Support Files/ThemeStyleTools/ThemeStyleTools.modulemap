@@ -1,0 +1,6 @@
+framework module ThemeStyleTools {
+  umbrella header "ThemeStyleTools-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -209,7 +209,7 @@ class DataSourceTableViewCell: UITableViewCell {
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
                     self.root?.presentedViewController?.dismiss(animated: false, completion: nil)
                 }
-                self.root?.getAllDatasource()
+                self.root?.Refresh()
             }
         }
         

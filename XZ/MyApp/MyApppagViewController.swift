@@ -41,7 +41,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     fileprivate struct MenuItem1: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "爬虫"))
+            return .text(title: MenuItemText(text: "我的应用"))
         }
     }
     
@@ -61,6 +61,7 @@ class MyApppagViewController: UIViewController {
     var dataName:String = ""
     var crawlername:String = ""
     var pids:Int = 0
+    var etimes:String = ""
     var quitheight:Int = 0
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,8 +91,8 @@ class MyApppagViewController: UIViewController {
                 print("--- 标签将要切换 ---")
             case let .didMoveItem(menuItemView, previousMenuItemView):
                 print("--- 标签切换完毕 ---")
-                if(menuItemView.titleLabel.text == "爬虫"){
-                    (options.pagingControllers[0] as! MyAppTableViewController).getAllApps()
+                if(menuItemView.titleLabel.text == "我的应用"){
+                    (options.pagingControllers[0] as! MyAppTableViewController).headerres()
                     print("刷新爬虫")
                 }
                 if(menuItemView.titleLabel.text == "数据源"){
@@ -130,6 +131,7 @@ class MyApppagViewController: UIViewController {
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: BuyappViewController())))
             as! BuyappViewController
         controller.pids = pids
+        controller.etime = etimes
         self.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(controller, animated: true)
         self.hidesBottomBarWhenPushed = false

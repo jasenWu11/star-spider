@@ -282,7 +282,7 @@ class MyorderTableViewcell: UITableViewCell {
         l_price?.text = "产品单价(元)："
         v_order?.addSubview(l_price!)
         // 单价
-        tv_price = UILabel(frame: CGRect(x:265, y:55, width: 100, height:20))
+        tv_price = UILabel(frame: CGRect(x:245, y:55, width: 100, height:20))
         tv_price?.font = UIFont.systemFont(ofSize: 14)
         tv_price?.textColor = UIColor.red
         v_order?.addSubview(tv_price!)
@@ -298,24 +298,24 @@ class MyorderTableViewcell: UITableViewCell {
         tv_pstate?.textColor = UIColor.black
         v_order?.addSubview(tv_pstate!)
         //支付时间标签
-        l_ptime = UILabel(frame: CGRect(x:10, y:105, width: 100, height:20))
+        l_ptime = UILabel(frame: CGRect(x:10, y:130, width: 100, height:20))
         l_ptime?.font = UIFont.systemFont(ofSize: 14)
         l_ptime?.textColor = UIColor.black
         l_ptime?.text = "支付时间："
         v_order?.addSubview(l_ptime!)
         // 支付时间
-        tv_ptime = UILabel(frame: CGRect(x:85, y:105, width: 200, height:20))
+        tv_ptime = UILabel(frame: CGRect(x:85, y:130, width: 200, height:20))
         tv_ptime?.font = UIFont.systemFont(ofSize: 14)
         tv_ptime?.textColor = UIColor.black
         v_order?.addSubview(tv_ptime!)
         // 创建时间
-        tv_ctimes = UILabel(frame: CGRect(x:10, y:130, width:100, height: 20))
+        tv_ctimes = UILabel(frame: CGRect(x:10, y:105, width:100, height: 20))
         tv_ctimes?.font = UIFont.systemFont(ofSize: 14)
         tv_ctimes?.textColor = UIColor.black
         tv_ctimes?.text = "创建时间："
         v_order?.addSubview(tv_ctimes!)
         
-        tv_ctime = UILabel(frame: CGRect(x:85, y:130, width:200, height: 20))
+        tv_ctime = UILabel(frame: CGRect(x:85, y:105, width:200, height: 20))
         tv_ctime?.font = UIFont.systemFont(ofSize: 14)
         tv_ctime?.textColor = UIColor.black
         v_order?.addSubview(tv_ctime!)

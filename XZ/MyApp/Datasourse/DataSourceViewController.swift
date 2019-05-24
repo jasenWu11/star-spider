@@ -19,8 +19,8 @@ class DataSourceViewController: UIViewController{
     var rows:[[String]] = []
     var excelrows:[[String]] = []
     var row:[String] = []
-    var therow : [Any] = []
-    var therows : [[Any]]! = []
+    var therow : [String] = []
+    var therows : [[String]] = []
     var pid:Int = 0
     var qdata:String = ""
     let screenWidth =  UIScreen.main.bounds.size.width
@@ -78,6 +78,10 @@ class DataSourceViewController: UIViewController{
         }
             self.columns.removeAll()
             self.rows.removeAll()
+            columd.removeAll()
+            columns.removeAll()
+            self.gridViewController.setColumd(columd: self.columd)
+            self.gridViewController.setColumns(columns: self.columns)
             self.gridViewController.removeRow()
             let url = "https://www.xingzhu.club/XzTest/datasource/getDataSource"
             var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
@@ -143,7 +147,13 @@ class DataSourceViewController: UIViewController{
                         self.excelrows = self.rows
                         MCGCDTimer.shared.cancleTimer(WithTimerName: "GCDTimer")
                         self.gridViewController.bezierText.removeFromSuperview()
-                        self.gridViewController.setViewY(type: 0)
+                        //导航栏高度
+                        let nv_height = self.navigationController?.navigationBar.frame.size.height
+                        //状态栏高度
+                        let zt_height = UIApplication.shared.statusBarFrame.height
+                        let thisheight = self.screenHeight-nv_height!-zt_height
+                        let they = zt_height+nv_height!
+                        self.gridViewController.setViewY(sjthey: 0,sjheight: thisheight,ctype:0)
                         self.gridViewController.setColumns(columns: self.columns)
                         self.gridViewController.setColumd(columd: self.columd)
                         self.gridViewController.setRow(row: self.rows)
@@ -193,8 +203,8 @@ class DataSourceViewController: UIViewController{
         return array
     }
     @objc func menu(_ sender: Any) {
-        let items: [String] = ["导出Excel","分享到微信","分享到QQ","发送到邮箱"]
-        let imgSource: [String] = ["excel","wechat","QQ","youxiang"]
+        let items: [String] = ["导出Excel","分享到微信","发送到邮箱","数据内搜索","筛选数据","全部数据"]
+        let imgSource: [String] = ["excel","wechat","youxiang","sousuo","QQ","quanbu"]
         NavigationMenuShared.showPopMenuSelecteWithFrameWidth(width: itemWidth, height: 160, point: CGPoint(x: ScreenInfo.Width - 30, y: 0), item: items, imgSource: imgSource) { (index) in
             ///点击回调
             switch index{
@@ -203,16 +213,222 @@ class DataSourceViewController: UIViewController{
             case 1:
                 self.gridViewController.wechat(excelname: self.Ntitle)
             case 2:
-                self.gridViewController.QQ2(excelname: self.Ntitle)
-            case 3:
                 self.gridViewController.toemail(excelname: self.Ntitle)
+            case 3:
+                print("状态是\(self.gridViewController.getckzt())")
+                if(self.gridViewController.getckzt() == 1){
+                    self.gridViewController.setaddY()
+                }
+                self.viewDidAppear1()
+            case 4:
+                print("状态是\(self.gridViewController.getckzt())")
+                if(self.gridViewController.getckzt() == 1){
+                    self.gridViewController.setaddY()
+                }
+                self.viewDidAppear2()
+            case 5:
+                print("状态是\(self.gridViewController.getckzt())")
+                if(self.gridViewController.getckzt() == 1){
+                    self.gridViewController.setaddY()
+                }
+                self.rows.removeAll()
+                self.therows.removeAll()
+                self.DataRequet()
             default:
                 break
             }
         }
     }
-    
-    
+    @objc func viewDidAppear1(){
+        
+        
+        let alertController = UIAlertController(title: "搜索信息",
+                                                message: "请输入要搜索的信息", preferredStyle: .alert)
+        alertController.addTextField {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "搜索信息"
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        let okAction = UIAlertAction(title: "好的", style: .default, handler: {
+            action in
+            //也可以用下标的形式获取textField let login = alertController.textFields![0]
+            let datasele = alertController.textFields!.first!
+            var data = datasele.text
+            //print("搜索信息：\(datasele.text)")
+            if(data == ""){
+                self.showMsgbox(_message: "搜索信息不能为空")
+            }
+            else{
+                self.Datastelce(seledata: data!)
+            }
+        })
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    func Datastelce(seledata:String){
+        var serows:[[String]] = [[]]
+        var jserows:[[String]] = [[]]
+        serows.removeAll()
+        jserows.removeAll()
+        var xuhao:[String] = []
+        xuhao.removeAll()
+        var xuhao1:[String] = []
+        xuhao1.removeAll()
+        var jse1:[String] = []
+        if(self.rows.count>0){
+            for index in 0...self.rows.count-1{
+                var sterow:[String] = rows[index]
+                for jndex in 0...sterow.count-1{
+                    var item : String = sterow[jndex]
+                    let stringResult = item.contains("\(seledata)")
+                    if(stringResult == true){
+                        if (xuhao.count>0){
+                            for mndex in 0...xuhao.count-1{
+                                let stringR2 = xuhao.contains(sterow[0])
+                                if(stringR2 == false){
+                                    serows += [sterow]
+                                    xuhao += [sterow[0]]
+                                }
+                            }
+                        }
+                        else{
+                            serows += [sterow]
+                            xuhao += [sterow[0]]
+                        }
+                    }
+                }
+            }
+            //print("最后的数组是\(serows)")
+            if(serows.count>0){
+                for index in 0...serows.count-1{
+                    print("s只是第\(index+1)次访问")
+                    var xjsz = serows[index]
+                    var row0:String = xjsz[0]
+                    var row2:String = xjsz[2]
+                    var xxjsz:[String] = []
+                    xxjsz += [row0]
+                    xxjsz += [row2]
+                    print("小贾数组\(xxjsz)")
+                    jserows += [xxjsz]
+                }
+            }
+            
+            //print("最后的假数组是\(jserows)")
+            var xbt:[String] = []
+            xbt.removeAll()
+            self.gridViewController.setColumns(columns: xbt)
+            self.gridViewController.setColumd(columd: xbt)
+            self.rows = serows
+            self.therows = jserows
+            self.gridViewController.removeRow()
+            self.excelrows = self.rows
+            MCGCDTimer.shared.cancleTimer(WithTimerName: "GCDTimer")
+            self.gridViewController.bezierText.removeFromSuperview()
+            //导航栏高度
+            let nv_height = self.navigationController?.navigationBar.frame.size.height
+            //状态栏高度
+            let zt_height = UIApplication.shared.statusBarFrame.height
+            let thisheight = self.screenHeight-nv_height!-zt_height
+            let they = zt_height+nv_height!
+            self.gridViewController.setViewY(sjthey: 0,sjheight: thisheight,ctype:0)
+            self.gridViewController.setColumns(columns: self.columns)
+            self.gridViewController.setColumd(columd: self.columd)
+            self.gridViewController.setRow(row: self.rows)
+            self.gridViewController.setPhoto(photoindex: self.phoitem)
+            //print("数据表格是\(self.rows)")
+            //print("数据表格假装是\(self.therows)")
+            self.navigationItem.rightBarButtonItem!.isEnabled = true
+            for arrayItem in self.therows {
+                self.gridViewController.addRow(row: arrayItem)
+            }
+        }
+
+    }
+    @objc func viewDidAppear2(){
+        
+        
+        let alertController = UIAlertController(title: "搜索信息",
+                                                message: "请输入要筛除的信息", preferredStyle: .alert)
+        alertController.addTextField {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "筛除信息"
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        let okAction = UIAlertAction(title: "好的", style: .default, handler: {
+            action in
+            //也可以用下标的形式获取textField let login = alertController.textFields![0]
+            let datasele = alertController.textFields!.first!
+            var data = datasele.text
+            //print("筛除信息：\(datasele.text)")
+            if(data == ""){
+                self.showMsgbox(_message: "筛除信息不能为空")
+            }
+            else{
+                self.Dataquit(seledata: data!)
+            }
+        })
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    func Dataquit(seledata:String){
+        var serows:[[String]] = [[]]
+        var jserows:[[String]] = [[]]
+        serows.removeAll()
+        jserows.removeAll()
+        var xuhao:[String] = []
+        xuhao.removeAll()
+        var xuhao1:[String] = []
+        xuhao1.removeAll()
+        var jse1:[String] = []
+        //print("数组\(rows)的行数为\(rows.count)")
+        var count:Int = 0
+        if(self.rows.count>0){
+            for index in 0...100000{
+                if(index<rows.count+count){
+                print("\(index)所有数据量\(self.rows.count-1),删除了\(count)行")
+                    //print("检索到\(index),数据量剩下\(self.rows.count)，删除了\(count)")
+                    var sterow:[String] = rows[index-count]
+                    for jndex in 0...sterow.count-1{
+                        var item : String = sterow[jndex]
+                        let stringResult = item.contains("\(seledata)")
+                        if(stringResult == true){
+                            print("删除的是\(index)")
+                            rows.remove(at: index-count)
+                            therows.remove(at: index-count)
+                            count += 1
+                            break
+                        }
+                    }
+                }
+            }
+            self.gridViewController.setColumns(columns: [])
+            self.gridViewController.setColumd(columd: [])
+            self.gridViewController.removeRow()
+            self.excelrows = self.rows
+            MCGCDTimer.shared.cancleTimer(WithTimerName: "GCDTimer")
+            self.gridViewController.bezierText.removeFromSuperview()
+            //导航栏高度
+            let nv_height = self.navigationController?.navigationBar.frame.size.height
+            //状态栏高度
+            let zt_height = UIApplication.shared.statusBarFrame.height
+            let thisheight = self.screenHeight-nv_height!-zt_height
+            let they = zt_height+nv_height!
+            self.gridViewController.setViewY(sjthey: 0,sjheight: thisheight,ctype:0)
+            self.gridViewController.setColumns(columns: self.columns)
+            self.gridViewController.setColumd(columd: self.columd)
+            self.gridViewController.setRow(row: self.rows)
+            self.gridViewController.setPhoto(photoindex: self.phoitem)
+            //print("数据表格是\(self.rows)")
+            //print("数据表格假装是\(self.therows)")
+            self.navigationItem.rightBarButtonItem!.isEnabled = true
+            for arrayItem in self.therows {
+                self.gridViewController.addRow(row: arrayItem)
+            }
+        }
+        
+    }
     func showMsgbox(_message: String, _title: String = "提示"){
         
         let alert = UIAlertController(title: _title, message: _message, preferredStyle: UIAlertController.Style.alert)

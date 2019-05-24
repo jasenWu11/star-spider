@@ -17,7 +17,8 @@ class ToWebViewController: UIViewController {
         self.navigationController?.isNavigationBarHidden = false
         self.title = thetitle
         print("标题\(thetitle)")
-        wv_web.loadRequest(URLRequest(url: NSURL(string : theurl)! as URL))
+        let urls = NSURL(string : theurl)! as URL
+        wv_web.loadRequest(URLRequest(url: urls))
         // Do any additional setup after loading the view.
     }
     @IBAction func back(_ sender: Any) {

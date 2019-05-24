@@ -10,7 +10,7 @@ import UIKit
 import Alamofire
 import MobileCoreServices
 import MessageUI
-class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
+class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate,UIWebViewDelegate{
     @IBOutlet weak var l_fssj: UIView!
     @IBOutlet weak var l_mess: UILabel!
     @IBOutlet weak var v_purse: UIView!
@@ -20,7 +20,7 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
     @IBOutlet weak var message: UIView!
     @IBOutlet weak var Sugg: UIView!
     @IBOutlet weak var sett: UIView!
-    @IBOutlet weak var tv_phone: UILabel!
+    @IBOutlet weak var syjj: UIView!
     @IBOutlet weak var tv_name: UILabel!
     var olduser : String = ""
     var oldpwd : String = ""
@@ -35,6 +35,7 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
     var userPhoneNumber: String =  ""
     var userPwdSalt: String =  ""
     var headph : String = "";
+    var emailph:String = ""
     /// lazy load
     lazy var payPasswordView: WMPasswordView = {
         let pwdView = WMPasswordView(type: WMPwdType.payPwd, amount: 250.0)
@@ -116,6 +117,10 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
         l_fssj.addGestureRecognizer(fssjclick)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
         l_fssj.isUserInteractionEnabled = true
+        let syjjclick = UITapGestureRecognizer(target: self, action: #selector(syjjAction))
+        syjj.addGestureRecognizer(syjjclick)
+        //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
+        l_fssj.isUserInteractionEnabled = true
         //未读消息数量
         l_mess?.backgroundColor=UIColor.red
         l_mess?.layer.cornerRadius = 13;
@@ -148,23 +153,7 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
             tv_name.text = nameph
         }
     }
-    func jsonRequest()  {
-        
-        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
-        Alamofire.request("http://119.29.88.72:8080/XzTest/user/selectUserByIdTest/1", method: .post, parameters: [:], encoding: JSONEncoding.default, headers: nil)
-            .responseJSON { (response) in
-                print("jsonRequest:\(response.result)")
-                
-                if let data = response.result.value {
-                    let json = JSON(data)
-                    self.userphone = json["userPhone"].string!
-                    self.username = json["userName"].string!
-                    print("手机号:\(self.userphone)")
-                    self.tv_phone.text = self.userphone
-                    self.tv_name.text = self.username
-                }
-        }
-    }
+
     
     func getUnreadNoticeCount()  {
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
@@ -244,24 +233,7 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
         self.navigationController?.pushViewController(controller, animated: true)
         self.hidesBottomBarWhenPushed = false
     }
-    //发送纯文本
-    @IBAction func sendTextContent(_ sender: AnyObject) {
-        let message =  WXMediaMessage()
-        
-        message.title = "欢迎访问 hangge.com"
-        message.description = "做最好的开发者知识平台。分享各种编程开发经验。"
-        message.setThumbImage(UIImage(named:"apple.png"))
-        
-        let ext =  WXWebpageObject()
-        ext.webpageUrl = "http://hangge.com"
-        message.mediaObject = ext
-        
-        let req =  SendMessageToWXReq()
-        req.bText = false
-        req.message = message
-        req.scene = _scene
-        WXApi.send(req)
-    }
+
     
     @objc func getAllDataname()  {
         let url = "https://www.xingzhu.club/XzTest/datasource/getAllDataSource"
@@ -390,13 +362,16 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
         let mimeType1 = mimeType(pathExtension: "gif")
         print("文件1是\(mimeType1)")
         //设置邮件地址、主题及正文
-        mailComposeVC.setToRecipients(["1252279088@qq.com"])
-        mailComposeVC.setSubject("所有最新数据源")
+        if UserDefaults.standard.object(forKey: "userEmail") != nil {
+            emailph = UserDefaults.standard.object(forKey: "userEmail") as! String
+        }
+        mailComposeVC.setToRecipients([emailph])
+        mailComposeVC.setSubject("星蛛数据服务平台最新数据源")
         if(pwd == ""){
-            mailComposeVC.setMessageBody("发送所有最新数据源至邮箱", isHTML: false)
+            mailComposeVC.setMessageBody("发送我的所有最新数据源至邮箱", isHTML: false)
         }
         else{
-            mailComposeVC.setMessageBody("发送所有最新数据源至邮箱,压缩密码为\(pwd)", isHTML: false)
+            mailComposeVC.setMessageBody("发送我的所有最新数据源至邮箱,压缩密码为\(pwd)", isHTML: false)
         }
         //添加文件附件
         let url = URL(fileURLWithPath: zipPath3)
@@ -413,7 +388,7 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
         
         let sendMailErrorAlert = UIAlertController(title: "未开启邮件功能", message: "设备邮件功能尚未开启，请在设置中更改", preferredStyle: .alert)
         sendMailErrorAlert.addAction(UIAlertAction(title: "确定", style: .default) { _ in })
-        self.present(sendMailErrorAlert, animated: true){}
+        self.present(sendMailErrorAlert, animated: true)
     }
     
     
@@ -501,6 +476,8 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
         if let url = URL(string:self.userProfilePhoto){
             let data = try! Data(contentsOf: url)
             let smallImage = UIImage(data: data)
+            //添加水印
+//            let smallImages = smallImage?.drawTextInImage(text: "头像", textColor: UIColor.red, textFont: UIFont.systemFont(ofSize: 300), suffixText: nil, suffixFont: nil, suffixColor: nil)
             iv_head.image = smallImage
         }
     }
@@ -508,5 +485,28 @@ class MyViewController: UIViewController ,MFMailComposeViewControllerDelegate{
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: theloginUINavigationController())))
             as! theloginUINavigationController
         self.present(controller, animated: true, completion: nil)
+    }
+    @objc func syjjAction() {
+        print("即将打开QQ，联系客服？")
+        let alertController = UIAlertController(title: "联系客服", message: "即将打开QQ，联系客服？",preferredStyle: .alert)
+        let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
+            action in
+            self.CallQQ()
+        })
+        let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction1)
+        alertController.addAction(cancelAction2)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    func CallQQ() {
+        print("帮助哟")
+        // 按钮事件中唤醒QQ聊天界面
+        let webView = UIWebView(frame: CGRect(x:30, y: (screenHeight-130)/2, width:screenWidth-60, height: 130))
+        let url1 = URL(string: "mqq://im/chat?chat_type=wpa&uin=1252279088&version=1&src_type=web")
+        let request = NSURLRequest(url: url1!)
+        webView.delegate = self
+        webView.loadRequest(request as URLRequest)
+        webView.isHidden = true
+        view.addSubview(webView)
     }
 }

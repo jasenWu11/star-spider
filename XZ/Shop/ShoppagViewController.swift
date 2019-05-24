@@ -6,9 +6,11 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     //第1个子视图控制器
     private let viewController1 = ShopTableViewController()
     //第2个子视图控制器
-    private let viewController2 = ShopTableViewController()
+    private let viewController2 = Shop1TableViewController()
     //第3个子视图控制器
-    private let viewController3 = ShopTableViewController()
+    private let viewController3 = Shop2TableViewController()
+    //第4个子视图控制器
+    private let viewController4 = Shop3TableViewController()
     //组件类型
     fileprivate var componentType: ComponentType {
         return .all(menuOptions: MenuOptions(), pagingControllers: pagingControllers)
@@ -16,7 +18,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     
     //所有子视图控制器
     fileprivate var pagingControllers: [UIViewController] {
-        return [viewController1, viewController2, viewController3]
+        return [viewController1, viewController2, viewController3, viewController4]
     }
     
     //菜单配置项
@@ -27,7 +29,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
         }
         //菜单项
         var itemsOptions: [MenuItemViewCustomizable] {
-            return [MenuItem1(), MenuItem2(), MenuItem3()]
+            return [MenuItem1(), MenuItem2(), MenuItem3(), MenuItem4()]
         }
     }
     
@@ -35,7 +37,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     fileprivate struct MenuItem1: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "数据"))
+            return .text(title: MenuItemText(text: "全部产品"))
         }
     }
     
@@ -43,14 +45,21 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     fileprivate struct MenuItem2: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "爬虫"))
+            return .text(title: MenuItemText(text: "新闻媒体"))
         }
     }
     //第3个菜单项
     fileprivate struct MenuItem3: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
-            return .text(title: MenuItemText(text: "API"))
+            return .text(title: MenuItemText(text: "电子商务"))
+        }
+    }
+    //第4个菜单项
+    fileprivate struct MenuItem4: MenuItemViewCustomizable {
+        //自定义菜单项名称
+        var displayMode: MenuItemDisplayMode {
+            return .text(title: MenuItemText(text: "社交网络"))
         }
     }
 }
@@ -83,11 +92,9 @@ class ShoppagViewController: UIViewController {
         //分页菜单配置
         let options = PagingMenuOptions()
         (options.pagingControllers[0] as! ShopTableViewController).root = self
-        (options.pagingControllers[1] as! ShopTableViewController).root = self
-        (options.pagingControllers[2] as! ShopTableViewController).root = self
-        (options.pagingControllers[0] as! ShopTableViewController).type = 1
-        (options.pagingControllers[1] as! ShopTableViewController).type = 2
-        (options.pagingControllers[2] as! ShopTableViewController).type = 3
+        (options.pagingControllers[1] as! Shop1TableViewController).root = self
+        (options.pagingControllers[2] as! Shop2TableViewController).root = self
+        (options.pagingControllers[3] as! Shop3TableViewController).root = self
 //        //1的数据
 //        (options.pagingControllers[0] as! ShopTableViewController).titles = title1
 //        (options.pagingControllers[0] as! ShopTableViewController).contents = content1

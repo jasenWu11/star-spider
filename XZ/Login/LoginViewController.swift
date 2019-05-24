@@ -122,14 +122,14 @@ class LoginViewController: UIViewController {
     
     func isTelNumber(num:NSString)->Bool
     {
-        var mobile = "^1(3[0-9]|5[0-35-9]|8[025-9])\\d{8}$"
-        var  CM = "^1(34[0-8]|(3[5-9]|5[017-9]|8[278])\\d)\\d{7}$"
-        var  CU = "^1(3[0-2]|5[256]|8[56])\\d{8}$"
-        var  CT = "^1((33|53|8[09])[0-9]|349)\\d{7}$"
-        var regextestmobile = NSPredicate(format: "SELF MATCHES %@",mobile)
-        var regextestcm = NSPredicate(format: "SELF MATCHES %@",CM )
-        var regextestcu = NSPredicate(format: "SELF MATCHES %@" ,CU)
-        var regextestct = NSPredicate(format: "SELF MATCHES %@" ,CT)
+        let mobile = "^1(3[0-9]|5[0-35-9]|8[025-9])\\d{8}$"
+        let  CM = "^1(34[0-8]|(3[5-9]|5[017-9]|8[278])\\d)\\d{7}$"
+        let  CU = "^1(3[0-2]|5[256]|8[56])\\d{8}$"
+        let  CT = "^1((33|53|8[09])[0-9]|349)\\d{7}$"
+        let regextestmobile = NSPredicate(format: "SELF MATCHES %@",mobile)
+        let regextestcm = NSPredicate(format: "SELF MATCHES %@",CM )
+        let regextestcu = NSPredicate(format: "SELF MATCHES %@" ,CU)
+        let regextestct = NSPredicate(format: "SELF MATCHES %@" ,CT)
         if ((regextestmobile.evaluate(with: num) == true)
             || (regextestcm.evaluate(with: num)  == true)
             || (regextestct.evaluate(with: num) == true)

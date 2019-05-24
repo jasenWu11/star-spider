@@ -4,4 +4,5 @@ target 'XZ' do
     pod 'MJRefresh', '~> 3.1.15.7'
     pod 'libxlsxwriter'
     pod 'Hero'
+    pod 'ThemeStyleTools'
 end

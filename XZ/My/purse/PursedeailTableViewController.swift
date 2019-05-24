@@ -33,6 +33,7 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
     let header = MJRefreshNormalHeader()
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
         self.title = "账单明细"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"+",style:UIBarButtonItem.Style.plain,target:self,action:#selector(menu))
         self.navigationItem.rightBarButtonItem?.image = UIImage(named: "share")
@@ -206,11 +207,11 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
     @objc func viewDidAppear(){
         
         
-        let alertController = UIAlertController(title: "压缩密码",
-                                                message: "请输入4位压缩密码", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "密码",
+                                                message: "是否输入压缩密码", preferredStyle: .alert)
         alertController.addTextField {
             (textField: UITextField!) -> Void in
-            textField.placeholder = "压缩密码"
+            textField.placeholder = "密码"
             textField.addChangeTextTarget()
             textField.maxTextNumber = 12
             textField.isSecureTextEntry = true
@@ -225,12 +226,12 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
             //也可以用下标的形式获取textField let login = alertController.textFields![0]
             let oldpass = alertController.textFields!.first!
             var opass = oldpass.text
-            print("压缩密码：\(oldpass.text)")
+            print("密码：\(oldpass.text)")
             if(opass == ""){
-                self.showMsgbox(_message: "压缩密码不能为空")
+                self.showMsgbox(_message: "密码不能为空")
             }
             else if((opass?.count)! != 4){
-                self.showMsgbox(_message: "压缩密码为4位数")
+                self.showMsgbox(_message: "密码为4位数")
             }
             else{
                 self.toemail(pass: opass!)
@@ -307,12 +308,12 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
             theemail = theemails
         }
         mailComposeVC.setToRecipients([theemail])
-        mailComposeVC.setSubject("我的消费报表")
+        mailComposeVC.setSubject("我的流水报表")
         if(pwd == ""){
-           mailComposeVC.setMessageBody("发送消费报表至邮箱", isHTML: false)
+           mailComposeVC.setMessageBody("发送星蛛数据服务平台流水报表至邮箱", isHTML: false)
         }
         else{
-            mailComposeVC.setMessageBody("发送消费报表至邮箱,压缩密码为\(pwd)", isHTML: false)
+            mailComposeVC.setMessageBody("发送星蛛数据服务平台流水报表至邮箱,压缩密码为\(pwd)", isHTML: false)
         }
         //添加文件附件
         let url = URL(fileURLWithPath: zipPath3)
