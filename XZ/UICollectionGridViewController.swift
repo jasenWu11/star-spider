@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //
 //  UICollectionGridViewController.swift
 //  hangge_1081
@@ -6,6 +7,8 @@
 //  Copyright © 2016年 hangge.com. All rights reserved.
 //
 
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
 import Foundation
 import UIKit
 
@@ -20,9 +23,13 @@ class UICollectionGridViewController: UICollectionViewController {
     var cols: [String]! = []
     //行数据
     var rows: [[Any]]! = []
+<<<<<<< HEAD
     //实际表头数据
     var colum :[String]! = []
     let datav = DataSourceViewController()
+=======
+    
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     //排序代理
     weak var sortDelegate: UICollectionGridViewSortDelegate?
     
@@ -30,6 +37,7 @@ class UICollectionGridViewController: UICollectionViewController {
     private var selectedColIdx = -1
     //列排序顺序
     private var asc = true
+<<<<<<< HEAD
     var v_datasource : UIView?
     var datasourceView : UIScrollView?
     var iv_close:UIButton?
@@ -49,6 +57,16 @@ class UICollectionGridViewController: UICollectionViewController {
         layout.viewController = self
         collectionView!.backgroundColor = UIColor.white
         collectionView!.register(UICollectionGridViewCell.self,
+=======
+    
+    init() {
+        //初始化表格布局
+        let layout = UICollectionViewLayout()
+        super.init(collectionViewLayout: layout)
+        //layout.viewController = self
+        collectionView!.backgroundColor = UIColor.white
+        collectionView!.register(UICollectionViewCell.self,
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
                                  forCellWithReuseIdentifier: "cell")
         collectionView!.delegate = self
         collectionView!.dataSource = self
@@ -66,6 +84,7 @@ class UICollectionGridViewController: UICollectionViewController {
         cols = columns
     }
     
+<<<<<<< HEAD
     //设置列头实际数据
     func setColumd(columd: [String]) {
         colum = columd
@@ -73,12 +92,16 @@ class UICollectionGridViewController: UICollectionViewController {
     
     //添加行数据
     
+=======
+    //添加行数据
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     func addRow(row: [Any]) {
         rows.append(row)
         collectionView!.collectionViewLayout.invalidateLayout()
         collectionView!.reloadData()
     }
     
+<<<<<<< HEAD
     
     //添加实际行数据
     func setRow(row: [[Any]]) {
@@ -136,6 +159,10 @@ class UICollectionGridViewController: UICollectionViewController {
         datasourceView?.showsVerticalScrollIndicator = false
         datasourceView?.clipsToBounds = true
         
+=======
+    override func viewDidLoad() {
+        super.viewDidLoad()
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     
     override func viewDidLayoutSubviews() {
@@ -154,7 +181,10 @@ class UICollectionGridViewController: UICollectionViewController {
         }
         //总行数是：记录数＋1个表头
         return rows.count + 1
+<<<<<<< HEAD
         
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     
     //返回表格的列数
@@ -182,12 +212,21 @@ class UICollectionGridViewController: UICollectionViewController {
         
         //表头单元格背景色
         if indexPath.section == 0 {
+<<<<<<< HEAD
             cell.backgroundColor = UIColor(red: 91.0/255, green: 84.0/255,
                                            blue: 145.0/255, alpha: 1)
             //排序列列头显示升序降序图标
             if indexPath.row == selectedColIdx {
                 let iconType = asc ? FAType.FALongArrowUp : FAType.FALongArrowDown
                 cell.imageView.setFAIconWithName(icon: iconType, textColor: UIColor.white)
+=======
+            cell.backgroundColor = UIColor(red: 0x91/255, green: 0xDA/255,
+                                           blue: 0x51/255, alpha: 1)
+            //排序列列头显示升序降序图标
+            if indexPath.row == selectedColIdx {
+//                let iconType = asc ? FAType.FALongArrowUp : FAType.FALongArrowDown
+//                cell.imageView.setFAIconWithName(icon: iconType, textColor: UIColor.white)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
             }else{
                 cell.imageView.image = nil
             }
@@ -216,7 +255,10 @@ class UICollectionGridViewController: UICollectionViewController {
                                  didSelectItemAt indexPath: IndexPath) {
         //打印出点击单元格的［行,列］坐标
         print("点击单元格的[行,列]坐标: [\(indexPath.section),\(indexPath.row)]")
+<<<<<<< HEAD
 //        showMsgbox(_message: rows[indexPath.section-1][indexPath.row] as! String)
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         if indexPath.section == 0 && sortDelegate != nil {
             //如果点击的是表头单元格，则默认该列升序排列，再次点击则变降序排列，以此交替
             asc = (selectedColIdx != indexPath.row) ? true : !asc
@@ -224,6 +266,7 @@ class UICollectionGridViewController: UICollectionViewController {
             rows = sortDelegate?.sort(colIndex: indexPath.row, asc: asc, rows: rows)
             collectionView.reloadData()
         }
+<<<<<<< HEAD
         self.Setdatasource(section: indexPath.section)
     }
     func showMsgbox(_message: String, _title: String = "数据"){
@@ -332,3 +375,8 @@ class UICollectionGridViewController: UICollectionViewController {
     
 
 }
+=======
+    }
+}
+
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413

@@ -9,7 +9,11 @@
 import UIKit
 import Alamofire
 class LoginViewController: UIViewController {
+<<<<<<< HEAD:XZ/Login/LoginViewController.swift
     @IBOutlet weak var iv_logo: UIImageView!
+=======
+    
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413:XZ/Login/LoginViewController.swift
     @IBOutlet weak var tv_fog: UILabel!
     @IBOutlet weak var tv_Res: UILabel!
     @IBOutlet weak var tv_pwd: UITextField!
@@ -55,6 +59,7 @@ class LoginViewController: UIViewController {
         bt_log?.layer.shadowRadius = 4
         bt_log?.layer.masksToBounds = false
         bt_log?.backgroundColor = UIColorRGB_Alpha(R: 91.0, G: 84.0, B: 145.0, alpha: 0.8);
+<<<<<<< HEAD:XZ/Login/LoginViewController.swift
     }
     //收起键盘
     @objc func handleTap(sender: UITapGestureRecognizer) {
@@ -63,20 +68,30 @@ class LoginViewController: UIViewController {
           tv_pwd.resignFirstResponder()
        }
        sender.cancelsTouchesInView = false
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413:XZ/Login/LoginViewController.swift
     }
     @objc func resAction() -> Void {
         
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: RegisterViewController())))
             as! RegisterViewController
         controller.root = self
+<<<<<<< HEAD:XZ/Login/LoginViewController.swift
         self.navigationController?.pushViewController(controller, animated: true)
+=======
+        self.present(controller, animated: true, completion: nil)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413:XZ/Login/LoginViewController.swift
     }
     @objc func fogAction() -> Void {
         
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: FogetpassViewController())))
             as! FogetpassViewController
         controller.root = self
+<<<<<<< HEAD:XZ/Login/LoginViewController.swift
     self.navigationController?.pushViewController(controller, animated: true)
+=======
+        self.present(controller, animated: true, completion: nil)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413:XZ/Login/LoginViewController.swift
     }
     func showMsgbox(_message: String, _title: String = "提示"){
         
@@ -295,5 +310,8 @@ class LoginViewController: UIViewController {
         let color = UIColor.init(red: (R / 255.0), green: (G / 255.0), blue: (B / 255.0), alpha: alpha);
         return color;
     }
+<<<<<<< HEAD:XZ/Login/LoginViewController.swift
     
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413:XZ/Login/LoginViewController.swift
 }

@@ -7,11 +7,19 @@
 //
 
 import UIKit
+<<<<<<< HEAD
 import Alamofire
 class MyAppTableViewcell: UITableViewCell {
     
     var tableView:UITableView?
     var v_oper: UIButton?
+=======
+
+class MyAppTableViewcell: UITableViewCell {
+    
+    var tableView:UITableView?
+    var v_oper: UIView?
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     var tv_stime: UILabel?
     var tv_title: UILabel?
     var tv_etime: UILabel?
@@ -21,7 +29,11 @@ class MyAppTableViewcell: UITableViewCell {
     var bt_dele : UIButton?
     var tv_stimes: UILabel?
     var tv_etimes: UILabel?
+<<<<<<< HEAD
     var tv_states: UIButton?
+=======
+    var tv_states: UILabel?
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     var tv_counts: UILabel?
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
@@ -41,6 +53,7 @@ class MyAppTableViewcell: UITableViewCell {
     @objc func Operactions(subButton: UIButton) {
         print("支付状态\(root?.appPayStatus)")
         let appPayStatus:String = (root?.appPayStatus[subButton.tag])!
+<<<<<<< HEAD
         var crawlernames : String = (root?.crawlerName[subButton.tag])!
         var iskey : Int = (root?.iskeywords[subButton.tag])!
         var pidss : Int = (root?.pidss[subButton.tag])!
@@ -49,10 +62,16 @@ class MyAppTableViewcell: UITableViewCell {
         root?.root?.Ntitle = Ntitle
         root?.root?.iskey = iskey
         root?.root?.crawlername = crawlernames
+=======
+        var crawlername : String = (root?.crawlerName[subButton.tag])!
+        var iskey : Int = (root?.iskeywords[subButton.tag])!
+        root?.root?.iskey = iskey
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         print("支付状态\(appPayStatus)")
         print("产品编号\(pids)")
         print("是否需要keyword\(iskey)")
         if(appPayStatus == "已支付"){
+<<<<<<< HEAD
             root?.root?.operDetailView()
         }
         else{
@@ -60,6 +79,15 @@ class MyAppTableViewcell: UITableViewCell {
             let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
                 action in
                 self.payok(thepid: pidss,theendtime:endtimes)
+=======
+            root?.root?.performSegue(withIdentifier: "operDetailView", sender: crawlername)
+        }
+        else{
+            let alertController = UIAlertController(title: "提示", message: "该应用未支付，是否前往支付订单？",preferredStyle: .alert)
+            let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
+                action in
+                self.payok()
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
             })
             let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
             alertController.addAction(cancelAction1)
@@ -67,6 +95,7 @@ class MyAppTableViewcell: UITableViewCell {
             root?.present(alertController, animated: true, completion: nil)
         }
     }
+<<<<<<< HEAD
     func payok(thepid:Int,theendtime:String){
         root?.root?.pids = thepid
         root?.root?.etimes = theendtime
@@ -78,12 +107,24 @@ class MyAppTableViewcell: UITableViewCell {
         let cancelAction1 = UIAlertAction(title: "确定", style: .destructive, handler: {
             action in
             self.deleteok(appid: appids)
+=======
+    func payok(){
+        root?.root?.performSegue(withIdentifier: "MyOrder", sender: pids)
+    }
+    @objc func Deleactions(subButton: UIButton) {
+        print(subButton.tag)
+        let alertController = UIAlertController(title: "提示", message: "是否删除该应用？",preferredStyle: .alert)
+        let cancelAction1 = UIAlertAction(title: "确定", style: .default, handler: {
+            action in
+            self.deleteok()
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         })
         let cancelAction2 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         alertController.addAction(cancelAction1)
         alertController.addAction(cancelAction2)
         root?.present(alertController, animated: true, completion: nil)
     }
+<<<<<<< HEAD
     func deleteok(appid:Int){
         
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
@@ -111,6 +152,17 @@ class MyAppTableViewcell: UITableViewCell {
             }
         }
         
+=======
+    func deleteok(){
+        let alertController = UIAlertController(title: "删除成功!",
+                                                message: nil, preferredStyle: .alert)
+        //显示提示框
+        root?.present(alertController, animated: true, completion: nil)
+        //两秒钟后自动消失
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            self.root?.presentedViewController?.dismiss(animated: false, completion: nil)
+        }
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     @objc func BuyClick(subButton: UIButton) {
         let optionMenuController = UIAlertController(title: nil, message: "选择支付方式", preferredStyle: .actionSheet)
@@ -153,7 +205,11 @@ class MyAppTableViewcell: UITableViewCell {
     }
     func setUpUI(){
         //视图
+<<<<<<< HEAD
         v_oper = UIButton(frame: CGRect(x:5, y: 5, width:screenWidth-10, height: 155))
+=======
+        v_oper = UIView(frame: CGRect(x:5, y: 5, width:screenWidth-10, height: 155))
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         v_oper?.backgroundColor=UIColor.white
         v_oper?.clipsToBounds=true
         v_oper?.layer.cornerRadius = 8
@@ -163,11 +219,14 @@ class MyAppTableViewcell: UITableViewCell {
         v_oper?.layer.shadowRadius = 4
         v_oper?.layer.masksToBounds = false
         self.addSubview(v_oper!)
+<<<<<<< HEAD
         v_oper?.isUserInteractionEnabled = true
         let longGress = UILongPressGestureRecognizer()
         longGress.addTarget(self, action: #selector(longGressGestrue(longGress:)))
         v_oper?.addGestureRecognizer(longGress)
         
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         // 大标题
         tv_title = UILabel(frame: CGRect(x:10, y: 10, width:screenWidth-10, height: 20))
         tv_stime?.font = UIFont.systemFont(ofSize: 16)
@@ -188,7 +247,11 @@ class MyAppTableViewcell: UITableViewCell {
         tv_etimes = UILabel(frame: CGRect(x:15, y:80, width:80, height: 20))
         tv_etimes?.font = UIFont.systemFont(ofSize: 14)
         tv_etimes?.textColor = UIColor.gray
+<<<<<<< HEAD
         tv_etimes?.text = "支付状态："
+=======
+        tv_etimes?.text = "运行状态："
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         v_oper?.addSubview(tv_etimes!)
         // 结束时间
         tv_etime = UILabel(frame: CGRect(x:90, y:80, width:200, height: 20))
@@ -196,6 +259,7 @@ class MyAppTableViewcell: UITableViewCell {
         tv_etime?.textColor = UIColor.gray
         v_oper?.addSubview(tv_etime!)
         // 状态
+<<<<<<< HEAD
         tv_states = UIButton(frame: CGRect(x:screenWidth-80, y:30, width:60, height: 60))
         tv_states?.setTitleColor(UIColor.black, for: .normal)
         tv_states?.titleLabel?.font = UIFont.systemFont(ofSize: 14)
@@ -207,6 +271,18 @@ class MyAppTableViewcell: UITableViewCell {
         tv_states?.addTarget(self, action: #selector(xufeiAction), for: UIControl.Event.touchUpInside)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
         tv_states?.isUserInteractionEnabled = true
+=======
+        tv_states = UILabel(frame: CGRect(x:screenWidth-80, y:30, width:60, height: 60))
+        tv_states?.font = UIFont.systemFont(ofSize: 14)
+        tv_states?.textColor = UIColor.black
+        tv_states?.text = "状态"
+        tv_states?.layer.cornerRadius = 30.0
+        tv_states?.layer.borderWidth = 0.5
+        tv_states?.layer.masksToBounds = true
+        tv_states?.textAlignment=NSTextAlignment.center
+        v_oper?.addSubview(tv_states!)
+//
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
 //        tv_state = UILabel(frame: CGRect(x:50, y:85, width:100, height: 20))
 //        tv_state?.font = UIFont.systemFont(ofSize: 14)
 //        tv_state?.textColor = UIColor.black
@@ -234,7 +310,10 @@ class MyAppTableViewcell: UITableViewCell {
         bt_oper?.layer.masksToBounds = true
         bt_oper?.addTarget(self, action: #selector(Operactions), for: UIControl.Event.touchUpInside)
         v_oper?.addSubview(bt_oper!)
+<<<<<<< HEAD
         
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
 //        // 删除按钮
 //        bt_dele = UIButton(frame: CGRect(x:screenWidth-70-15, y:((145)/2)+10, width:70, height: 30))
 //        bt_dele?.setTitle("删除", for: UIControl.State.normal)
@@ -265,6 +344,7 @@ class MyAppTableViewcell: UITableViewCell {
         super.setSelected(selected, animated: animated)
         // Configure the view for the selected state
     }
+<<<<<<< HEAD
     @objc private func longGressGestrue(longGress:UILongPressGestureRecognizer){
         
           if longGress.state == UIGestureRecognizer.State.began {
@@ -333,4 +413,7 @@ class MyAppTableViewcell: UITableViewCell {
             root?.present(alertController, animated: true, completion: nil)
         }
     }
+=======
+    
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
 }

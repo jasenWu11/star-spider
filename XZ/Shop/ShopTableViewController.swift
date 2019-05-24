@@ -12,12 +12,19 @@ import MJRefresh
 class ShopTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate{
     var titles:[String] = []
     var contents:[String] = []
+<<<<<<< HEAD
     var images:[UIImage?] = []
     var pricem:[Double] = []
     var prices:[Double] = []
     var pricey:[Double] = []
     var pidss:[Int] = []
     var heights:[CGFloat] = []
+=======
+    var images:[String] = []
+    var price:[Double] = []
+    var pidss:[Int] = []
+    var type:Int = 0
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     let screenWidth =  UIScreen.main.bounds.size.width
     let screenHeight =  UIScreen.main.bounds.size.height
     let TAG_CELL_LABEL = 1
@@ -32,6 +39,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
     var dzView : UIView?
     var tv_dingzhi : UILabel?
     var bt_dz : UIButton?
+<<<<<<< HEAD
     var widths:Int = 0
     // 底部加载
     let footer = MJRefreshAutoNormalFooter()
@@ -39,14 +47,19 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
     var maxcount:Int = 10
     var chongzhi:Int = 0
     var issear:Int = 0
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     override func loadView() {
         super.loadView()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+<<<<<<< HEAD
         self.view.backgroundColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
         //关闭导航栏半透明效果
         self.navigationController?.navigationBar.isTranslucent = false
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         //搜索框
         searchBars = UISearchBar(frame: CGRect(x:0, y: 0, width:screenWidth, height: 44))
         searchBars?.barStyle = .black
@@ -94,6 +107,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         dzView?.addSubview(bt_dz!)
         //隐藏时间
         //下拉刷新
+<<<<<<< HEAD
         header.lastUpdatedTimeLabel.isHidden = false
         header.stateLabel.isHidden = false
         //refreshItemData()
@@ -127,6 +141,33 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         //print("市场前台显示")
+=======
+        header.lastUpdatedTimeLabel.isHidden = true
+        header.stateLabel.isHidden = true
+        //refreshItemData()
+        //创建表视图
+        self.tableView = UITableView(frame: CGRect(x:0, y:84, width:self.screenWidth, height: self.screenHeight-207), style:.plain)
+        //self.tableView = UITableView(frame: self.view.frame, style:.plain)
+        self.tableView!.delegate = self
+        self.tableView!.dataSource = self
+        //创建一个重用的单元格
+        self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "ShopCell")
+        self.view.addSubview(self.tableView!)
+        header.setRefreshingTarget(self, refreshingAction: #selector(getAllProducts))
+        self.tableView!.mj_header = header
+        getAllProducts()
+//        titles = ["微博热搜版","爱奇艺点击率最高电影"]
+//        contents = root?.content1 ?? ["获取微博热搜版，研究大众兴趣","获取爱奇艺点击率最高电影,可以方便找到票房较高的电影，筛选避过烂片"]
+//        images = root?.image1 ?? ["weibo","aiqiyi"]
+//        price = root?.price1 ?? [81.04,130.5]
+//        pidss = root?.pid1 ?? [2238241,2238245]
+       print("数据是\(titles)")
+      
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print("市场前台显示")
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         
         // The rest of your code.
     }
@@ -143,6 +184,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
         -> UITableViewCell {
+<<<<<<< HEAD
         let identifier = "ShopCell"
         let cell = ShopTableViewCell.init(style: UITableViewCell.CellStyle.default, reuseIdentifier: identifier) as! ShopTableViewCell
             cell.layer.shouldRasterize = true
@@ -165,6 +207,28 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath){
         //print(indexPath.row)
+=======
+        
+        
+        let identifier = "ShopCell"
+        let cell = ShopTableViewCell.init(style: UITableViewCell.CellStyle.default, reuseIdentifier: identifier) as! ShopTableViewCell
+        cell.root = self
+        cell.titleLabel?.text = titles[indexPath.row]
+        let url = URL(string:images[indexPath.row])
+        let data = try! Data(contentsOf: url!)
+        let smallImage = UIImage(data: data)
+        cell.iconImage?.image = smallImage
+        cell.subTitleLabel?.text = contents[indexPath.row]
+        cell.pirceLabel?.text = "¥\(price[indexPath.row])"
+        cell.subButton!.tag = pidss[indexPath.row]
+        cell.shopcellView!.tag = pidss[indexPath.row]
+        cell.tag = pidss[indexPath.row]
+        pids = pidss[indexPath.row]
+        return cell
+    }
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath){
+        print(indexPath.row)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
 //    在这个方法中给新页面传递参数
 //    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -174,6 +238,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
 //            controller.pid = (sender as? Int)!
 //        }
 //    }
+<<<<<<< HEAD
     @objc func Refresh(){
         self.titles.removeAll()
         self.pidss.removeAll()
@@ -210,6 +275,28 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.tableView!.mj_footer.endRefreshingWithNoMoreData()
                 }
                 for i in index..<jndex{
+=======
+    @objc func getAllProducts()  {
+        
+        let url = "https://www.xingzhu.club/XzTest/products/getAllProducts"
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("提示:\(message)")
+                let provinces = json["data"]
+                self.titles.removeAll()
+                self.pidss.removeAll()
+                self.contents.removeAll()
+                self.images.removeAll()
+                self.price.removeAll()
+                for i in 0..<provinces.count{
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
                     let productId: Int = provinces[i]["productId"].int ?? 0
                     self.pidss += [productId]
 
@@ -218,6 +305,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
 
                     let productDes: String = provinces[i]["productDes"].string ?? ""
                     self.contents += [productDes]
+<<<<<<< HEAD
                     
 //                    var protitleheight = self.heightForView(text: productDes, font: UIFont.systemFont(ofSize: 14), width:  CGFloat(self.widths))
 //                    self.heights += [Int(protitleheight)]
@@ -250,6 +338,32 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         self.tableView!.mj_header.endRefreshing()
     }
 
+=======
+
+                    let productPhoto: String = provinces[i]["productPhoto"].string ?? ""
+                    self.images += [productPhoto]
+
+                    let productPriceMonth: Double = provinces[i]["productPriceMonth"].double ?? 0
+                    self.price += [productPriceMonth]
+                }
+            }
+            print("标题是\(self.titles)")
+            print("图片是\(self.images)")
+            //重现加载表格数据
+            self.tableView!.reloadData()
+            //结束刷新
+            self.tableView!.mj_header.endRefreshing()
+        }
+    }
+    //初始化数据
+    func refreshItemData() {
+        titles.append("微博热搜版")
+        contents.append("获取微博热搜版，研究大众兴趣")
+        images.append("https://xz-1256883494.cos.ap-guangzhou.myqcloud.com/products_img/weibo.png")
+        price.append(81.04)
+        pidss.append(2238241)
+    }
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -257,7 +371,11 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
     func searchBarSearchButtonClicked(_ searchBars: UISearchBar) {
         searchBars.resignFirstResponder()
         let searchtext:String = searchBars.text!
+<<<<<<< HEAD
         //print(searchtext)
+=======
+        print(searchtext)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     override func touchesBegan(_ touches:Set<UITouch>, with event:UIEvent?) {
     
@@ -268,6 +386,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         
         //searchBars?.resignFirstResponder()
         searchtext = searchBars?.text! ?? ""
+<<<<<<< HEAD
         //print(searchtext)
         //print("searchtext")
         self.titles.removeAll()
@@ -313,6 +432,41 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
                     self.tableView!.mj_footer.endRefreshingWithNoMoreData()
                 }
                 for i in index..<jndex{
+=======
+        print(searchtext)
+        //print("searchtext")
+        getProducts()
+        if (searchtext == "") {
+            getAllProducts()
+        }
+    }
+    func searchBarCancelButtonClicked(_ searchBar:UISearchBar) {
+        print("cancel")
+        getAllProducts()
+    }
+    @objc func getProducts()  {
+        let url = "https://www.xingzhu.club/XzTest/products/getProductByContent"
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        let paras = ["productTitle":self.searchtext]
+        print("搜索\(self.searchtext)")
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            self.titles = []
+            self.pidss = []
+            self.contents = []
+            self.images = []
+            self.price = []
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("提示:\(message)")
+                let provinces = json["data"]
+                for i in 0..<provinces.count{
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
                     let productId: Int = provinces[i]["productId"].int ?? 0
                     self.pidss += [productId]
                     
@@ -322,6 +476,7 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
                     let productDes: String = provinces[i]["productDes"].string ?? ""
                     self.contents += [productDes]
                     
+<<<<<<< HEAD
 //                    var protitleheight = self.heightForView(text: productDes, font: UIFont.systemFont(ofSize: 14), width:  CGFloat(self.widths))
 //                    self.heights += [Int(protitleheight)]
                     
@@ -384,5 +539,24 @@ class ShopTableViewController: UIViewController, UITableViewDelegate, UITableVie
         //        //结束刷新
         //        self.tableView!.mj_footer.endRefreshing()
         
+=======
+                    let productPhoto: String = provinces[i]["productPhoto"].string ?? ""
+                    self.images += [productPhoto]
+                    
+                    let productPriceMonth: Double = provinces[i]["productPriceMonth"].double ?? 0
+                    self.price += [productPriceMonth]
+                }
+            }
+            print("标题是\(self.titles)")
+            print("图片是\(self.images)")
+            //重现加载表格数据
+            self.tableView!.reloadData()
+            //结束刷新
+            self.tableView!.mj_header.endRefreshing()
+        }
+    }
+    @objc func cumaBtnClick(Button: UIButton) {
+       root?.performSegue(withIdentifier: "custommade", sender: "")
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
 }

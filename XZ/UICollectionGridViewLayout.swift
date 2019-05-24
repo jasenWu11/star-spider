@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //
 //  UICollectionGridViewLayout.swift
 //  hangge_1081
@@ -5,6 +6,8 @@
 //  Created by hangge on 2016/11/19.
 //  Copyright © 2016年 hangge.com. All rights reserved.
 //
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
 import Foundation
 import UIKit
 
@@ -151,6 +154,7 @@ class UICollectionGridViewLayout: UICollectionViewLayout {
         }
     }
     
+<<<<<<< HEAD
 //    //计算某一列的单元格尺寸
 //    func sizeForItemWithColumnIndex(columnIndex: Int, remainingWidth: CGFloat) -> CGSize {
 //        let columnString = viewController.cols[columnIndex]
@@ -165,6 +169,8 @@ class UICollectionGridViewLayout: UICollectionViewLayout {
 //        //计算好的宽度还要取整，避免偏移
 //        return CGSize(width: ceil(width), height:size.height + 30)
 //    }
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     //计算某一列的单元格尺寸
     func sizeForItemWithColumnIndex(columnIndex: Int, remainingWidth: CGFloat) -> CGSize {
         let columnString = viewController.cols[columnIndex]
@@ -174,6 +180,7 @@ class UICollectionGridViewLayout: UICollectionViewLayout {
             NSAttributedString.Key.underlineStyle:NSUnderlineStyle.single.rawValue
             ])
         
+<<<<<<< HEAD
         //如果有剩余的空间则都给第一列
         if columnIndex == 0 {
             return CGSize(width: 100, height:size.height + 30)
@@ -186,3 +193,12 @@ class UICollectionGridViewLayout: UICollectionViewLayout {
         return CGSize(width:size.width + 17, height:size.height + 0)
     }
 }
+=======
+        //修改成所有列都平均分配（但宽度不能小于90）
+        let width = max(remainingWidth/CGFloat(columnIndex+1), 90)
+        //计算好的宽度还要取整，避免偏移
+        return CGSize(width: ceil(width), height:size.height + 10)
+    }
+}
+
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413

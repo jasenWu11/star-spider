@@ -16,7 +16,13 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     //第2个子视图控制器
     private let viewController2 = ShiliViewController()
     //第3个子视图控制器
+<<<<<<< HEAD
     private let viewController3 = HistoryViewController()
+=======
+    private let viewController3 = messViewController()
+    //第4个子视图控制器
+    private let viewController4 = HistoryViewController()
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     //组件类型
     fileprivate var componentType: ComponentType {
         return .all(menuOptions: MenuOptions(), pagingControllers: pagingControllers)
@@ -24,7 +30,11 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     
     //所有子视图控制器
     fileprivate var pagingControllers: [UIViewController] {
+<<<<<<< HEAD
         return [viewController1, viewController2, viewController3]
+=======
+        return [viewController1, viewController2, viewController3, viewController4]
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     
     //菜单配置项
@@ -35,7 +45,11 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
         }
         //菜单项
         var itemsOptions: [MenuItemViewCustomizable] {
+<<<<<<< HEAD
             return [MenuItem1(), MenuItem2(), MenuItem3()]
+=======
+            return [MenuItem1(), MenuItem2(), MenuItem3(), MenuItem4()]
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         }
     }
     
@@ -51,6 +65,7 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     fileprivate struct MenuItem2: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
+<<<<<<< HEAD
             return .text(title: MenuItemText(text: "数据示例"))
         }
     }
@@ -58,6 +73,22 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
     fileprivate struct MenuItem3: MenuItemViewCustomizable {
         //自定义菜单项名称
         var displayMode: MenuItemDisplayMode {
+=======
+            return .text(title: MenuItemText(text: "应用详情"))
+        }
+    }
+    //第3个菜单项
+    fileprivate struct MenuItem3: MenuItemViewCustomizable {
+        //自定义菜单项名称
+        var displayMode: MenuItemDisplayMode {
+            return .text(title: MenuItemText(text: "API调用说明"))
+        }
+    }
+    //第4个菜单项
+    fileprivate struct MenuItem4: MenuItemViewCustomizable {
+        //自定义菜单项名称
+        var displayMode: MenuItemDisplayMode {
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
             return .text(title: MenuItemText(text: "版本说明"))
         }
     }
@@ -65,11 +96,15 @@ private struct PagingMenuOptions: PagingMenuControllerCustomizable {
 
 class APImessViewController: UIViewController {
     var pid:Int = 0
+<<<<<<< HEAD
     var datatitles:String = ""
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     var userid:Int = 0
     var proedit : String = ""
     var prouptime : String = ""
     var hight:CGFloat = 0.0
+<<<<<<< HEAD
     var thesly:CGFloat = 0.0
     var scene = Int32(WXSceneSession.rawValue)
     let screenWidth =  UIScreen.main.bounds.size.width
@@ -85,11 +120,16 @@ class APImessViewController: UIViewController {
         self.title = datatitles
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"+",style:UIBarButtonItem.Style.plain,target:self,action:#selector(menu))
         self.navigationItem.rightBarButtonItem?.image = UIImage(named: "share")
+=======
+    override func viewDidLoad() {
+        super.viewDidLoad()
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         userid = UserDefaults.standard.object(forKey: "userId") as! Int
         //分页菜单配置
         let options = PagingMenuOptions()
         (options.pagingControllers[0] as! messViewController).root = self
         (options.pagingControllers[1] as! ShiliViewController).root = self
+<<<<<<< HEAD
         (options.pagingControllers[2] as! HistoryViewController).root = self
         (options.pagingControllers[0] as! messViewController).pids = pid
         (options.pagingControllers[1] as! ShiliViewController).pids = pid
@@ -102,6 +142,19 @@ class APImessViewController: UIViewController {
         let tabBarHeight = (zt_height==44 ? 34 : 0)
         hight = hights-55-CGFloat(tabBarHeight)
         print("高度等于\(hight)")
+=======
+        (options.pagingControllers[2] as! messViewController).root = self
+        (options.pagingControllers[3] as! HistoryViewController).root = self
+        (options.pagingControllers[0] as! messViewController).pids = pid
+        //分页菜单控制器初始化
+        let pagingMenuController = PagingMenuController(options: options)
+        //分页菜单控制器尺寸设置
+        pagingMenuController.view.frame.origin.y += 64
+        pagingMenuController.view.frame.size.height -= 119
+        let hights = pagingMenuController.view.frame.size.height
+        hight = hights
+        print("高度等于\(hights)")
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         
         //建立父子关系
         addChild(pagingMenuController)
@@ -109,7 +162,10 @@ class APImessViewController: UIViewController {
         view.addSubview(pagingMenuController.view)
         print("传进来的商品是\(pid)")
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -117,7 +173,47 @@ class APImessViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     @IBAction func Xiadan(_ sender: Any) {
+<<<<<<< HEAD
         self.createApp()
+=======
+        let url = "https://www.xingzhu.club/XzTest/orders/postOrder"
+        let paras = ["productId":self.pid,"userId":self.userid]
+        print("商品ID\(self.pid),用户\(self.userid)")
+        // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+        Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+            print("jsonRequest:\(response.result)")
+            
+            if let data = response.result.value {
+                let json = JSON(data)
+                print("结果:\(json)")
+                var code: Int = json["code"].int!
+                print("错误:\(code)")
+                var message:String = json["message"].string!
+                print("提示:\(message)")
+                if (message == "创建订单成功！") {
+                    self.createApp()
+                    let alertController = UIAlertController(title: "\(message)",
+                                                            message: nil, preferredStyle: .alert)
+                    //显示提示框
+                    self.present(alertController, animated: true, completion: nil)
+                    //两秒钟后自动消失
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                        self.presentedViewController?.dismiss(animated: false, completion: nil)
+                    }
+                }
+                else{
+                    let alertController = UIAlertController(title: "\(message)",
+                                                            message: nil, preferredStyle: .alert)
+                    //显示提示框
+                    self.present(alertController, animated: true, completion: nil)
+                    //两秒钟后自动消失
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                        self.presentedViewController?.dismiss(animated: false, completion: nil)
+                    }
+                }
+            }
+        }
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
        
     }
     func createApp() {
@@ -135,6 +231,7 @@ class APImessViewController: UIViewController {
                 print("错误:\(code)")
                 var message:String = json["message"].string!
                 print("创建应用提示:\(message)")
+<<<<<<< HEAD
                 let alertController = UIAlertController(title: message,
                                                         message: nil, preferredStyle: .alert)
                 //显示提示框
@@ -143,10 +240,13 @@ class APImessViewController: UIViewController {
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.7) {
                     self.presentedViewController?.dismiss(animated: false, completion: nil)
                 }
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
             }
         }
         
     }
+<<<<<<< HEAD
     @objc func menu(_ sender: Any) {
         let items: [String] = ["分享到微信","分享朋友圈","生成二维码"]
         let imgSource: [String] = ["wechat","pyq","erweima"]
@@ -181,5 +281,8 @@ class APImessViewController: UIViewController {
         req.scene = scene
         WXApi.send(req)
     }
+=======
+    
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
 }
 

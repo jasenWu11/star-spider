@@ -11,21 +11,11 @@ import UIKit
 class SuggestViewController: UIViewController {
 
     @IBAction func back(_ sender: Any) {
-        let transition = CATransition()
-        transition.duration = 0.6
-        transition.type = CATransitionType.reveal
-        transition.subtype = CATransitionSubtype.fromLeft
-        transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeInEaseOut)
-        view.window!.layer.add(transition, forKey: kCATransition)
-        self.dismiss(animated: false, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "意见反馈"
-        let handLeftRight = UISwipeGestureRecognizer(target: self, action: #selector(funLeftRight))
-        //handLeftRight.direction = .left //支持向左
-        self.view.addGestureRecognizer(handLeftRight)
-        
+
         // Do any additional setup after loading the view.
     }
     
@@ -39,7 +29,5 @@ class SuggestViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-    @objc func funLeftRight(sender: UIPanGestureRecognizer){
-       
-    }
+
 }

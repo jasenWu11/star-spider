@@ -9,6 +9,7 @@
 import UIKit
 import Alamofire
 import MJRefresh
+<<<<<<< HEAD
 import MobileCoreServices
 import MessageUI
 class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  ,MFMailComposeViewControllerDelegate{
@@ -21,6 +22,12 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
     var columd:[String] = ["编号","金额", "详情", "时间"]
     var row : [Any] = []
     var rows : [[Any]]! = []
+=======
+class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    var rechargeId:[Int] = []
+    var rechargeTime:[String] = []
+    var rechargerMoney:[Double] = []
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     //    var states:[String] = ["未开始","已停止","已停止","暂停","未开始","正在操作","正在操作"]
     //    var counts:[String] = ["0","16","30","15","0","20","18"]
     let screenWidth =  UIScreen.main.bounds.size.width
@@ -33,6 +40,7 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
     let header = MJRefreshNormalHeader()
     override func viewDidLoad() {
         super.viewDidLoad()
+<<<<<<< HEAD
         self.view.backgroundColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
         self.title = "账单明细"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title:"+",style:UIBarButtonItem.Style.plain,target:self,action:#selector(menu))
@@ -41,11 +49,14 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
         //handLeftRight.direction = .left //支持向左
         self.view.addGestureRecognizer(handLeftRight)
         
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         self.tableView?.separatorStyle = .none
         //下拉刷新
         header.lastUpdatedTimeLabel.isHidden = true
         header.stateLabel.isHidden = true
         //创建表视图
+<<<<<<< HEAD
         //导航栏高度
         let nv_height = self.navigationController?.navigationBar.frame.size.height
         //状态栏高度
@@ -55,6 +66,12 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
         self.tableView!.delegate = self
         self.tableView!.dataSource = self
         tableView?.separatorStyle = .none
+=======
+        self.tableView = UITableView(frame: CGRect(x:0, y:64, width:screenWidth, height: screenHeight-64), style:.plain)
+        //self.tableView = UITableView(frame: self.view.frame, style:.plain)
+        self.tableView!.delegate = self
+        self.tableView!.dataSource = self
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         //创建一个重用的单元格
         self.tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "ShopCell")
         view.addSubview(self.tableView!)
@@ -62,6 +79,7 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
         self.tableView!.mj_header = header
         getRechargeRecords()
     }
+<<<<<<< HEAD
     
     @objc func funLeftRight(sender: UIPanGestureRecognizer){
 
@@ -75,6 +93,10 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
         transition.timingFunction = CAMediaTimingFunction(name:CAMediaTimingFunctionName.easeInEaseOut)
         view.window!.layer.add(transition, forKey: kCATransition)
         self.dismiss(animated: false, completion: nil)
+=======
+    @IBAction func back(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     
     // MARK: - Table view data source
@@ -87,7 +109,11 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
         return self.rechargeId.count
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+<<<<<<< HEAD
         return 70.7
+=======
+        return 60
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
@@ -95,10 +121,16 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
             let identifier = "MyappCell"
             let cell = pursedeailTableViewCell.init(style: UITableViewCell.CellStyle.default, reuseIdentifier: identifier) as! pursedeailTableViewCell
             cell.root = self
+<<<<<<< HEAD
             cell.tv_rids?.text = "\(rId[indexPath.row])"
             cell.tv_times?.text = rechargeTime[indexPath.row]
             cell.tv_mons?.text = rechargerMoney[indexPath.row]
             cell.tv_rcr?.text = recharerRemark[indexPath.row]
+=======
+            cell.tv_rids?.text = "\(rechargeId[indexPath.row])"
+            cell.tv_times?.text = rechargeTime[indexPath.row]
+            cell.tv_mons?.text = "+\(rechargerMoney[indexPath.row])"
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
             //cell.bt_dele!.tag = pidss[indexPath.row]
             return cell
     }
@@ -122,6 +154,7 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
                 var message:String = json["message"].string!
                 print("提示:\(message)")
                 let provinces = json["data"]
+<<<<<<< HEAD
                 self.rId.removeAll()
                 self.rechargeId.removeAll()
                 self.rechargeTime.removeAll()
@@ -373,5 +406,25 @@ class PursedeailTableViewController: UIViewController, UITableViewDelegate, UITa
         alert.addAction(btnOK)
         self.present(alert, animated: true, completion: nil)
         
+=======
+                self.rechargeId.removeAll()
+                self.rechargeTime.removeAll()
+                self.rechargerMoney.removeAll()
+                for i in 0..<provinces.count{
+                    let rid: Int = provinces[i]["rechargeId"].int ?? 0
+                    self.rechargeId += [rid]
+                    
+                    let rmo: Double = provinces[i]["rechargerMoney"].double ?? 0.0
+                    self.rechargerMoney += [rmo]
+                    
+                    let rct: String = provinces[i]["rechargeTime"].string ?? ""
+                    self.rechargeTime += [rct]
+                }
+            }
+            self.tableView!.reloadData()
+            //结束刷新
+            self.tableView!.mj_header.endRefreshing()
+        }
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
 }

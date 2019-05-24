@@ -26,11 +26,16 @@ class FogetpassViewController: UIViewController {
     var verifyCode : String = ""
     var root : LoginViewController?
     @IBAction func back(_ sender: Any) {
+<<<<<<< HEAD
         self.navigationController?.popViewController(animated: true)
+=======
+        self.dismiss(animated: true, completion: nil)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+<<<<<<< HEAD
         //限制输入最大值
         tv_phone.addChangeTextTarget()
         tv_phone.maxTextNumber = 11
@@ -39,6 +44,8 @@ class FogetpassViewController: UIViewController {
         tv_yanzh.addChangeTextTarget()
         tv_yanzh.maxTextNumber = 4
         self.view.addGestureRecognizer(UITapGestureRecognizer(target:self, action:#selector(FogetpassViewController.handleTap(sender:))))
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         //注册信息视图圆角
         v_xinxi?.clipsToBounds=true
         v_xinxi?.layer.cornerRadius = 10
@@ -315,7 +322,11 @@ class FogetpassViewController: UIViewController {
                     let time: TimeInterval = 1
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
                         //code
+<<<<<<< HEAD
                         self.navigationController?.popViewController(animated: true)
+=======
+                        self.dismiss(animated: true, completion: nil)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
                         print("手机号\(self.phone),密码\(self.pass)")
                         self.root?.tv_phone.text = self.phone
                         self.root?.tv_pwd.text = self.pass
@@ -362,6 +373,7 @@ class FogetpassViewController: UIViewController {
         let color = UIColor.init(red: (R / 255.0), green: (G / 255.0), blue: (B / 255.0), alpha: alpha);
         return color;
     }
+<<<<<<< HEAD
     //收起键盘
     @objc func handleTap(sender: UITapGestureRecognizer) {
         if sender.state == .ended {
@@ -371,4 +383,6 @@ class FogetpassViewController: UIViewController {
         }
         sender.cancelsTouchesInView = false
     }
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
 }

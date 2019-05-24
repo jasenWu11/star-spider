@@ -8,26 +8,44 @@
 
 import Foundation
 import UIKit
+<<<<<<< HEAD
 import MessageUI
 import MobileCoreServices
 import SafariServices
 
 //多列表格组v件（通过CollectionView实现）
 class UICollectionGridViewController: UICollectionViewController ,MFMailComposeViewControllerDelegate{
+=======
+
+//表格排序协议
+protocol UICollectionGridViewSortDelegate: class {
+    func sort(colIndex: Int, asc: Bool, rows: [[Any]]) -> [[Any]]
+}
+
+//多列表格组件（通过CollectionView实现）
+class UICollectionGridViewController: UICollectionViewController {
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     //表头数据
     var cols: [String]! = []
     //行数据
     var rows: [[Any]]! = []
+<<<<<<< HEAD
     //实际表头数据
     var colum :[String]! = []
     let datav = DataSourceViewController()
     //排序代理
     //weak var sortDelegate: UICollectionGridViewSortDelegate?
+=======
+    
+    //排序代理
+    weak var sortDelegate: UICollectionGridViewSortDelegate?
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     
     //选中的表格列（-1表示没有选中的）
     private var selectedColIdx = -1
     //列排序顺序
     private var asc = true
+<<<<<<< HEAD
     var v_datasource : UIButton?
     var datasourceView : UIScrollView?
     var iv_close:UIButton?
@@ -61,13 +79,21 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     var xg_view:UIView?
     init() {
         
+=======
+    
+    init() {
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         //初始化表格布局
         let layout = UICollectionGridViewLayout()
         super.init(collectionViewLayout: layout)
         layout.viewController = self
         collectionView!.backgroundColor = UIColor.white
         collectionView!.register(UICollectionGridViewCell.self,
+<<<<<<< HEAD
                                  forCellWithReuseIdentifier: "cell")
+=======
+                                      forCellWithReuseIdentifier: "cell")
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         collectionView!.delegate = self
         collectionView!.dataSource = self
         collectionView!.isDirectionalLockEnabled = true
@@ -84,6 +110,7 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         cols = columns
     }
     
+<<<<<<< HEAD
     //设置列头实际数据
     func setColumd(columd: [String]) {
         colum = columd
@@ -91,11 +118,15 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     
     //添加行数据
     
+=======
+    //添加行数据
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     func addRow(row: [Any]) {
         rows.append(row)
         collectionView!.collectionViewLayout.invalidateLayout()
         collectionView!.reloadData()
     }
+<<<<<<< HEAD
     //添加真的行数据
     
     func addRows(row: [Any]) {
@@ -114,6 +145,8 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         phoitem = photoindex
     }
     
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     //清空行数据
     func removeRow() {
         rows.removeAll()
@@ -122,6 +155,7 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+<<<<<<< HEAD
         NotificationCenter.default.addObserver(self, selector: #selector(UICollectionGridViewController.keyboardWillChangeFrame), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(UICollectionGridViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         //获取屏幕大小
@@ -214,6 +248,10 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+=======
+    }
+    
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     override func viewDidLayoutSubviews() {
         collectionView!.frame = CGRect(x:0, y:0,
                                        width:view.frame.width, height:view.frame.height)
@@ -225,12 +263,20 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     
     //返回表格总行数
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
+<<<<<<< HEAD
         if cols.isEmpty {
             return 0
         }
         //总行数是：记录数＋1个表头
         return rows.count + 1
         
+=======
+            if cols.isEmpty {
+                return 0
+            }
+            //总行数是：记录数＋1个表头
+            return rows.count + 1
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     
     //返回表格的列数
@@ -241,9 +287,15 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     
     //单元格内容创建
     override func collectionView(_ collectionView: UICollectionView,
+<<<<<<< HEAD
                                  cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell",
                                                       for: indexPath) as! UICollectionGridViewCell
+=======
+                            cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell",
+                                            for: indexPath) as! UICollectionGridViewCell
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         
         //设置列头单元格，内容单元格的数据
         if indexPath.section == 0 {
@@ -258,8 +310,13 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         
         //表头单元格背景色
         if indexPath.section == 0 {
+<<<<<<< HEAD
             cell.backgroundColor = UIColor(red: 91.0/255, green: 84.0/255,
                                            blue: 145.0/255, alpha: 1)
+=======
+            cell.backgroundColor = UIColor(red: 0x91/255, green: 0xDA/255,
+                                           blue: 0x51/255, alpha: 1)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
             //排序列列头显示升序降序图标
             if indexPath.row == selectedColIdx {
                 let iconType = asc ? FAType.FALongArrowUp : FAType.FALongArrowDown
@@ -268,7 +325,11 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
                 cell.imageView.image = nil
             }
         }
+<<<<<<< HEAD
             //内容单元格背景色
+=======
+        //内容单元格背景色
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         else {
             //排序列的单元格背景会变色
             if indexPath.row == selectedColIdx {
@@ -276,7 +337,11 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
                 cell.backgroundColor = UIColor(red: 0xCC/255, green: 0xF8/255,
                                                blue: 0xFF/255, alpha: 1)
             }
+<<<<<<< HEAD
                 //数据区域每行单元格背景色交替显示
+=======
+            //数据区域每行单元格背景色交替显示
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
             else if indexPath.section % 2 == 0 {
                 cell.backgroundColor = UIColor(white: 242/255.0, alpha: 1)
             } else {
@@ -292,6 +357,7 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
                                  didSelectItemAt indexPath: IndexPath) {
         //打印出点击单元格的［行,列］坐标
         print("点击单元格的[行,列]坐标: [\(indexPath.section),\(indexPath.row)]")
+<<<<<<< HEAD
 //        if indexPath.section == 0 && sortDelegate != nil {
 //            //如果点击的是表头单元格，则默认该列升序排列，再次点击则变降序排列，以此交替
 //            asc = (selectedColIdx != indexPath.row) ? true : !asc
@@ -308,6 +374,15 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
             xiangqing = 1
             }
             self.Setdatasource(section: indexPath.section)
+=======
+        showMsgbox(_message: rows[indexPath.section-1][indexPath.row] as! String)
+        if indexPath.section == 0 && sortDelegate != nil {
+            //如果点击的是表头单元格，则默认该列升序排列，再次点击则变降序排列，以此交替
+            asc = (selectedColIdx != indexPath.row) ? true : !asc
+            selectedColIdx = indexPath.row
+            rows = sortDelegate?.sort(colIndex: indexPath.row, asc: asc, rows: rows)
+            collectionView.reloadData()
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         }
     }
     func showMsgbox(_message: String, _title: String = "数据"){
@@ -318,6 +393,7 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
         self.present(alert, animated: true, completion: nil)
         
     }
+<<<<<<< HEAD
     @objc func CloseClick() {
         self.v_datasource?.transform = CGAffineTransform.identity
         UIView.animate(withDuration: 0.4) {
@@ -1222,3 +1298,6 @@ class UICollectionGridViewController: UICollectionViewController ,MFMailComposeV
     }
 }
 
+=======
+}
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413

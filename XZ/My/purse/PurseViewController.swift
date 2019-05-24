@@ -8,12 +8,17 @@
 
 import UIKit
 import Alamofire
+<<<<<<< HEAD
 class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelegate{
+=======
+class PurseViewController: UIViewController ,UITextFieldDelegate{
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     @IBOutlet weak var tv_money: UILabel!
     @IBOutlet weak var v_Topup: UIView!
     var yuer : Double = 0.0;
     @IBOutlet weak var l_pursedeail: UILabel!
     var moneys:String = ""
+<<<<<<< HEAD
     //个人信息更新
     var olduser : String = ""
     var oldpwd : String = ""
@@ -33,6 +38,13 @@ class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelega
         
         
         ifHasPayPwd()
+=======
+    @IBAction func back(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         tv_money.frame.size.width = 200.0  //获取宽度
         tv_money?.textAlignment=NSTextAlignment.left
         if UserDefaults.standard.object(forKey: "userBalance") != nil {
@@ -52,6 +64,7 @@ class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelega
         v_Topup.isUserInteractionEnabled = true
         // Do any additional setup after loading the view.
     }
+<<<<<<< HEAD
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         print("我的详细信息前台显示")
@@ -113,17 +126,24 @@ class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelega
 
     }
     
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     //点击事件方法
     @objc func pursedeailAction() -> Void {
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: PursedeailTableViewController())))
             as! PursedeailTableViewController
+<<<<<<< HEAD
         self.navigationController?.pushViewController(controller, animated: true)
+=======
+        self.present(controller, animated: true, completion: nil)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     //点击事件方法
     @objc func TopupAction() -> Void {
        viewDidAppear()
     }
     @objc func viewDidAppear(){
+<<<<<<< HEAD
         var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
         let to_url = "http://www.xingzhu.club/v1.0/#/iosPay?Id=\(userid)"
         let controller = self.storyboard?.instantiateViewController(withIdentifier: String(describing: type(of: ToWebViewController())))
@@ -191,6 +211,73 @@ class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelega
 //        alertController.addAction(cancelAction)
 //        alertController.addAction(okAction)
 //        self.present(alertController, animated: true, completion: nil)
+=======
+        
+        
+        let alertController = UIAlertController(title: "钱包充值",
+                                                message: "请输入100000以内充值金额(元)", preferredStyle: .alert)
+        alertController.addTextField {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "充值金额(元)"
+            textField.clearButtonMode=UITextField.ViewMode.whileEditing  //编辑时出现清除按钮
+            textField.clearButtonMode=UITextField.ViewMode.unlessEditing  //编辑时不出现，编辑后才出现清除按钮
+            textField.clearButtonMode=UITextField.ViewMode.always  //一直显示清除按钮
+            textField.delegate = self
+        }
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        let okAction = UIAlertAction(title: "好的", style: .destructive, handler: {
+            action in
+            //也可以用下标的形式获取textField let login = alertController.textFields![0]
+            let money = alertController.textFields!.first!
+            var mon:String = money.text ?? ""
+            print("充值金额：\(mon)")
+            if(mon == ""){
+                self.showMsgbox(_message: "充值金额不能为空")
+            }
+            else{
+                let mon1 = Double(self.moneys)!
+                let mon2 = Double(mon)!
+                print("充值金额\(mon2)")
+//                let mon2 = Double("\(String(describing: mon))")!
+                var mons:Double = mon1+mon2
+                self.moneys = "\(mons)"
+                
+                
+                var userid:Int = UserDefaults.standard.object(forKey: "userId") as! Int
+                let url = "https://www.xingzhu.club/XzTest/recharges/recharge"
+                // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+                let paras = ["userId":userid,"rechargerMoney":mon2] as [String : Any]
+                // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
+                Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
+                    print("jsonRequest:\(response.result)")
+                    var request : String = "\(response.result)"
+                    if let data = response.result.value {
+                        let json = JSON(data)
+                        print("结果:\(json)")
+                        let code: Int = json["code"].int!
+                        print("错误:\(code)")
+                        var message:String = json["message"].string!
+                        print("message\(message)")
+                        let alertController = UIAlertController(title: "\(message)",
+                                                                message: nil, preferredStyle: .alert)
+                        //显示提示框
+                        self.present(alertController, animated: true, completion: nil)
+                        //两秒钟后自动消失
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                            self.presentedViewController?.dismiss(animated: false, completion: nil)
+                        }
+                        if(message == "充值成功！"){
+                          UserDefaults.standard.set(mons, forKey: "userBalance")
+                            self.tv_money.text = "\(mons)"
+                        }
+                    }
+                }
+            }
+        })
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        self.present(alertController, animated: true, completion: nil)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     func showMsgbox(_message: String, _title: String = "提示"){
         
@@ -243,6 +330,7 @@ class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelega
         // Pass the selected object to the new view controller.
     }
     */
+<<<<<<< HEAD
     @objc func menu(_ sender: Any) {
         let items: [String] = [ifhasPayPwd,"联系QQ客服"]
         let imgSource: [String] = ["close","QQ"]
@@ -345,4 +433,7 @@ class PurseViewController: UIViewController ,UITextFieldDelegate,UIWebViewDelega
             }
         }
     }
+=======
+
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
 }

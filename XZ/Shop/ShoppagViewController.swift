@@ -153,6 +153,9 @@ class ShoppagViewController: UIViewController {
         if segue.identifier == "custom"{
             let controller = segue.destination as! CustommadeViewController
         }
+        if segue.identifier == "custom"{
+            let controller = segue.destination as! CustommadeViewController
+        }
     }
     func getAllProducts()  {
             let url = "https://www.xingzhu.club/XzTest/products/getAllProducts"

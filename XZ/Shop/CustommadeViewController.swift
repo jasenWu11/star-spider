@@ -8,6 +8,7 @@
 
 import UIKit
 import Alamofire
+<<<<<<< HEAD
 class CustommadeViewController: UIViewController ,UIWebViewDelegate{
     @IBOutlet weak var v_xxk: UIView!
     @IBOutlet weak var bt_lxfs: UIButton!
@@ -26,12 +27,23 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
     @IBOutlet weak var bt_tj: UIButton!
     @IBOutlet weak var tf_web: UILabel!
     @IBOutlet weak var tv_data: UITextField!
+=======
+class CustommadeViewController: UIViewController {
+
+    @IBOutlet weak var bt_tj: UIButton!
+    @IBOutlet weak var tf_web: UITextView!
+    @IBOutlet weak var tv_data: UITextField!
+    @IBOutlet weak var sv_dz: UIScrollView!
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     @IBOutlet weak var tf_rem: UITextView!
     @IBOutlet weak var tv_QQ: UITextField!
     @IBOutlet weak var tv_email: UITextField!
     @IBOutlet weak var tv_phone: UITextField!
+<<<<<<< HEAD
      @IBOutlet weak var v_data: UIView!
     
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     var webs : String = ""
     var datas : String = ""
     var remas : String = ""
@@ -39,6 +51,7 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
     var qqs : String = ""
     var emails : String = ""
     var userid:Int = 0
+<<<<<<< HEAD
     var v_url:UIView?
     var bt_close:UIButton?
     var bt_addurl:UIButton?
@@ -258,10 +271,44 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
         tf_web.isUserInteractionEnabled = true
         v_web.isHidden = true
         
+=======
+    let screenWidth =  UIScreen.main.bounds.size.width
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        userid = UserDefaults.standard.object(forKey: "userId") as! Int
+        tf_web?.backgroundColor=UIColor.white
+        tf_web?.clipsToBounds=true
+        tf_web?.layer.cornerRadius = 10
+        tf_web?.layer.shadowColor = UIColor.gray.cgColor
+        tf_web?.layer.shadowOpacity = 1.0
+        tf_web?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        tf_web?.layer.shadowRadius = 4
+        tf_web?.layer.masksToBounds = false
+        
+        tf_rem?.backgroundColor=UIColor.white
+        tf_rem?.clipsToBounds=true
+        tf_rem?.layer.cornerRadius = 10
+        tf_rem?.layer.shadowColor = UIColor.gray.cgColor
+        tf_rem?.layer.shadowOpacity = 1.0
+        tf_rem?.layer.shadowOffset = CGSize(width: 0, height: 0)
+        tf_rem?.layer.shadowRadius = 4
+        tf_rem?.layer.masksToBounds = false
+        
+        //是否可以滚动
+        sv_dz.isScrollEnabled = false
+        //垂直方向反弹
+        sv_dz.alwaysBounceVertical = true
+        //垂直方向是否显示滚动条
+        sv_dz.showsVerticalScrollIndicator = false
+        sv_dz.contentSize = CGSize(width: screenWidth,
+                                     height: 1500);
+
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         bt_tj?.setTitle("提交需求", for: UIControl.State.normal)
         bt_tj?.setTitleColor(UIColor.white, for: UIControl.State.normal)
         bt_tj?.titleLabel?.font = UIFont.systemFont(ofSize: 18)
         bt_tj?.backgroundColor = UIColorRGB_Alpha(R: 0.0, G: 140.0, B: 255.0, alpha: 0.8);
+<<<<<<< HEAD
         v_url = UIView(frame: CGRect(x:0, y:screenHeight, width:screenWidth, height: screenHeight-20))
         
         v_url?.backgroundColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
@@ -306,6 +353,10 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
         leftView1.bounds = CGRect(x:0, y:0, width:15, height:(tf_url?.frame.size.height)!)
         leftView1.backgroundColor = UIColor.clear
         tf_url?.leftViewMode = .always
+=======
+        
+        // Do any additional setup after loading the view.
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
     }
     
     @IBAction func back(_ sender: Any) {
@@ -325,6 +376,7 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
         // Pass the selected object to the new view controller.
     }
     */
+<<<<<<< HEAD
     @IBAction func cleanurl(_ sender: Any) {
         tf_web.text = ""
         to_url = ""
@@ -354,11 +406,25 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
             UIView.animate(withDuration: 0.3) {
                 self.v_url?.frame.origin.y -= self.screenHeight-20
             }
+=======
+    
+    @IBAction func Custommade(_ sender: Any) {
+        webs = tf_web.text
+        datas = tv_data.text ?? ""
+        remas = tf_rem.text
+        phones = tv_phone.text ?? ""
+        qqs = tv_QQ.text ?? ""
+        emails = tv_email.text ?? ""
+        if(webs == ""){
+            showMsgbox(_message: "请输入网站链接")
+            return
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         }
         if(datas == ""){
             showMsgbox(_message: "请输入需爬取的数据")
             return
         }
+<<<<<<< HEAD
         else if(phones == ""){
             let alertController = UIAlertController(title: "请输入您的个人信息",
                                                     message: nil, preferredStyle: .alert)
@@ -381,6 +447,11 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
                 }, completion: nil)
                 self.zt_hmess = 0
             }
+=======
+        if(phones == ""){
+            showMsgbox(_message: "请输入您的手机号码")
+            return
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         }else{
             postDemand()
         }
@@ -390,7 +461,11 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
         let url = "https://www.xingzhu.club/XzTest/demands/postDemand"
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
         let paras = ["userId":self.userid,"demandWeb":self.webs,"demandData":self.datas,"demandRemarks":self.remas,"demandPhoneNumber":self.phones,"demandEmail":self.emails,"demandQq":self.qqs] as [String : Any]
+<<<<<<< HEAD
         print("网站\(self.webs),手机\(phones),QQ\(qqs),数据\(datas),备注\(remas),邮箱\(emails)")
+=======
+        print("网站\(self.webs)")
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
         // HTTP body: foo=bar&baz[]=a&baz[]=1&qux[x]=1&qux[y]=2&qux[z]=3
         Alamofire.request(url, method: .post, parameters: paras, encoding: JSONEncoding.default, headers: nil).responseJSON { (response) in
             print("jsonRequest:\(response.result)")
@@ -422,6 +497,7 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
         self.present(alert, animated: true, completion: nil)
         
     }
+<<<<<<< HEAD
     @IBAction func toUrl(_ sender: Any) {
         print("uil视图出现")
         self.navigationController?.isNavigationBarHidden = true
@@ -667,4 +743,6 @@ class CustommadeViewController: UIViewController ,UIWebViewDelegate{
     @objc func yincang(){
         self.v_hmess?.isHidden = true
     }
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
 }

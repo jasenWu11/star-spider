@@ -1,4 +1,5 @@
 //
+<<<<<<< HEAD
 //  UICollectionGridViewCell.swift
 //  hangge_1081
 //
@@ -6,6 +7,8 @@
 //  Copyright © 2017年 hangge.com. All rights reserved.
 //
 
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413
 import UIKit
 
 class UICollectionGridViewCell: UICollectionViewCell {

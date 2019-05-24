@@ -1,5 +1,5 @@
 //
-//  AboutusViewController.swift
+//  MessageViewController.swift
 //  XZ
 //
 //  Created by wjz on 2018/12/21.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AboutusViewController: UIViewController {
+class MessageViewController: UIViewController {
 
     @IBAction func back(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)

@@ -9,7 +9,11 @@
 import UIKit
 import Alamofire
 class RegisterViewController: UIViewController {
+<<<<<<< HEAD:XZ/Login/RegisterViewController.swift
     @IBOutlet weak var l_xieyi: UILabel!
+=======
+
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413:XZ/Login/RegisterViewController.swift
     @IBOutlet weak var bt_back: UIButton!
     @IBOutlet weak var bt_re: UIButton!
     @IBOutlet weak var v_yzm: UIView!
@@ -24,6 +28,7 @@ class RegisterViewController: UIViewController {
     var verifyCode : String = ""
     var root : LoginViewController?
     var oldphone = ""
+<<<<<<< HEAD:XZ/Login/RegisterViewController.swift
     var xyurl = "https://www.xingzhu.club/v1.0/#/toregister/service-contract"
     @IBAction  func back(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
@@ -42,6 +47,14 @@ class RegisterViewController: UIViewController {
         l_xieyi.addGestureRecognizer(xieyiclick)
         //开启 isUserInteractionEnabled 手势否则点击事件会没有反应
         l_xieyi.isUserInteractionEnabled = true
+=======
+    @IBAction func back(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+        
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413:XZ/Login/RegisterViewController.swift
         //注册信息视图圆角
         v_xinxi?.clipsToBounds=true
         v_xinxi?.layer.cornerRadius = 10
@@ -318,7 +331,11 @@ class RegisterViewController: UIViewController {
                     let time: TimeInterval = 1
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + time) {
                         //code
+<<<<<<< HEAD:XZ/Login/RegisterViewController.swift
                         self.navigationController?.popViewController(animated: true)
+=======
+                        self.dismiss(animated: true, completion: nil)
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413:XZ/Login/RegisterViewController.swift
                         print("手机号\(self.phone),密码\(self.pass)")
                         self.root?.tv_phone.text = self.phone
                         self.root?.tv_pwd.text = self.pass
@@ -365,6 +382,7 @@ class RegisterViewController: UIViewController {
         let color = UIColor.init(red: (R / 255.0), green: (G / 255.0), blue: (B / 255.0), alpha: alpha);
         return color;
     }
+<<<<<<< HEAD:XZ/Login/RegisterViewController.swift
     @objc func xieyiAction() -> Void {
         var showname:String = "星蛛用户服务协议"
         print("跳转到\(xyurl)")
@@ -383,4 +401,6 @@ class RegisterViewController: UIViewController {
         }
         sender.cancelsTouchesInView = false
     }
+=======
+>>>>>>> 4dc0df178de3d5404cd18f0b0f787b8ecee52413:XZ/Login/RegisterViewController.swift
 }
